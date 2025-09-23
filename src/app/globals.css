@@ -1,8 +1,11 @@
+/* app/globals.css */
 @import "tailwindcss";
 
+/* твои токены/переменные и темы */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --color-primary: #6f2da8; /* чтобы можно было bg-primary / text-primary */
 }
 
 @theme inline {
@@ -10,6 +13,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-primary: var(--color-primary);
 }
 
 @media (prefers-color-scheme: dark) {
