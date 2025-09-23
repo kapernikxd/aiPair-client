@@ -12,6 +12,7 @@ import AuthPopup from "@/components/AuthPopup";
 // }
 
 const data = [
+  { id: 0, cardWidth: "200", src: '/img/mizuhara.png', title: 'aiAgent α', views: 'New', hoverText: 'Meet the undercover strategist.', href: '/profile/ai-agent' },
   { id: 1, cardWidth: "200", src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/chat/emily' },
   { id: 2, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/chat/tristan' },
   { id: 3, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/chat/emily' },
@@ -79,6 +80,7 @@ export default function Landing() {
             <div className="text-sm text-white/70">by <span className="font-semibold text-white">Freudly‑style</span></div>
           </div>
           <div className="hidden gap-6 text-sm text-white/80 md:flex">
+            <a href="/profile/ai-agent" className="hover:text-white">aiAgent α</a>
             <a href="#features" className="hover:text-white">Features</a>
             <a href="#demo" className="hover:text-white">Demo</a>
             <a href="#pricing" className="hover:text-white">Pricing</a>

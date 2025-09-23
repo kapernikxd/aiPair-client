@@ -62,6 +62,7 @@ export default function AppShell({
                 {/* содержимое меню; при необходимости можно дать собственный вертикальный скролл */}
                 <nav className="mt-2 flex-1 px-2">
                     <NavItem href="#" label="Discover" icon={<Home className="size-5" />} open={open} />
+                    <NavItem href="/profile/ai-agent" label="aiAgent α" icon={<MessageSquare className="size-5" />} open={open} />
                     <div className="mt-4 border-t border-white/5 pt-3" />
                     <SectionTitle open={open}>Chats</SectionTitle>
                     <NavItem href="#" label="Sabine" icon={<MessageSquare className="size-5" />} open={open} />
@@ -116,6 +117,7 @@ export default function AppShell({
                             </div>
                             <nav className="space-y-1">
                                 <NavItem href="#" label="Discover" icon={<Home className="size-5" />} open />
+                                <NavItem href="/profile/ai-agent" label="aiAgent α" icon={<MessageSquare className="size-5" />} open />
                                 <NavItem href="#" label="Search" icon={<Search className="size-5" />} open />
                                 <NavItem href="#" label="Memory" icon={<Archive className="size-5" />} open />
                                 <NavItem href="#" label="Notification" icon={<Bell className="size-5" />} open />
