@@ -3,6 +3,8 @@
 import { useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
+import { useAuthRoutes } from '@/hooks/useAuthRoutes';
+
 type Props = {
   open: boolean;
   onClose: () => void;
@@ -26,6 +28,7 @@ export default function AuthPopup({
   ],
 }: Props) {
   const dialogRef = useRef<HTMLDivElement>(null);
+  const { goToAdmin } = useAuthRoutes();
 
   // Закрытие по Esc
   useEffect(() => {
@@ -102,7 +105,10 @@ export default function AuthPopup({
               <div className="mx-auto mt-6 flex max-w-md flex-col gap-4">
                 {/* Google */}
                 <button
-                  onClick={onGoogle}
+                  onClick={() => {
+                    onGoogle?.();
+                    goToAdmin();
+                  }}
                   className="inline-flex w-full items-center justify-center gap-3 rounded-full bg-neutral-800 px-6 py-4 text-lg font-medium ring-1 ring-white/10 hover:bg-neutral-700 active:scale-[.995] transition"
                 >
                   <svg viewBox="0 0 48 48" className="size-5" aria-hidden="true">
@@ -113,7 +119,10 @@ export default function AuthPopup({
 
                 {/* Apple */}
                 <button
-                  onClick={onApple}
+                  onClick={() => {
+                    onApple?.();
+                    goToAdmin();
+                  }}
                   className="inline-flex w-full items-center justify-center gap-3 rounded-full bg-neutral-800 px-6 py-4 text-lg font-medium ring-1 ring-white/10 hover:bg-neutral-700 active:scale-[.995] transition"
                 >
                   <svg viewBox="0 0 24 24" className="size-5" fill="currentColor" aria-hidden="true">
