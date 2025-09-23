@@ -9,6 +9,7 @@ import AppShell from "@/components/AppShell";
 // }
 
 const data = [
+  { id: 0, cardWidth: "200", src: '/img/mizuhara.png', title: 'aiAgent α', views: 'Profile', hoverText: 'View the creator dossier.', href: '/profile/ai-agent' },
   { id: 1, cardWidth: "200", src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/admin/chat' },
   { id: 2, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/admin/chat' },
   { id: 3, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/admin/chat' },
