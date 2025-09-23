@@ -42,11 +42,13 @@ export default function Landing() {
   return (
     <AppShell>
       {/* любой контент справа */}
-      <div className="p-0 m-0 h-full overflow-y-auto">
-      <CardRailTwoRows items={data} className="mx-auto max-w-[1400px]" />
-      <CardRailTwoRows items={data} className="mx-auto max-w-[1400px]" />
-      <CardRailTwoRows items={data} className="mx-auto max-w-[1400px]" />
-      <CardRailTwoRows items={data} className="mx-auto max-w-[1400px]" />
+      <div className="flex h-full min-h-0 flex-col">
+        <div className="flex-1 overflow-y-auto">
+          <CardRailTwoRows items={data} className="mx-auto max-w-[1400px]" />
+          <CardRailTwoRows items={data} className="mx-auto max-w-[1400px]" />
+          <CardRailTwoRows items={data} className="mx-auto max-w-[1400px]" />
+          <CardRailTwoRows items={data} className="mx-auto max-w-[1400px]" />
+        </div>
       </div>
     </AppShell>
   )
