@@ -35,11 +35,11 @@ export default function ChatPage() {
   return (
     <AppShell>
       {/* весь экран, внешняя прокрутка отключена */}
-      <div className="overflow-hidden">
+      <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
         <GradientOrbs />
 
         {/* три строки: Header / Messages(scroll) / Input */}
-        <div className="mx-auto grid h-full w-full max-w-3xl grid-rows-[auto,1fr,auto] px-4 pt-4 pb-4 gap-y-6">
+        <div className="relative z-10 mx-auto grid h-full w-full max-w-3xl flex-1 grid-rows-[auto,1fr,auto] gap-y-6 px-4 pt-4 pb-4">
           {/* 1) ШАПКА — статично */}
           <HeaderProfile
             title="Angelina"

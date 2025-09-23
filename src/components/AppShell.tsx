@@ -142,7 +142,7 @@ export default function AppShell({
                     <div className="text-sm text-white/50">Right content header</div>
                 </div>
 
-                <div className="p-4 md:p-6">{children}</div>
+                <div className="flex h-full min-h-0 flex-col p-4 md:p-6">{children}</div>
             </main>
         </div>
     );
