@@ -135,7 +135,7 @@ export default function AppShell({
             </div>
 
             {/* ==== ПРАВЫЙ КОНТЕНТ (СКРОЛЛ ТУТ) ==== */}
-            <main className="flex-1 h-full overflow-y-auto">
+            <main className="flex-1 h-full overflow-hidden">
                 {/* липкий топбар внутри правой колонки */}
                 <div className="sticky top-0 z-10 hidden md:flex items-center justify-between border-b border-white/10 bg-neutral-900/70 px-5 py-3 backdrop-blur">
                     <div className="text-sm text-white/70">For You</div>

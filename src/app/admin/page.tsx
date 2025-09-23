@@ -42,10 +42,12 @@ export default function Landing() {
   return (
     <AppShell>
       {/* любой контент справа */}
+      <div className="p-0 m-0 h-full overflow-y-auto">
       <CardRailTwoRows items={data} className="mx-auto max-w-[1400px]" />
       <CardRailTwoRows items={data} className="mx-auto max-w-[1400px]" />
       <CardRailTwoRows items={data} className="mx-auto max-w-[1400px]" />
       <CardRailTwoRows items={data} className="mx-auto max-w-[1400px]" />
+      </div>
     </AppShell>
   )
 }
