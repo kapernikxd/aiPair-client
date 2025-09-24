@@ -186,7 +186,7 @@ export default function AppShell({
                     <span className="mt-1">Создать</span>
                 </Link>
                 <Link
-                    href="/admin/chat"
+                    href="/admin/chats"
                     className="flex flex-col items-center text-xs text-white/70"
                 >
                     <MessageSquare className="size-6" />
