@@ -9,7 +9,7 @@ export default function NameField({
   onChange: (val: string) => void;
   max?: number;
 }) {
-  const counter = value.length.toString().padStart(2, "0");
+  const counter = value?.length?.toString()?.padStart(2, "0");
   return (
     <label className="block space-y-2">
       <div className="flex items-center justify-between text-xs font-medium uppercase tracking-wide text-neutral-400">

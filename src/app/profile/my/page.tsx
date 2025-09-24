@@ -5,10 +5,7 @@ import EditProfileDialog from "@/components/profile/edit/EditProfileDialog";
 import GradientBackdrop from "@/components/profile/GradientBackdrop";
 import HeaderActions from "@/components/profile/HeaderActions";
 import ProfileCard from "@/components/profile/ProfileCard";
-import BadgesRow from "@/components/profile/BadgesRow";
 import AiAgentsTimeline from "@/components/profile/AiAgentsTimeline";
-import Milestones from "@/components/profile/Milestones";
-import MoreTalkies from "@/components/profile/MoreTalkies";
 
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import { useEffect, useState } from "react";
@@ -20,11 +17,7 @@ export default function MyProfilePage() {
   const aiAgents = useStoreData(aiBotStore, (store) => store.myBots);
   const subscribedAiAgents = useStoreData(aiBotStore, (store) => store.subscribedBots);
 
-  const badges = useStoreData(profileStore, (store) => store.badges);
-  const talkies = useStoreData(profileStore, (store) => store.talkies);
-  const milestones = useStoreData(profileStore, (store) => store.milestones);
   const isDialogOpen = useStoreData(uiStore, (store) => store.isEditProfileDialogOpen);
-  const moreTalkies = talkies.slice(3);
 
   const [activeFilter, setActiveFilter] = useState<"my" | "subscribed">("my");
 
@@ -89,7 +82,7 @@ export default function MyProfilePage() {
                 <p className="mt-2 text-sm text-white/70">
                   Choose whether to see your own creations or the agents you're subscribed to.
                 </p>
-                <div className="mt-4 grid gap-2">
+                <div className="mt-4 grid gap-3">
                   {filters.map((filter) => {
                     const isActive = activeFilter === filter.value;
                     return (
