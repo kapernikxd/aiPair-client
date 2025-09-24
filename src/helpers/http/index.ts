@@ -7,7 +7,7 @@ export const isDev = process.env.NODE_ENV === "development";
 
 export const EMAIL = "pllace.support@gmail.com";
 
-export const BASE_URL = "http://192.168.0.23:5001/"
+export const BASE_URL = "http://localhost:5001/"
 
 export const TELEGRAM_URL = 'https://t.me/pllacesupport';
 export const DOMAIN = "https://pllace.su"

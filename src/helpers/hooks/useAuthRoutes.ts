@@ -9,6 +9,7 @@ const ROUTES = {
   createAgent: '/create',
   aiAgentProfile: '/profile/ai-agent',
   userProfile: '/profile/user',
+  myProfile: '/profile/my',
   adminRoot: '/admin',
   adminChats: '/admin/chats',
   adminChat: '/admin/chat',
