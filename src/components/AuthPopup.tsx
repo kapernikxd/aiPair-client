@@ -28,7 +28,7 @@ export default function AuthPopup({
   ],
 }: Props) {
   const dialogRef = useRef<HTMLDivElement>(null);
-  const { goToAdmin } = useAuthRoutes();
+  const { routes, goToAdmin } = useAuthRoutes();
 
   // Закрытие по Esc
   useEffect(() => {
@@ -134,8 +134,8 @@ export default function AuthPopup({
 
               <p className="mt-6 text-center text-sm text-neutral-400">
                 By continuing, you agree to Talkie’s{' '}
-                <a className="underline hover:text-white" href="#">Terms of Service</a> and{' '}
-                <a className="underline hover:text-white" href="#">Privacy Policy</a>.
+                <a className="underline hover:text-white" href={routes.terms}>Terms of Service</a> and{' '}
+                <a className="underline hover:text-white" href={routes.privacy}>Privacy Policy</a>.
               </p>
             </div>
           </motion.div>

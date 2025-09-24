@@ -1,3 +1,5 @@
+'use client';
+
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -15,6 +17,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 
 import AppShell from "@/components/AppShell";
+import { useAuthRoutes } from "@/hooks/useAuthRoutes";
 
 const badges = ["Narrative tactician", "Keeps secrets", "Loyal to the core"];
 
@@ -101,6 +104,7 @@ const talkies: TalkieCard[] = [
 ];
 
 export default function UserProfilePage() {
+  const { routes } = useAuthRoutes();
   return (
     <AppShell>
       <div className="relative min-h-screen overflow-y-auto bg-neutral-950 text-white">
@@ -177,7 +181,7 @@ export default function UserProfilePage() {
                     </div>
                   </div>
                   <Link
-                    href="/admin/chat"
+                    href={routes.adminChat}
                     className="inline-flex items-center gap-2 rounded-2xl border border-white/15 px-5 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10"
                   >
                     Message Keyser
