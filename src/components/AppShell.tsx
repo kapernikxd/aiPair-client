@@ -35,7 +35,7 @@ export default function AppShell({
     const open = useStoreData(uiStore, (store) => store.isSidebarOpen);
     const mobileOpen = useStoreData(uiStore, (store) => store.isMobileSidebarOpen);
     const profile = useStoreData(profileStore, (store) => store.profile);
-    const profileInitial = profile.userName.charAt(0)?.toUpperCase() || 'U';
+    const profileInitial = 'U';
 
     useEffect(() => {
         uiStore.hydrateSidebarFromStorage();

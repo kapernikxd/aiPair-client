@@ -7,7 +7,7 @@ import { useRootStore, useStoreData } from '@/stores/StoreProvider';
 
 export default function ProfileSection({ open = true }: { open?: boolean }) {
   const { profileStore, authStore } = useRootStore();
-  const profileName = useStoreData(profileStore, (store) => store.profile.userName);
+  const profileName = "Name" // useStoreData(profileStore, (store) => store.profile.userName);
   const authUser = useStoreData(authStore, (store) => store.user);
   const displayName = authUser?.name ?? profileName;
   const initial = displayName.charAt(0)?.toUpperCase() || 'U';

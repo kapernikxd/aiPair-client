@@ -5,7 +5,17 @@ import { ChatDTO, MessageDTO } from '@/helpers/types';
 import { ChatById, ReadedMessageResponse } from '@/services/chat/ChatResponse';
 import ChatService, { FetchChatsOptions } from '@/services/chat/ChatService';
 
+import { chatThreads } from '@/helpers/data/chats';
+import { initialMessages } from '@/helpers/data/chat';
+import type { ChatMessage } from '@/helpers/types/chat';
+import type { ChatThread } from '@/helpers/types/chats';
+
+
 export class ChatStore extends BaseStore {
+  threads = [...chatThreads];
+  activeThreadId: number | null = this.threads[0]?.id ?? null;
+  private messagesByThread = new Map<number, ChatMessage[]>();
+
   private root: RootStore;
 
   chats: ChatDTO[] = [];
@@ -31,8 +41,41 @@ export class ChatStore extends BaseStore {
     this.root = root;
     makeAutoObservable(this);
     this.chatService = new ChatService();
+    if (this.activeThreadId !== null) {
+      this.messagesByThread.set(this.activeThreadId, [...initialMessages]);
+    }
   }
 
+  get activeMessages(): ChatMessage[] {
+    if (this.activeThreadId === null) return [];
+    return this.messagesByThread.get(this.activeThreadId) ?? [];
+  }
+
+  get activeThread(): ChatThread | null {
+    if (this.activeThreadId === null) return null;
+    return this.threads.find((thread) => thread.id === this.activeThreadId) ?? null;
+  }
+
+  setActiveThread(id: number) {
+    this.activeThreadId = id;
+    if (!this.messagesByThread.has(id)) {
+      this.messagesByThread.set(id, [...initialMessages]);
+    }
+    this.notify();
+  }
+
+  receiveMessage(message: ChatMessage, threadId?: number) {
+    const targetThread = threadId ?? this.activeThreadId;
+    if (targetThread === null) return;
+    const messages = this.messagesByThread.get(targetThread) ?? [];
+    this.messagesByThread.set(targetThread, [...messages, message]);
+    this.notify();
+  }
+
+  resetThread(threadId: number) {
+    this.messagesByThread.set(threadId, [...initialMessages]);
+    this.notify();
+  }
 
   async loadPinnedMessages(chatId: string) {
     try {
