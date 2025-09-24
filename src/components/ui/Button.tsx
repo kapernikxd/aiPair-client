@@ -27,15 +27,25 @@ type ButtonVariant =
   | "mobileClose"
   | "gradient";
 
-type BaseButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className"> & {
-  variant: Exclude<ButtonVariant, "gradient">;
+
+type CommonExtras = {
+  /** Позволяет подмешать свои классы */
+  className?: string;
 };
 
-type GradientButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className"> & {
-  variant: "gradient";
-  gradientFrom: string;
-  gradientTo: string;
-};
+type BaseButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className"> &
+  CommonExtras & {
+    variant: Exclude<ButtonVariant, "gradient">;
+  };
+
+
+type GradientButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "className"> &
+  CommonExtras & {
+    variant: "gradient";
+    gradientFrom: string;
+    gradientTo: string;
+  };
+
 
 type ButtonProps = BaseButtonProps | GradientButtonProps;
 
@@ -92,25 +102,41 @@ const gradientBaseClasses =
   "inline-flex items-center justify-center rounded-2xl px-4 py-2 text-sm font-semibold text-neutral-900 shadow-lg transition hover:brightness-105";
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { variant, ...restProps },
-  ref,
+  props,
+  ref
 ) {
-  if (variant === "gradient") {
-    const { children, gradientFrom, gradientTo, style, ...rest } = restProps as GradientButtonProps;
+  if (props.variant === "gradient") {
+    const {
+      children,
+      gradientFrom,
+      gradientTo,
+      style,
+      className,
+      ...rest
+    } = props as GradientButtonProps;
+
     const backgroundImage = `linear-gradient(135deg, ${gradientFrom}, ${gradientTo})`;
     const mergedStyle: CSSProperties = { ...style, backgroundImage };
+    const classes =
+      gradientBaseClasses +
+      (className ? ` ${className}` : "");
+
     return (
-      <button ref={ref} className={gradientBaseClasses} style={mergedStyle} {...rest}>
+      <button ref={ref} className={classes} style={mergedStyle} {...rest}>
         {children}
       </button>
     );
   }
 
-  const { children, style, ...rest } = restProps as BaseButtonProps;
-  const className = variantStyles[variant];
+  const { children, style, className, variant, ...rest } =
+    props as BaseButtonProps;
+
+  const classes =
+    variantStyles[variant] +
+    (className ? ` ${className}` : "");
 
   return (
-    <button ref={ref} className={className} style={style} {...rest}>
+    <button ref={ref} className={classes} style={style} {...rest}>
       {children}
     </button>
   );

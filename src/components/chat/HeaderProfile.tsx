@@ -37,7 +37,7 @@ export default function HeaderProfile({ title, avatarSrc, stats, onFollow }: Pro
                         </div>
                     )}
                 </div>
-                <Button onClick={onFollow} variant="solidWhitePillCompact">
+                <Button onClick={onFollow} variant="solidWhitePillCompact" className="self-start">
                     Follow
                 </Button>
             </div>
