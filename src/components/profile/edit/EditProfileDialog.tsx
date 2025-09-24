@@ -11,19 +11,20 @@ import IntroField from "./overview/IntroField";
 import RelationshipField from "./overview/RelationshipField";
 import Notice from "./overview/Notice";
 import FormActions from "./overview/FormActions";
-import { EditableProfile } from "@/helpers/types/profile";
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
+import { MyProfileDTO } from "@/helpers/types";
+import LastNameField from "./overview/LastNameField";
 
 
 type Props = {
   open: boolean;
-  profile: EditableProfile;
+  profile: MyProfileDTO;
   onClose: () => void;
-  onSave: (profile: EditableProfile) => void;
+  onSave: (profile: MyProfileDTO) => void;
 };
 
 export default function EditProfileDialog({ open, profile, onClose, onSave }: Props) {
-  const [formState, setFormState] = useState<EditableProfile>(profile);
+  const [formState, setFormState] = useState<MyProfileDTO>(profile);
   const { profileStore } = useRootStore();
   const genderOptions = useStoreData(profileStore, (store) => store.genderOptions);
   const relationshipOptions = useStoreData(profileStore, (store) => store.relationshipOptions);
@@ -55,26 +56,31 @@ export default function EditProfileDialog({ open, profile, onClose, onSave }: Pr
         <DialogHeader onClose={onClose} />
 
         <div className="space-y-6 px-6 pb-6 sm:px-8 sm:pb-8">
-          <HeroRow userName={formState.userName} />
+          <HeroRow userName={formState.username || 'userName'} />
 
           <NameField
-            value={formState.userName}
+            value={formState.name}
+            onChange={(val) => setFormState((s) => ({ ...s, userName: val }))}
+          />
+
+          <LastNameField
+            value={formState.lastname}
             onChange={(val) => setFormState((s) => ({ ...s, userName: val }))}
           />
 
           <GenderGroup
-            value={formState.gender}
+            value={'male'}
             onChange={(val) => setFormState((s) => ({ ...s, gender: val }))}
             options={genderOptions}
           />
 
           <IntroField
-            value={formState.intro}
+            value={formState.userBio}
             onChange={(val) => setFormState((s) => ({ ...s, intro: val }))}
           />
 
           <RelationshipField
-            value={formState.relationshipPreference}
+            value={'test'}
             onChange={(val) => setFormState((s) => ({ ...s, relationshipPreference: val }))}
             options={relationshipOptions}
           />

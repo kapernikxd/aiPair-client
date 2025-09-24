@@ -29,7 +29,7 @@ export type TalkieStat = {
 };
 
 
-export type TalkieCard = {
+export type AiAgentCard = {
     name: string;
     image: string;
     description: string;

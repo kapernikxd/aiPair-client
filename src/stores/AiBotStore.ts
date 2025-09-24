@@ -220,7 +220,7 @@ export class AiBotStore extends BaseStore {
     }
   }
 
-  async fetchMyBots() {
+  async fetchMyAiBots() {
     try {
       const { data } = await this.profileService.getMyAiBots();
       runInAction(() => {

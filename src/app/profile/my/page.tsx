@@ -8,24 +8,31 @@ import GradientBackdrop from "@/components/profile/GradientBackdrop";
 import HeaderActions from "@/components/profile/HeaderActions";
 import ProfileCard from "@/components/profile/ProfileCard";
 import BadgesRow from "@/components/profile/BadgesRow";
-import TalkieTimeline from "@/components/profile/TalkieTimeline";
+import AiAgentsTimeline from "@/components/profile/AiAgentsTimeline";
 import Milestones from "@/components/profile/Milestones";
 import CommunityStats from "@/components/profile/CommunityStats";
 import MoreTalkies from "@/components/profile/MoreTalkies";
 
 
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
+import { useEffect } from "react";
 
 
 export default function MyProfilePage() {
-  const { profileStore, uiStore } = useRootStore();
-  const profile = useStoreData(profileStore, (store) => store.profile);
+  const { profileStore, uiStore, aiBotStore } = useRootStore();
+  const profile = useStoreData(profileStore, (store) => store.myProfile);
+  const aiAgents = useStoreData(aiBotStore, (store) => store.myBots);
+
   const badges = useStoreData(profileStore, (store) => store.badges);
   const talkies = useStoreData(profileStore, (store) => store.talkies);
   const milestones = useStoreData(profileStore, (store) => store.milestones);
-  const genderLabel = useStoreData(profileStore, (store) => store.genderLabel);
   const isDialogOpen = useStoreData(uiStore, (store) => store.isEditProfileDialogOpen);
   const moreTalkies = talkies.slice(3);
+
+  useEffect(() => {
+    void profileStore.fetchMyProfile();
+    void aiBotStore.fetchMyAiBots();
+  }, [profileStore]);
 
 
   return (
@@ -35,7 +42,7 @@ export default function MyProfilePage() {
           open={isDialogOpen}
           profile={profile}
           onClose={() => uiStore.closeEditProfileDialog()}
-          onSave={(updated) => profileStore.updateProfile(updated)}
+          onSave={(updated) => console.log(updated)}
         />
 
         <GradientBackdrop />
@@ -43,19 +50,16 @@ export default function MyProfilePage() {
         <div className="mx-auto w-full max-w-5xl px-4 pb-20 pt-14">
           <header className="space-y-8">
             <HeaderActions onEdit={() => uiStore.openEditProfileDialog()} />
-            <ProfileCard profile={profile} genderLabel={genderLabel} />
-            <BadgesRow badges={badges} />
+            <ProfileCard profile={profile} genderLabel={'Male'} />
           </header>
 
           <section className="mt-12 grid gap-6 lg:grid-cols-[1fr_320px]">
             <div className="space-y-6">
-              <TalkieTimeline items={talkies} />
-              <Milestones items={milestones} />
+              <AiAgentsTimeline items={aiAgents} />
             </div>
 
             <aside className="space-y-6">
               <CommunityStats />
-              <MoreTalkies items={moreTalkies} />
             </aside>
           </section>
         </div>

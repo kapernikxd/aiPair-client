@@ -17,10 +17,6 @@ export default function HeaderActions({ onEdit }: { onEdit: () => void }) {
                 </Button>
             </div>
             <div className="flex items-center gap-3">
-                <Button variant="frostedPill">
-                    <Sparkles className="size-4" />
-                    Subscribed
-                </Button>
                 <Button onClick={onEdit} variant="solidWhitePill">
                     Edit Profile
                 </Button>

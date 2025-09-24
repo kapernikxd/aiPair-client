@@ -21,6 +21,8 @@ export interface UserDTO {
   moderationStatus?: 'PENDING' | 'APPROVED' | 'REJECTED';
   moderationImageStatus?: 'PENDING' | 'APPROVED' | 'REJECTED';
   role?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface UserBasicDTO {

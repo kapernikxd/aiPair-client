@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { BaseStore } from './BaseStore';
 import type { RootStore } from './RootStore';
-import type { ProfilesFilterParams, TalkieCard, UpdateProfileProps } from '@/helpers/types/profile';
+import type { ProfilesFilterParams, AiAgentCard, UpdateProfileProps } from '@/helpers/types/profile';
 import { MyProfileDTO, ProfileDTO, UserDTO } from '@/helpers/types';
 import ProfileService, { UsersFilterParams } from '@/services/profile/ProfileService';
 import { ChangePasswordProps } from '@/services/auth/AuthResponse';
@@ -25,7 +25,7 @@ export type PublicProfile = {
   location: string;
   avatar: string;
   badges: string[];
-  talkies: TalkieCard[];
+  talkies: AiAgentCard[];
 };
 
 export class ProfileStore extends BaseStore {
