@@ -6,8 +6,8 @@ import LandingClient from '@/components/LandingClient';
 import DeviceMockup from '@/components/DeviceMockup';
 import CardRailTwoRows from "@/components/CardRailTwoRows";
 import AuthPopup from "@/components/AuthPopup";
-import { useAuthRoutes } from "@/hooks/useAuthRoutes";
-import type { AuthRouteKey } from "@/hooks/useAuthRoutes";
+import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
+import type { AuthRouteKey } from "@/helpers/hooks/useAuthRoutes";
 
 // export const metadata = {
 //   title: 'AI Pair — Talk with an AI companion',

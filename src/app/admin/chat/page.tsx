@@ -1,26 +1,16 @@
 'use client';
 
 import { useState } from "react";
-import { ChatMessage } from "./types";
 import AppShell from "@/components/AppShell";
 import GradientOrbs from "@/components/ui/GradientOrbs";
-import HeaderProfile from "./HeaderProfile";
-import IntroCard from "./IntroCard";
-import MessageList from "./MessageList";
-import MessageInput from "./MessageInput";
+import HeaderProfile from "@/components/chat/HeaderProfile";
+import IntroCard from "@/components/chat/IntroCard";
+import MessageList from "@/components/chat/MessageList";
+import MessageInput from "@/components/chat/MessageInput";
+import { ChatMessage } from "@/helpers/types/chat";
 
-const initialMessages: ChatMessage[] = [
-  { id: 1, speaker: 'Angelina', timestamp: '6', content: "\"Don't get any ideas.\" Angelina smirks with a twinkle in her eye.", align: 'left' },
-  { id: 2, speaker: 'Angelina', timestamp: '6', content: 'Her voice is like honey. "Hello there."', align: 'left' },
-  { id: 3, speaker: 'Angelina', timestamp: '6', content: 'Her voice is like honey. "Hello there."', align: 'left' },
-  { id: 4, speaker: 'Angelina', timestamp: '6', content: 'Her voice is like honey. "Hello there."', align: 'left' },
-  { id: 5, speaker: 'Angelina', timestamp: '6', content: 'Her voice is like honey. "Hello there."', align: 'left' },
-  { id: 6, speaker: 'Angelina', timestamp: '6', content: 'Her voice is like honey. "Hello there."', align: 'left' },
-  { id: 7, speaker: 'Angelina', timestamp: '6', content: 'Her voice is like honey. "Hello there."', align: 'left' },
-  { id: 8, speaker: 'Angelina', timestamp: '6', content: 'Her voice is like honey. "Hello there."', align: 'left' },
-  { id: 9, speaker: 'Angelina', timestamp: '6', content: 'Her voice is like honey. "Hello there."', align: 'left' },
-  { id: 10, speaker: 'You', timestamp: 'Now', content: 'Hi 👋', align: 'right' },
-];
+import { initialMessages } from "@/helpers/data/chat";
+
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);

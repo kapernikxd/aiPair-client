@@ -14,7 +14,7 @@ import {
     UserRound,
     PlusCircle,
 } from 'lucide-react';
-import { useAuthRoutes } from '@/hooks/useAuthRoutes';
+import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
 import ProfileSection from './ProfileSection';
 
 type AppShellProps = {

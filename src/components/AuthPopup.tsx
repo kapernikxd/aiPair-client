@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 
-import { useAuthRoutes } from '@/hooks/useAuthRoutes';
+import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
 
 type Props = {
   open: boolean;
