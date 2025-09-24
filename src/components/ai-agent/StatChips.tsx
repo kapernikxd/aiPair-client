@@ -1,9 +1,11 @@
-export default function StatChips() {
+export default function StatChips({ items }: { items: string[] }) {
     return (
         <div className="flex flex-wrap gap-3 text-sm text-white/70">
-            <span className="rounded-full bg-white/10 px-3 py-1">1.4K followers</span>
-            <span className="rounded-full bg-white/10 px-3 py-1">210 chats today</span>
-            <span className="rounded-full bg-white/10 px-3 py-1">By @talkie-labs</span>
+            {items.map((chip) => (
+                <span key={chip} className="rounded-full bg-white/10 px-3 py-1">
+                    {chip}
+                </span>
+            ))}
         </div>
     );
 }

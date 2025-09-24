@@ -12,6 +12,7 @@ import RelationshipField from "./overview/RelationshipField";
 import Notice from "./overview/Notice";
 import FormActions from "./overview/FormActions";
 import { EditableProfile } from "@/helpers/types/profile";
+import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 
 
 type Props = {
@@ -23,6 +24,9 @@ type Props = {
 
 export default function EditProfileDialog({ open, profile, onClose, onSave }: Props) {
   const [formState, setFormState] = useState<EditableProfile>(profile);
+  const { profileStore } = useRootStore();
+  const genderOptions = useStoreData(profileStore, (store) => store.genderOptions);
+  const relationshipOptions = useStoreData(profileStore, (store) => store.relationshipOptions);
 
   // sync incoming profile on open
   useEffect(() => {
@@ -61,6 +65,7 @@ export default function EditProfileDialog({ open, profile, onClose, onSave }: Pr
           <GenderGroup
             value={formState.gender}
             onChange={(val) => setFormState((s) => ({ ...s, gender: val }))}
+            options={genderOptions}
           />
 
           <IntroField
@@ -71,6 +76,7 @@ export default function EditProfileDialog({ open, profile, onClose, onSave }: Pr
           <RelationshipField
             value={formState.relationshipPreference}
             onChange={(val) => setFormState((s) => ({ ...s, relationshipPreference: val }))}
+            options={relationshipOptions}
           />
 
           <Notice />

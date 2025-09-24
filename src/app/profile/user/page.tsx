@@ -12,11 +12,13 @@ import SectionHeader from "@/components/user/SectionHeader";
 import TalkieGrid from "@/components/user/TalkieGrid";
 
 
-import { badges, talkies } from "@/helpers/data/user";
+import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 
 
 export default function UserProfilePage() {
   const { routes } = useAuthRoutes();
+  const { profileStore } = useRootStore();
+  const userProfile = useStoreData(profileStore, (store) => store.userProfile);
 
 
   return (
@@ -29,11 +31,11 @@ export default function UserProfilePage() {
           <header className="space-y-8">
             <HeaderBar />
             <UserHero
-              name="Keyser Soze"
-              intro="One of my favorite movies is the “Usual Suspects” (1995) from where I picked up the name Keyser Soze."
-              location="Somewhere in the shadows"
-              avatar="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=500&q=80"
-              badges={badges}
+              name={userProfile.name}
+              intro={userProfile.intro}
+              location={userProfile.location}
+              avatar={userProfile.avatar}
+              badges={userProfile.badges}
               messageHref={routes.adminChat}
             />
           </header>
@@ -41,7 +43,7 @@ export default function UserProfilePage() {
 
           <section className="mt-12 space-y-6">
             <SectionHeader title="Talkie List" subtitle="Where the stories stay safe and the signal stays clear." actionLabel="View archive" />
-            <TalkieGrid items={talkies} />
+            <TalkieGrid items={userProfile.talkies} />
           </section>
         </div>
       </div>

@@ -1,20 +1,19 @@
 "use client";
 
-import { genderOptions } from "@/helpers/data/profile";
-
-
 export default function GenderGroup({
   value,
   onChange,
+  options,
 }: {
   value: string;
   onChange: (val: string) => void;
+  options: readonly { value: string; label: string }[];
 }) {
   return (
     <fieldset className="space-y-3">
       <legend className="text-xs font-medium uppercase tracking-wide text-neutral-400">Gender</legend>
       <div className="grid gap-2 sm:grid-cols-3">
-        {genderOptions.map((option) => (
+        {options.map((option) => (
           <label
             key={option.value}
             className={`flex items-center gap-3 rounded-2xl border px-3 py-3 text-sm transition ${
