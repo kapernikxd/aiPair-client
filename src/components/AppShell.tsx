@@ -88,15 +88,27 @@ export default function AppShell({
             {/* ==== МОБИЛЬНЫЙ САЙДБАР ==== */}
             <div className="md:hidden">
                 {/* верхняя панель с кнопкой открытия */}
-                <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-white/10 bg-neutral-900/80 px-3 py-3 backdrop-blur">
+                <div className="fixed top-0 left-0 right-0 z-40 flex items-center gap-3 border-b border-white/10 bg-neutral-900/90 px-3 py-3 backdrop-blur">
                     <button
                         onClick={() => setMobileOpen(true)}
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 hover:bg-white/15"
+                        className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 hover:bg-white/15"
                         aria-label="Open menu"
                     >
                         <Menu />
                     </button>
-                    <span className="text-lg font-semibold">talkie</span>
+                    <div className="flex-1">
+                        <label className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2">
+                            <Search className="size-4 text-white/70" aria-hidden />
+                            <input
+                                type="search"
+                                placeholder="Search"
+                                className="w-full bg-transparent text-sm text-white placeholder:text-white/60 focus:outline-none"
+                            />
+                        </label>
+                    </div>
+                    <div className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-400 text-sm font-semibold">
+                        V
+                    </div>
                 </div>
 
                 {mobileOpen && (
@@ -111,7 +123,7 @@ export default function AppShell({
                             animate={{ x: 0 }}
                             exit={{ x: -320 }}
                             transition={{ type: 'tween', duration: 0.2 }}
-                            className="fixed left-0 top-0 z-40 h-full w-[280px] border-r border-white/5 bg-neutral-950/90 p-3 backdrop-blur"
+                            className="fixed left-0 top-0 z-50 h-full w-[280px] border-r border-white/5 bg-neutral-950/90 p-3 backdrop-blur"
                         >
                             <div className="mb-2 flex items-center justify-between">
                                 <span className="text-lg font-semibold">Menu</span>
@@ -153,7 +165,7 @@ export default function AppShell({
                     <div className="text-sm text-white/50">Right content header</div>
                 </div>
 
-                <div className="flex h-full min-h-0 flex-col">{children}</div>
+                <div className="flex h-full min-h-0 flex-col pt-[76px] md:pt-0">{children}</div>
             </main>
         </div>
     );
