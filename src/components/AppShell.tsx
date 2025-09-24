@@ -12,6 +12,7 @@ import {
     Bell,
     MessageSquare,
     UserRound,
+    PlusCircle,
 } from 'lucide-react';
 import ProfileSection from './ProfileSection';
 
@@ -153,8 +154,33 @@ export default function AppShell({
                     <div className="text-sm text-white/50">Right content header</div>
                 </div>
 
-                <div className="flex h-full min-h-0 flex-col">{children}</div>
+                <div className="flex h-full min-h-0 flex-col pb-16 md:pb-0">{children}</div>
             </main>
+
+            {/* ==== МОБИЛЬНОЕ НИЖНЕЕ МЕНЮ ==== */}
+            <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t border-white/10 bg-neutral-950/90 py-3 backdrop-blur md:hidden">
+                <Link
+                    href="/"
+                    className="flex flex-col items-center text-xs text-white/70"
+                >
+                    <Home className="size-6" />
+                    <span className="mt-1">Главная</span>
+                </Link>
+                <Link
+                    href="/create"
+                    className="flex flex-col items-center text-xs text-white/70"
+                >
+                    <PlusCircle className="size-6" />
+                    <span className="mt-1">Создать</span>
+                </Link>
+                <Link
+                    href="/admin/chat"
+                    className="flex flex-col items-center text-xs text-white/70"
+                >
+                    <MessageSquare className="size-6" />
+                    <span className="mt-1">Чаты</span>
+                </Link>
+            </nav>
         </div>
     );
 }
