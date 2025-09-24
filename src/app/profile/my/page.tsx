@@ -1,7 +1,5 @@
 "use client";
 
-
-import { useMemo, useState } from "react";
 import AppShell from "@/components/AppShell";
 import EditProfileDialog from "@/components/profile/edit/EditProfileDialog";
 
@@ -16,21 +14,29 @@ import CommunityStats from "@/components/profile/CommunityStats";
 import MoreTalkies from "@/components/profile/MoreTalkies";
 
 
-import { badges, talkies, milestones, initialProfile, genderLabels } from "@/helpers/data/profile";
+import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 
 
 export default function MyProfilePage() {
-  const [profile, setProfile] = useState(initialProfile);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-
-  const genderLabel = useMemo(() => genderLabels[profile.gender] ?? profile.gender, [profile.gender]);
+  const { profileStore, uiStore } = useRootStore();
+  const profile = useStoreData(profileStore, (store) => store.profile);
+  const badges = useStoreData(profileStore, (store) => store.badges);
+  const talkies = useStoreData(profileStore, (store) => store.talkies);
+  const milestones = useStoreData(profileStore, (store) => store.milestones);
+  const genderLabel = useStoreData(profileStore, (store) => store.genderLabel);
+  const isDialogOpen = useStoreData(uiStore, (store) => store.isEditProfileDialogOpen);
+  const moreTalkies = talkies.slice(3);
 
 
   return (
     <AppShell>
       <div className="relative min-h-screen overflow-y-auto bg-neutral-950 text-white">
-        <EditProfileDialog open={isDialogOpen} profile={profile} onClose={() => setIsDialogOpen(false)} onSave={setProfile} />
+        <EditProfileDialog
+          open={isDialogOpen}
+          profile={profile}
+          onClose={() => uiStore.closeEditProfileDialog()}
+          onSave={(updated) => profileStore.updateProfile(updated)}
+        />
 
 
         <GradientBackdrop />
@@ -38,7 +44,7 @@ export default function MyProfilePage() {
 
         <div className="mx-auto w-full max-w-5xl px-4 pb-20 pt-14">
           <header className="space-y-8">
-            <HeaderActions onEdit={() => setIsDialogOpen(true)} />
+            <HeaderActions onEdit={() => uiStore.openEditProfileDialog()} />
             <ProfileCard profile={profile} genderLabel={genderLabel} />
             <BadgesRow badges={badges} />
           </header>
@@ -53,7 +59,7 @@ export default function MyProfilePage() {
 
             <aside className="space-y-6">
               <CommunityStats />
-              <MoreTalkies items={talkies.slice(3)} />
+              <MoreTalkies items={moreTalkies} />
             </aside>
           </section>
         </div>

@@ -1,14 +1,13 @@
 "use client";
 
-import { relationshipOptions } from "@/helpers/data/profile";
-
-
 export default function RelationshipField({
   value,
   onChange,
+  options,
 }: {
   value: string;
   onChange: (val: string) => void;
+  options: readonly string[];
 }) {
   return (
     <label className="block space-y-2">
@@ -21,7 +20,7 @@ export default function RelationshipField({
           onChange={(e) => onChange(e.target.value)}
           className="w-full appearance-none rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-left text-base text-white focus:border-white/40 focus:outline-none"
         >
-          {relationshipOptions.map((option) => (
+          {options.map((option) => (
             <option key={option} value={option} className="bg-neutral-900 text-white">
               {option}
             </option>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { ArrowRight, Mic, Sparkles, Shield, Globe2, PlayCircle, CheckCircle2, X } from "lucide-react";
 import LandingClient from '@/components/LandingClient';
 import DeviceMockup from '@/components/DeviceMockup';
@@ -9,6 +9,8 @@ import AuthPopup from "@/components/AuthPopup";
 import { Button } from "@/components/ui/Button";
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 import type { AuthRouteKey } from "@/helpers/hooks/useAuthRoutes";
+import { useRootStore, useStoreData } from "@/stores/StoreProvider";
+import type { AuthProvider } from "@/stores/AuthStore";
 
 // export const metadata = {
 //   title: 'AI Pair — Talk with an AI companion',
@@ -81,8 +83,23 @@ const GradientBlob = ({ className = "" }: { className?: string }) => (
 
 export default function Landing() {
   const { routes } = useAuthRoutes();
-  const [open, setOpen] = useState(false);
-  const [showMobileBanner, setShowMobileBanner] = useState(true);
+  const { uiStore, authStore, profileStore } = useRootStore();
+  const open = useStoreData(uiStore, (store) => store.isAuthPopupOpen);
+  const showMobileBanner = useStoreData(uiStore, (store) => store.isMobileBannerVisible);
+  const isAuthenticated = useStoreData(authStore, (store) => store.isAuthenticated);
+  const authUser = useStoreData(authStore, (store) => store.user);
+  const profileName = useStoreData(profileStore, (store) => store.profile.userName);
+
+  const handleAuth = (provider: AuthProvider) => {
+    authStore.startAuth(provider);
+    const normalized = profileName.toLowerCase().replace(/\s+/g, '.');
+    authStore.completeAuth({
+      id: `${provider}-${Date.now()}`,
+      name: profileName,
+      email: `${normalized || 'user'}@example.com`,
+    });
+    uiStore.closeAuthPopup();
+  };
   const cardItems = useMemo(
     () =>
       baseCardData.map(({ routeKey, ...rest }) => ({
@@ -111,8 +128,8 @@ export default function Landing() {
           </div>
           <div className="flex items-center gap-3">
             <div className="hidden md:inline">
-              <Button onClick={() => setOpen(true)} variant="ghostRounded">
-                Sign in
+              <Button onClick={() => uiStore.openAuthPopup()} variant="ghostRounded">
+                {isAuthenticated ? authUser?.name ?? profileName : 'Sign in'}
               </Button>
             </div>
             <a className="inline-flex items-center gap-2 rounded-xl bg-[#6f2da8] px-4 py-2 text-sm font-medium text-white hover:opacity-90" href={routes.landingCta}>
@@ -305,16 +322,16 @@ export default function Landing() {
 
       <AuthPopup
         open={open}
-        onClose={() => setOpen(false)}
-        onGoogle={() => console.log('google')}
-        onApple={() => console.log('apple')}
+        onClose={() => uiStore.closeAuthPopup()}
+        onGoogle={() => handleAuth('google')}
+        onApple={() => handleAuth('apple')}
       />
       {showMobileBanner && (
         <div className="fixed inset-x-0 bottom-4 z-50 px-4 md:hidden">
           <div className="mx-auto flex max-w-xl items-center gap-3 rounded-3xl border border-white/15 bg-neutral-900/95 p-3 shadow-2xl shadow-black/40 backdrop-blur">
             <Button
               type="button"
-              onClick={() => setShowMobileBanner(false)}
+              onClick={() => uiStore.dismissMobileBanner()}
               variant="mobileClose"
               aria-label="Dismiss mobile banner"
             >

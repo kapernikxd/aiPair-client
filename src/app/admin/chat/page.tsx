@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from "react";
 import AppShell from "@/components/AppShell";
 import GradientOrbs from "@/components/ui/GradientOrbs";
 import { Button } from "@/components/ui/Button";
@@ -8,19 +7,17 @@ import HeaderProfile from "@/components/chat/HeaderProfile";
 import IntroCard from "@/components/chat/IntroCard";
 import MessageList from "@/components/chat/MessageList";
 import MessageInput from "@/components/chat/MessageInput";
-import { ChatMessage } from "@/helpers/types/chat";
-
-import { initialMessages } from "@/helpers/data/chat";
+import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 
 
 export default function ChatPage() {
-  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
+  const { chatStore } = useRootStore();
+  const messages = useStoreData(chatStore, (store) => store.activeMessages);
+  const activeThread = useStoreData(chatStore, (store) => store.activeThread);
 
   const handleSend = (text: string) => {
-    setMessages(prev => [
-      ...prev,
-      { id: Date.now(), speaker: 'You', timestamp: 'Now', content: text, align: 'right' },
-    ]);
+    if (!text.trim()) return;
+    chatStore.sendMessage(text);
   };
 
   return (
@@ -33,8 +30,8 @@ export default function ChatPage() {
         <div className="relative z-10 mx-auto grid h-full w-full max-w-3xl flex-1 grid-rows-[auto,1fr,auto] gap-y-6 px-4 pt-4 pb-4">
           {/* 1) ШАПКА — статично */}
           <HeaderProfile
-            title="Angelina"
-            avatarSrc="/img/mizuhara.png"
+            title={activeThread?.name ?? 'Angelina'}
+            avatarSrc={activeThread?.avatar?.src ?? '/img/mizuhara.png'}
             stats={{ views: '1.0K', duration: "2'30", author: 'Keyser Soze' }}
             onFollow={() => console.log('follow')}
           />

@@ -1,7 +1,7 @@
 'use client';
 
-import type React from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import type { ChangeEvent } from 'react';
+import { useEffect } from 'react';
 import AppShell from '@/components/AppShell';
 import { CheckCircle2, Sparkles } from 'lucide-react';
 
@@ -13,101 +13,53 @@ import MediaKitStep from '@/components/ai-agent-create/MediaKitStep';
 import PreviewSidebar from '@/components/ai-agent-create/PreviewSidebar';
 import ActionBar from '@/components/ai-agent-create/ActionBar';
 
-import { FormState, GalleryItem } from '@/helpers/types/agent-create';
-import { MAX_GALLERY_ITEMS, steps } from '@/helpers/data/agent-create';
-import { revokeGallery, revokeIfNeeded } from '@/helpers/utils/agent-create';
+import { FormState } from '@/helpers/types/agent-create';
+import { useRootStore, useStoreData } from '@/stores/StoreProvider';
 
 
 export default function CreateAiAgentPage() {
-  const [step, setStep] = useState(0);
-  const [form, setForm] = useState<FormState>({
-    firstName: '',
-    lastName: '',
-    prompt: '',
-    description: '',
-    intro: '',
-  });
-  const [avatar, setAvatar] = useState<File | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  const [gallery, setGallery] = useState<GalleryItem[]>([]);
-  const [completed, setCompleted] = useState(false);
+  const { aiBotStore } = useRootStore();
+  const step = useStoreData(aiBotStore, (store) => store.step);
+  const form = useStoreData(aiBotStore, (store) => store.form);
+  const avatarPreview = useStoreData(aiBotStore, (store) => store.avatarPreview);
+  const gallery = useStoreData(aiBotStore, (store) => store.gallery);
+  const completed = useStoreData(aiBotStore, (store) => store.completed);
+  const currentStepComplete = useStoreData(aiBotStore, (store) => store.currentStepComplete);
+  const steps = aiBotStore.steps;
+  const maxGalleryItems = aiBotStore.maxGalleryItems;
 
-  useEffect(() => {
-    setCompleted(false);
-  }, [step]);
+  useEffect(() => () => aiBotStore.dispose(), [aiBotStore]);
 
-  useEffect(() => {
-    return () => {
-      revokeIfNeeded(avatarPreview);
-      revokeGallery(gallery);
-    };
-  }, [avatarPreview, gallery]);
-
-  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setAvatar(file);
-    setAvatarPreview((prev) => {
-      revokeIfNeeded(prev);
-      return URL.createObjectURL(file);
-    });
+  const handleAvatarChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+    aiBotStore.setAvatar(file);
   };
 
-  const handleGalleryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGalleryChange = (event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
-    if (!files.length) return;
-
-    setGallery((prev) => {
-      const remaining = Math.max(0, MAX_GALLERY_ITEMS - prev.length);
-      const allowed = files.slice(0, remaining);
-      const mapped = allowed.map((file, index) => ({
-        id: `${file.name}-${Date.now()}-${index}`,
-        preview: URL.createObjectURL(file),
-        file,
-      }));
-      return [...prev, ...mapped];
-    });
+    aiBotStore.addGalleryItems(files);
     event.currentTarget.value = '';
   };
 
   const removeGalleryItem = (id: string) => {
-    setGallery((prev) => {
-      const target = prev.find((i) => i.id === id);
-      if (target) URL.revokeObjectURL(target.preview);
-      return prev.filter((i) => i.id !== id);
-    });
+    aiBotStore.removeGalleryItem(id);
   };
 
   const resetFlow = () => {
-    setForm({ firstName: '', lastName: '', prompt: '', description: '', intro: '' });
-    setAvatar(null);
-    revokeGallery(gallery);
-    setGallery([]);
-    setAvatarPreview((prev) => {
-      revokeIfNeeded(prev);
-      return null;
-    });
-    setStep(0);
-    setCompleted(false);
+    aiBotStore.resetFlow();
   };
 
-  const handleChange = (field: keyof FormState, value: string) =>
-    setForm((prev) => ({ ...prev, [field]: value }));
-
-  const currentStepComplete = useMemo(() => {
-    if (step === 0) return Boolean(form.firstName.trim() && form.lastName.trim() && (avatar || avatarPreview));
-    if (step === 1) return Boolean(form.prompt.trim() && form.description.trim() && form.intro.trim());
-    return gallery.length > 0;
-  }, [step, form, avatar, avatarPreview, gallery]);
+  const handleChange = (field: keyof FormState, value: string) => {
+    aiBotStore.setFormField(field, value);
+  };
 
   const goNext = () => {
-    if (!currentStepComplete) return;
-    if (step < steps.length - 1) setStep((s) => s + 1);
-    else setCompleted(true);
+    aiBotStore.goNext();
   };
 
-  const goPrev = () => setStep((s) => Math.max(0, s - 1));
+  const goPrev = () => {
+    aiBotStore.goPrev();
+  };
 
   return (
     <AppShell>
@@ -156,7 +108,7 @@ export default function CreateAiAgentPage() {
               {step === 2 && (
                 <MediaKitStep
                   gallery={gallery}
-                  maxItems={MAX_GALLERY_ITEMS}
+                  maxItems={maxGalleryItems}
                   onAdd={handleGalleryChange}
                   onRemove={removeGalleryItem}
                 />
@@ -177,7 +129,7 @@ export default function CreateAiAgentPage() {
             form={form}
             avatarPreview={avatarPreview}
             gallery={gallery}
-            maxItems={MAX_GALLERY_ITEMS}
+            maxItems={maxGalleryItems}
           />
         </div>
       </div>

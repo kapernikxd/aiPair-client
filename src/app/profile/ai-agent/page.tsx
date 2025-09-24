@@ -17,12 +17,18 @@ import OpeningsList from "@/components/ai-agent/OpeningsList";
 import HighlightsSidebar from "@/components/ai-agent/HighlightsSidebar";
 
 
-import { openings } from "@/helpers/data/ai-agent";
-import { highlights } from "@/helpers/data/ai-agent";
+import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 
 
 export default function AiAgentProfilePage() {
   const { routes } = useAuthRoutes();
+  const { aiBotStore } = useRootStore();
+  const header = useStoreData(aiBotStore, (store) => store.header);
+  const statsChips = useStoreData(aiBotStore, (store) => store.statsChips);
+  const introduction = useStoreData(aiBotStore, (store) => store.introduction);
+  const signatureMoves = useStoreData(aiBotStore, (store) => store.signatureMoves);
+  const highlights = useStoreData(aiBotStore, (store) => store.highlights);
+  const openings = useStoreData(aiBotStore, (store) => store.openings);
 
   return (
     <AppShell>
@@ -34,7 +40,7 @@ export default function AiAgentProfilePage() {
           {/* Top card */}
           <div className="flex flex-col gap-6 rounded-3xl border border-white/10 bg-white/5/50 p-8 backdrop-blur">
             <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
-              <HeaderCard />
+              <HeaderCard header={header} />
               <div className="flex items-center gap-3 self-start md:self-center">
                 <Link href={routes.home} className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm text-white/80 hover:bg-white/10">Discover more</Link>
                 <Button variant="ghostPill">Share</Button>
@@ -42,7 +48,7 @@ export default function AiAgentProfilePage() {
             </div>
 
 
-            <StatChips />
+            <StatChips items={statsChips} />
             <PrimaryCTAs chatHref={routes.adminChat} />
           </div>
 
@@ -50,8 +56,8 @@ export default function AiAgentProfilePage() {
           {/* Main grid */}
           <section className="grid gap-6 md:grid-cols-[1.3fr,1fr]">
             <div className="space-y-6 rounded-3xl border border-white/10 bg-neutral-900/60 p-8">
-              <Introduction />
-              <SignatureMoves />
+              <Introduction text={introduction} />
+              <SignatureMoves items={signatureMoves} />
               <OpeningsList openings={openings} />
             </div>
 

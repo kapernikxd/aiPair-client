@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
 import ProfileSection from './ProfileSection';
+import { useRootStore, useStoreData } from '@/stores/StoreProvider';
 
 type AppShellProps = {
     children: React.ReactNode;
@@ -29,18 +30,16 @@ export default function AppShell({
     sidebarWidth = 280,
     sidebarCollapsed = 80,
 }: AppShellProps) {
-    const [open, setOpen] = useState(true);
-    const [mobileOpen, setMobileOpen] = useState(false);
     const { routes } = useAuthRoutes();
+    const { uiStore, profileStore } = useRootStore();
+    const open = useStoreData(uiStore, (store) => store.isSidebarOpen);
+    const mobileOpen = useStoreData(uiStore, (store) => store.isMobileSidebarOpen);
+    const profile = useStoreData(profileStore, (store) => store.profile);
+    const profileInitial = profile.userName.charAt(0)?.toUpperCase() || 'U';
 
-    // восстановим состояние свёрнутости между перезагрузками
     useEffect(() => {
-        const v = localStorage.getItem('sidebar-open');
-        if (v !== null) setOpen(v === '1');
-    }, []);
-    useEffect(() => {
-        localStorage.setItem('sidebar-open', open ? '1' : '0');
-    }, [open]);
+        uiStore.hydrateSidebarFromStorage();
+    }, [uiStore]);
 
     const w = useMemo(
         () => (open ? sidebarWidth : sidebarCollapsed),
@@ -61,7 +60,7 @@ export default function AppShell({
                 {/* верх панели */}
                 <div className="flex items-center gap-2 px-3 py-3">
                     <Button
-                        onClick={() => setOpen((s) => !s)}
+                        onClick={() => uiStore.toggleSidebar()}
                         variant="sidebarIcon"
                         aria-label={open ? 'Collapse' : 'Expand'}
                     >
@@ -100,7 +99,7 @@ export default function AppShell({
                 {/* верхняя панель с кнопкой открытия */}
                 <div className="fixed top-0 left-0 right-0 z-40 flex items-center gap-3 border-b border-white/10 bg-neutral-900/90 px-3 py-3 backdrop-blur">
                     <Button
-                        onClick={() => setMobileOpen(true)}
+                        onClick={() => uiStore.openMobileSidebar()}
                         variant="sidebarIcon"
                         aria-label="Open menu"
                     >
@@ -117,7 +116,7 @@ export default function AppShell({
                         </label>
                     </div>
                     <div className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-400 text-sm font-semibold">
-                        V
+                        {profileInitial}
                     </div>
                 </div>
 
@@ -125,7 +124,7 @@ export default function AppShell({
                     <>
                         <div
                             className="fixed inset-0 z-30 bg-black/50"
-                            onClick={() => setMobileOpen(false)}
+                            onClick={() => uiStore.closeMobileSidebar()}
                             aria-hidden
                         />
                         <motion.aside
@@ -138,7 +137,7 @@ export default function AppShell({
                             <div className="mb-2 flex items-center justify-between">
                                 <span className="text-lg font-semibold">Menu</span>
                                 <Button
-                                    onClick={() => setMobileOpen(false)}
+                                    onClick={() => uiStore.closeMobileSidebar()}
                                     variant="sidebarIcon"
                                     aria-label="Close menu"
                                 >
