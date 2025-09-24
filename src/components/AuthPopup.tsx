@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 
 import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
+import EmailAuthPopup from './EmailAuthPopup';
 
 type Props = {
   open: boolean;
@@ -30,6 +31,13 @@ export default function AuthPopup({
 }: Props) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const { routes, goToAdmin } = useAuthRoutes();
+  const [emailPopupOpen, setEmailPopupOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) {
+      setEmailPopupOpen(false);
+    }
+  }, [open]);
 
   // Закрытие по Esc
   useEffect(() => {
@@ -129,6 +137,17 @@ export default function AuthPopup({
                   </svg>
                   Continue with Apple
                 </Button>
+
+                <Button
+                  onClick={() => setEmailPopupOpen(true)}
+                  variant="authProvider"
+                >
+                  <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m4 7 8 6 8-6" />
+                  </svg>
+                  Continue with Email
+                </Button>
               </div>
 
               <p className="mt-6 text-center text-sm text-neutral-400">
@@ -140,6 +159,18 @@ export default function AuthPopup({
           </motion.div>
         </motion.div>
       )}
+      <EmailAuthPopup
+        open={emailPopupOpen}
+        onBack={() => setEmailPopupOpen(false)}
+        onClose={() => {
+          setEmailPopupOpen(false);
+          onClose();
+        }}
+        onSuccess={() => {
+          setEmailPopupOpen(false);
+          onClose();
+        }}
+      />
     </AnimatePresence>
   );
 }
