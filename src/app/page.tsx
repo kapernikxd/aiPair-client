@@ -1,40 +1,52 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ArrowRight, Mic, Sparkles, Shield, Globe2, PlayCircle, CheckCircle2, X } from "lucide-react";
 import LandingClient from '@/components/LandingClient';
 import DeviceMockup from '@/components/DeviceMockup';
 import CardRailTwoRows from "@/components/CardRailTwoRows";
 import AuthPopup from "@/components/AuthPopup";
+import { useAuthRoutes } from "@/hooks/useAuthRoutes";
+import type { AuthRouteKey } from "@/hooks/useAuthRoutes";
 
 // export const metadata = {
 //   title: 'AI Pair — Talk with an AI companion',
 // }
 
-const data = [
-  { id: 0, cardWidth: "200", src: '/img/mizuhara.png', title: 'aiAgent α', views: 'New', hoverText: 'Meet the undercover strategist.', href: '/profile/ai-agent' },
-  { id: 1, cardWidth: "200", src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/chat/emily' },
-  { id: 2, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/chat/tristan' },
-  { id: 3, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/chat/emily' },
-  { id: 4, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/chat/tristan' },
-  { id: 5, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/chat/emily' },
-  { id: 6, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/chat/tristan' },
-  { id: 7, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/chat/emily' },
-  { id: 8, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/chat/tristan' },
-  { id: 9, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/chat/emily' },
-  { id: 10, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/chat/tristan' },
-  { id: 11, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/chat/emily' },
-  { id: 12, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/chat/tristan' },
-  { id: 13, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/chat/emily' },
-  { id: 14, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/chat/tristan' },
-  { id: 15, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/chat/emily' },
-  { id: 16, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/chat/tristan' },
-  { id: 17, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/chat/emily' },
-  { id: 18, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/chat/tristan' },
-  { id: 19, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/chat/emily' },
-  { id: 20, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/chat/tristan' },
-  { id: 21, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/chat/emily' },
-  { id: 22, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/chat/tristan' },
+type CardItem = {
+  id: number;
+  cardWidth?: string;
+  src: string;
+  title: string;
+  views: string;
+  hoverText: string;
+  routeKey: AuthRouteKey;
+};
+
+const baseCardData: CardItem[] = [
+  { id: 0, cardWidth: "200", src: '/img/mizuhara.png', title: 'aiAgent α', views: 'New', hoverText: 'Meet the undercover strategist.', routeKey: 'aiAgentProfile' },
+  { id: 1, cardWidth: "200", src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
+  { id: 2, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
+  { id: 3, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
+  { id: 4, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
+  { id: 5, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
+  { id: 6, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
+  { id: 7, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
+  { id: 8, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
+  { id: 9, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
+  { id: 10, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
+  { id: 11, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
+  { id: 12, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
+  { id: 13, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
+  { id: 14, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
+  { id: 15, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
+  { id: 16, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
+  { id: 17, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
+  { id: 18, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
+  { id: 19, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
+  { id: 20, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
+  { id: 21, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
+  { id: 22, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
   // ...добавляй дальше сколько нужно
 ];
 
@@ -67,8 +79,17 @@ const GradientBlob = ({ className = "" }: { className?: string }) => (
 );
 
 export default function Landing() {
+  const { routes } = useAuthRoutes();
   const [open, setOpen] = useState(false);
   const [showMobileBanner, setShowMobileBanner] = useState(true);
+  const cardItems = useMemo(
+    () =>
+      baseCardData.map(({ routeKey, ...rest }) => ({
+        ...rest,
+        href: routes[routeKey],
+      })),
+    [routes],
+  );
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
@@ -81,17 +102,17 @@ export default function Landing() {
             <div className="text-sm text-white/70">by <span className="font-semibold text-white">Freudly‑style</span></div>
           </div>
           <div className="hidden gap-6 text-sm text-white/80 md:flex">
-            <a href="/profile/ai-agent" className="hover:text-white">aiAgent α</a>
-            <a href="#features" className="hover:text-white">Features</a>
-            <a href="#demo" className="hover:text-white">Demo</a>
-            <a href="#pricing" className="hover:text-white">Pricing</a>
-            <a href="#faq" className="hover:text-white">FAQ</a>
+            <a href={routes.aiAgentProfile} className="hover:text-white">aiAgent α</a>
+            <a href={routes.landingFeatures} className="hover:text-white">Features</a>
+            <a href={routes.landingDemo} className="hover:text-white">Demo</a>
+            <a href={routes.landingPricing} className="hover:text-white">Pricing</a>
+            <a href={routes.landingFaq} className="hover:text-white">FAQ</a>
           </div>
           <div className="flex items-center gap-3">
             <button onClick={() => setOpen(true)} className="hidden rounded-xl border border-white/15 px-4 py-2 text-sm text-white/90 hover:bg-white/5 md:inline">
               Sign in
             </button>
-            <a className="inline-flex items-center gap-2 rounded-xl bg-[#6f2da8] px-4 py-2 text-sm font-medium text-white hover:opacity-90" href="#cta">
+            <a className="inline-flex items-center gap-2 rounded-xl bg-[#6f2da8] px-4 py-2 text-sm font-medium text-white hover:opacity-90" href={routes.landingCta}>
               Try it free <ArrowRight className="h-4 w-4" />
             </a>
           </div>
@@ -112,11 +133,11 @@ export default function Landing() {
               A simplified, fast landing inspired by Talkie. Speak naturally, get instant responses, and feel supported—anytime, anywhere.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <a href="#cta" className="inline-flex items-center gap-2 rounded-2xl bg-[#6f2da8] px-5 py-3 text-sm font-semibold hover:opacity-90">
+              <a href={routes.landingCta} className="inline-flex items-center gap-2 rounded-2xl bg-[#6f2da8] px-5 py-3 text-sm font-semibold hover:opacity-90">
                 Start free
                 <ArrowRight className="h-4 w-4" />
               </a>
-              <a href="#demo" className="inline-flex items-center gap-2 rounded-2xl border border-white/15 px-5 py-3 text-sm font-semibold hover:bg-white/5">
+              <a href={routes.landingDemo} className="inline-flex items-center gap-2 rounded-2xl border border-white/15 px-5 py-3 text-sm font-semibold hover:bg-white/5">
                 <PlayCircle className="h-4 w-4" /> Watch demo
               </a>
               <Pill><Mic className="h-3.5 w-3.5" /> No signup required</Pill>
@@ -141,7 +162,7 @@ export default function Landing() {
       </Section>
 
       <main className=" text-white p-6">
-        <CardRailTwoRows items={data} className="mx-auto max-w-[1200px]" />
+        <CardRailTwoRows items={cardItems} className="mx-auto max-w-[1200px]" />
       </main>
 
 
@@ -177,7 +198,7 @@ export default function Landing() {
               ))}
             </ul>
             <div className="mt-8">
-              <a href="#pricing" className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2 text-sm hover:bg-white/5">
+              <a href={routes.landingPricing} className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2 text-sm hover:bg-white/5">
                 View pricing <ArrowRight className="h-4 w-4" />
               </a>
             </div>
@@ -204,6 +225,7 @@ export default function Landing() {
             price="$0"
             features={["5 min/day", "Core voices", "Web access"]}
             cta="Try now"
+            href={routes.landingCta}
           />
           <Plan
             highlight
@@ -211,12 +233,14 @@ export default function Landing() {
             price="$9/mo"
             features={["Unlimited talk", "Premium voices", "Priority latency"]}
             cta="Upgrade"
+            href={routes.landingCta}
           />
           <Plan
             name="Pro"
             price="$19/mo"
             features={["Everything in Plus", "Memory opt‑in", "Early features"]}
             cta="Go Pro"
+            href={routes.landingCta}
           />
         </div>
       </Section>
@@ -250,10 +274,10 @@ export default function Landing() {
             <h3 className="text-2xl font-extrabold tracking-tight">Ready to talk?</h3>
             <p className="mt-2 text-white/90">Open the mic and try a 30‑second conversation. No email required.</p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              <a href="#" className="inline-flex items-center gap-2 rounded-2xl bg-neutral-950 px-5 py-3 text-sm font-semibold hover:bg-neutral-900">
+              <a href={routes.placeholder} className="inline-flex items-center gap-2 rounded-2xl bg-neutral-950 px-5 py-3 text-sm font-semibold hover:bg-neutral-900">
                 Open in browser <ArrowRight className="h-4 w-4" />
               </a>
-              <a href="#" className="inline-flex items-center gap-2 rounded-2xl border border-white/20 px-5 py-3 text-sm font-semibold hover:bg-white/10">
+              <a href={routes.placeholder} className="inline-flex items-center gap-2 rounded-2xl border border-white/20 px-5 py-3 text-sm font-semibold hover:bg-white/10">
                 Get the app
               </a>
             </div>
@@ -269,9 +293,9 @@ export default function Landing() {
             <span>© {new Date().getFullYear()} AI Pair</span>
           </div>
           <div className="flex items-center gap-6">
-            <a href="#" className="hover:text-white">Privacy</a>
-            <a href="#" className="hover:text-white">Terms</a>
-            <a href="#" className="hover:text-white">Contact</a>
+            <a href={routes.privacy} className="hover:text-white">Privacy</a>
+            <a href={routes.terms} className="hover:text-white">Terms</a>
+            <a href={routes.contact} className="hover:text-white">Contact</a>
           </div>
         </Section>
       </footer>
@@ -301,7 +325,7 @@ export default function Landing() {
               <span className="text-xs text-white/60">For full features and a superior experience.</span>
             </div>
             <a
-              href="#"
+              href={routes.placeholder}
               className="inline-flex items-center rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-neutral-900 shadow-sm hover:bg-white/90"
             >
               Get
@@ -326,7 +350,7 @@ function Feature({ icon, title, desc }: { icon: React.ReactNode; title: string; 
   );
 }
 
-function Plan({ name, price, features, cta, highlight }: { name: string; price: string; features: string[]; cta: string; highlight?: boolean }) {
+function Plan({ name, price, features, cta, highlight, href }: { name: string; price: string; features: string[]; cta: string; highlight?: boolean; href: string }) {
   return (
     <div className={`relative rounded-2xl border p-6 ${highlight ? "border-[#6f2da8] bg-[#6f2da8]/5" : "border-white/10 bg-neutral-900/60"}`}>
       {highlight && <span className="absolute -top-2 right-4 rounded-full bg-[#6f2da8] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">Popular</span>}
@@ -340,7 +364,7 @@ function Plan({ name, price, features, cta, highlight }: { name: string; price: 
           <li key={f} className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4" /> {f}</li>
         ))}
       </ul>
-      <a href="#cta" className={`mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold ${highlight ? "bg-[#6f2da8] text-white hover:opacity-90" : "border border-white/15 text-white hover:bg-white/5"}`}>
+      <a href={href} className={`mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold ${highlight ? "bg-[#6f2da8] text-white hover:opacity-90" : "border border-white/15 text-white hover:bg-white/5"}`}>
         {cta}
       </a>
     </div>

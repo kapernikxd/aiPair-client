@@ -14,6 +14,7 @@ import {
     UserRound,
     PlusCircle,
 } from 'lucide-react';
+import { useAuthRoutes } from '@/hooks/useAuthRoutes';
 import ProfileSection from './ProfileSection';
 
 type AppShellProps = {
@@ -29,6 +30,7 @@ export default function AppShell({
 }: AppShellProps) {
     const [open, setOpen] = useState(true);
     const [mobileOpen, setMobileOpen] = useState(false);
+    const { routes } = useAuthRoutes();
 
     // восстановим состояние свёрнутости между перезагрузками
     useEffect(() => {
@@ -69,20 +71,20 @@ export default function AppShell({
 
                 {/* содержимое меню; при необходимости можно дать собственный вертикальный скролл */}
                 <nav className="mt-2 flex-1 px-2">
-                    <NavItem href="#" label="Discover" icon={<Home className="size-5" />} open={open} />
+                    <NavItem href={routes.discover} label="Discover" icon={<Home className="size-5" />} open={open} />
                     <NavItem
-                        href="/create"
+                        href={routes.createAgent}
                         label="Create aiAgent"
                         icon={<PlusCircle className="size-5" />}
                         open={open}
                     />
-                    <NavItem href="/profile/ai-agent" label="aiAgent α" icon={<MessageSquare className="size-5" />} open={open} />
-                    <NavItem href="/profile/user" label="Keyser Soze" icon={<UserRound className="size-5" />} open={open} />
+                    <NavItem href={routes.aiAgentProfile} label="aiAgent α" icon={<MessageSquare className="size-5" />} open={open} />
+                    <NavItem href={routes.userProfile} label="Keyser Soze" icon={<UserRound className="size-5" />} open={open} />
                     <div className="mt-4 border-t border-white/5 pt-3" />
                     <SectionTitle open={open}>Chats</SectionTitle>
-                    <NavItem href="#" label="Sabine" icon={<MessageSquare className="size-5" />} open={open} />
-                    <NavItem href="#" label="Peta" icon={<MessageSquare className="size-5" />} open={open} />
-                    <NavItem href="#" label="Ginger" icon={<MessageSquare className="size-5" />} open={open} />
+                    <NavItem href={routes.adminChat} label="Sabine" icon={<MessageSquare className="size-5" />} open={open} />
+                    <NavItem href={routes.adminChat} label="Peta" icon={<MessageSquare className="size-5" />} open={open} />
+                    <NavItem href={routes.adminChat} label="Ginger" icon={<MessageSquare className="size-5" />} open={open} />
                 </nav>
 
                 <div className="mt-4 border-t border-white/5 pt-3" />
@@ -143,23 +145,23 @@ export default function AppShell({
                                 </button>
                             </div>
                             <nav className="space-y-1">
-                                <NavItem href="#" label="Discover" icon={<Home className="size-5" />} open />
+                                <NavItem href={routes.discover} label="Discover" icon={<Home className="size-5" />} open />
                                 <NavItem
-                                    href="/create"
+                                    href={routes.createAgent}
                                     label="Create aiAgent"
                                     icon={<PlusCircle className="size-5" />}
                                     open
                                 />
-                                <NavItem href="/profile/ai-agent" label="aiAgent α" icon={<MessageSquare className="size-5" />} open />
-                                <NavItem href="/profile/user" label="Keyser Soze" icon={<UserRound className="size-5" />} open />
-                                <NavItem href="#" label="Search" icon={<Search className="size-5" />} open />
-                                <NavItem href="#" label="Memory" icon={<Archive className="size-5" />} open />
-                                <NavItem href="#" label="Notification" icon={<Bell className="size-5" />} open />
+                                <NavItem href={routes.aiAgentProfile} label="aiAgent α" icon={<MessageSquare className="size-5" />} open />
+                                <NavItem href={routes.userProfile} label="Keyser Soze" icon={<UserRound className="size-5" />} open />
+                                <NavItem href={routes.placeholder} label="Search" icon={<Search className="size-5" />} open />
+                                <NavItem href={routes.placeholder} label="Memory" icon={<Archive className="size-5" />} open />
+                                <NavItem href={routes.placeholder} label="Notification" icon={<Bell className="size-5" />} open />
                                 <div className="mt-4 border-t border-white/5 pt-3" />
                                 <SectionTitle open>Chats</SectionTitle>
-                                <NavItem href="#" label="Sabine" icon={<MessageSquare className="size-5" />} open />
-                                <NavItem href="#" label="Peta" icon={<MessageSquare className="size-5" />} open />
-                                <NavItem href="#" label="Ginger" icon={<MessageSquare className="size-5" />} open />
+                                <NavItem href={routes.adminChat} label="Sabine" icon={<MessageSquare className="size-5" />} open />
+                                <NavItem href={routes.adminChat} label="Peta" icon={<MessageSquare className="size-5" />} open />
+                                <NavItem href={routes.adminChat} label="Ginger" icon={<MessageSquare className="size-5" />} open />
                             </nav>
 
                             <div className="mt-4">
@@ -184,19 +186,19 @@ export default function AppShell({
             {/* ==== МОБИЛЬНОЕ НИЖНЕЕ МЕНЮ ==== */}
             <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t border-white/10 bg-neutral-950/90 py-3 backdrop-blur md:hidden">
                 <Link
-                    href="/"
+                    href={routes.home}
                     className="flex flex-col items-center text-xs text-white/70"
                 >
                     <Home className="size-6" />
                 </Link>
                 <Link
-                    href="/create"
+                    href={routes.createAgent}
                     className="flex flex-col items-center text-xs text-white/70"
                 >
                     <PlusCircle className="size-6" />
                 </Link>
                 <Link
-                    href="/admin/chats"
+                    href={routes.adminChats}
                     className="flex flex-col items-center text-xs text-white/70"
                 >
                     <MessageSquare className="size-6" />

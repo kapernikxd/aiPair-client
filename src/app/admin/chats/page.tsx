@@ -1,14 +1,18 @@
+'use client';
+
 import Image from "next/image";
 import Link from "next/link";
 
 import AppShell from "@/components/AppShell";
+import { useAuthRoutes } from "@/hooks/useAuthRoutes";
+import type { AuthRouteKey } from "@/hooks/useAuthRoutes";
 
 type ChatThread = {
   id: number;
   name: string;
   preview: string;
   timestamp: string;
-  href: string;
+  routeKey: AuthRouteKey;
   avatar?: {
     src: string;
     alt?: string;
@@ -21,7 +25,7 @@ const chatThreads: ChatThread[] = [
     name: "Angelina",
     preview: "I'll wait for you at the bar. Don't keep me waiting 💋",
     timestamp: "Yesterday",
-    href: "/admin/chat",
+    routeKey: "adminChat",
     avatar: { src: "/img/mizuhara.png", alt: "Angelina" },
   },
   {
@@ -29,49 +33,49 @@ const chatThreads: ChatThread[] = [
     name: "Sabine",
     preview: "I'm homeless, I've lost my job, and I have nowhere else to go...",
     timestamp: "Yesterday",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
   {
     id: 3,
     name: "Peta",
     preview: "I don't know what you're talking about, I really don't...",
     timestamp: "Sat",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
   {
     id: 4,
     name: "Ginger",
     preview: "That's not the point. You're not listening to me.",
     timestamp: "Sat",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
   {
     id: 5,
     name: "Lisa",
     preview: "That's not the point. You're not listening to me.",
     timestamp: "Fri",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
   {
     id: 6,
     name: "Margerett",
     preview: "Well I'm not sure if that's a good idea, I have doubts...",
     timestamp: "Fri",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
   {
     id: 7,
     name: "Sgt. Layla Smith",
     preview: "Are you aware of the speed limit in this area, sir?",
     timestamp: "Fri",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
   {
     id: 8,
     name: "Angelina",
     preview: "I'll wait for you at the bar. Don't keep me waiting 💋",
     timestamp: "Yesterday",
-    href: "/admin/chat",
+    routeKey: "adminChat",
     avatar: { src: "/img/mizuhara.png", alt: "Angelina" },
   },
   {
@@ -79,49 +83,49 @@ const chatThreads: ChatThread[] = [
     name: "Sabine",
     preview: "I'm homeless, I've lost my job, and I have nowhere else to go...",
     timestamp: "Yesterday",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
   {
     id: 10,
     name: "Peta",
     preview: "I don't know what you're talking about, I really don't...",
     timestamp: "Sat",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
   {
     id: 11,
     name: "Ginger",
     preview: "That's not the point. You're not listening to me.",
     timestamp: "Sat",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
   {
     id: 12,
     name: "Lisa",
     preview: "That's not the point. You're not listening to me.",
     timestamp: "Fri",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
   {
     id: 13,
     name: "Margerett",
     preview: "Well I'm not sure if that's a good idea, I have doubts...",
     timestamp: "Fri",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
   {
     id: 14,
     name: "Sgt. Layla Smith",
     preview: "Are you aware of the speed limit in this area, sir?",
     timestamp: "Fri",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
   {
     id: 15,
     name: "Angelina",
     preview: "I'll wait for you at the bar. Don't keep me waiting 💋",
     timestamp: "Yesterday",
-    href: "/admin/chat",
+    routeKey: "adminChat",
     avatar: { src: "/img/mizuhara.png", alt: "Angelina" },
   },
   {
@@ -129,46 +133,47 @@ const chatThreads: ChatThread[] = [
     name: "Sabine",
     preview: "I'm homeless, I've lost my job, and I have nowhere else to go...",
     timestamp: "Yesterday",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
   {
     id: 17,
     name: "Peta",
     preview: "I don't know what you're talking about, I really don't...",
     timestamp: "Sat",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
   {
     id: 18,
     name: "Ginger",
     preview: "That's not the point. You're not listening to me.",
     timestamp: "Sat",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
   {
     id: 19,
     name: "Lisa",
     preview: "That's not the point. You're not listening to me.",
     timestamp: "Fri",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
   {
     id: 20,
     name: "Margerett",
     preview: "Well I'm not sure if that's a good idea, I have doubts...",
     timestamp: "Fri",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
   {
     id: 21,
     name: "Sgt. Layla Smith",
     preview: "Are you aware of the speed limit in this area, sir?",
     timestamp: "Fri",
-    href: "/admin/chat",
+    routeKey: "adminChat",
   },
 ];
 
 export default function ChatsPage() {
+  const { routes } = useAuthRoutes();
   return (
     <AppShell>
       <div className="flex-1 overflow-y-auto px-4 pb-28 pt-4 md:px-8 md:pb-12 md:pt-8">
@@ -185,7 +190,7 @@ export default function ChatsPage() {
               {chatThreads.map((thread) => (
                 <li key={thread.id}>
                   <Link
-                    href={thread.href}
+                    href={routes[thread.routeKey]}
                     className="group flex w-full items-center gap-4 py-2 transition hover:bg-white/10"
                   >
                     <ChatAvatar name={thread.name} avatar={thread.avatar} />
