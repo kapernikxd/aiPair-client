@@ -38,9 +38,7 @@ export class AuthStore extends BaseStore {
   constructor(root?: RootStore) {
     super();
     this.root = root;
-    makeAutoObservable(this, {
-      root: false,
-    });
+    makeAutoObservable(this);
   }
 
   private normalizeUser(user: AuthUserLike): AuthUser {
@@ -58,6 +56,8 @@ export class AuthStore extends BaseStore {
   get isAuthenticated() {
     return this.user !== null;
   }
+
+  getMyId = () => this.user?.id ?? ''
 
   setLoading(value: boolean) {
     this.isLoading = value;

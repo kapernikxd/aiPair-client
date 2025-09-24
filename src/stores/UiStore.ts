@@ -4,6 +4,14 @@ import type { RootStore } from './RootStore';
 
 export type Notification = { id: number; message: string; variant?: 'info' | 'success' | 'error' };
 
+export type SnackbarType = 'success' | 'warning' | 'error' | 'info';
+
+export interface SnackBarParams {
+  visible: boolean;
+  message: string;
+  type: SnackbarType;
+}
+
 export class UiStore extends BaseStore {
   private root: RootStore;
   isAuthPopupOpen = false;
@@ -14,10 +22,27 @@ export class UiStore extends BaseStore {
   notifications: Notification[] = [];
   private sidebarHydrated = false;
 
+  snackBar: SnackBarParams = {
+    visible: false,
+    message: '',
+    type: 'success',
+  };
+
   constructor(root: RootStore) {
     super();
     this.root = root;
     makeAutoObservable(this);
+  }
+
+  // Методы для работы со Snackbar
+  showSnackbar(message: string, type: SnackbarType) {
+    this.snackBar.message = message;
+    this.snackBar.type = type;
+    this.snackBar.visible = true;
+  }
+
+  hideSnackbar() {
+    this.snackBar.visible = false;
   }
 
   openAuthPopup() {

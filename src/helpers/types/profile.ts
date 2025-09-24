@@ -1,6 +1,8 @@
 import type { LucideIcon } from "lucide-react";
 import { PushNotificationSettings } from "./dtos";
 
+export type AvatarFile = { uri: string; name: string; type: string };
+
 export interface ProfilesFilterParams {
   page?: number;
 }
