@@ -6,6 +6,7 @@ import LandingClient from '@/components/LandingClient';
 import DeviceMockup from '@/components/DeviceMockup';
 import CardRailTwoRows from "@/components/CardRailTwoRows";
 import AuthPopup from "@/components/AuthPopup";
+import { Button } from "@/components/ui/Button";
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 import type { AuthRouteKey } from "@/helpers/hooks/useAuthRoutes";
 
@@ -109,9 +110,11 @@ export default function Landing() {
             <a href={routes.landingFaq} className="hover:text-white">FAQ</a>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={() => setOpen(true)} className="hidden rounded-xl border border-white/15 px-4 py-2 text-sm text-white/90 hover:bg-white/5 md:inline">
-              Sign in
-            </button>
+            <div className="hidden md:inline">
+              <Button onClick={() => setOpen(true)} variant="ghostRounded">
+                Sign in
+              </Button>
+            </div>
             <a className="inline-flex items-center gap-2 rounded-xl bg-[#6f2da8] px-4 py-2 text-sm font-medium text-white hover:opacity-90" href={routes.landingCta}>
               Try it free <ArrowRight className="h-4 w-4" />
             </a>
@@ -309,14 +312,14 @@ export default function Landing() {
       {showMobileBanner && (
         <div className="fixed inset-x-0 bottom-4 z-50 px-4 md:hidden">
           <div className="mx-auto flex max-w-xl items-center gap-3 rounded-3xl border border-white/15 bg-neutral-900/95 p-3 shadow-2xl shadow-black/40 backdrop-blur">
-            <button
+            <Button
               type="button"
               onClick={() => setShowMobileBanner(false)}
-              className="flex h-8 w-8 items-center justify-center rounded-full text-white/50 hover:bg-white/10 hover:text-white"
+              variant="mobileClose"
               aria-label="Dismiss mobile banner"
             >
               <X className="h-4 w-4" />
-            </button>
+            </Button>
             <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#6f2da8] text-lg font-semibold text-white">
               t
             </div>

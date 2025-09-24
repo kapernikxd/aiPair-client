@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Crown } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
 
 export default function ProfileSection({ open = true }: { open?: boolean }) {
   return (
@@ -16,15 +17,10 @@ export default function ProfileSection({ open = true }: { open?: boolean }) {
         {!open ? null : (
           <div className="flex-1 flex items-center gap-2">
             {/* subscribe pill */}
-            <button
-              className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold 
-                         text-white ring-1 ring-white/10 
-                         bg-gradient-to-r from-fuchsia-400/30 via-pink-400/30 to-purple-400/30
-                         hover:from-fuchsia-400/40 hover:to-purple-400/40 transition"
-            >
+            <Button variant="subscribe">
               <Crown className="size-4" />
               <span>Subscribe</span>
-            </button>
+            </Button>
 
             {/* discount badge */}
             <div className="rounded-xl bg-purple-300/80 px-2 py-1 text-[12px] font-semibold text-purple-900">

@@ -2,6 +2,7 @@
 "use client";
 
 import { ImagePlus, X } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 import { GalleryItem } from "../../helpers/types/agent-create";
 
 export default function MediaKitStep({
@@ -35,7 +36,7 @@ export default function MediaKitStep({
 
       {gallery.length >= maxItems && (
         <p className="text-xs text-white/60">
-          You've reached the {maxItems}-image limit. Remove an image if you want to add a new one.
+          You&rsquo;ve reached the {maxItems}-image limit. Remove an image if you want to add a new one.
         </p>
       )}
 
@@ -43,14 +44,16 @@ export default function MediaKitStep({
         {gallery.map((item) => (
           <div key={item.id} className="group relative overflow-hidden rounded-3xl border border-white/10">
             <img src={item.preview} alt="Gallery asset" className="h-40 w-full object-cover" />
-            <button
-              type="button"
-              onClick={() => onRemove(item.id)}
-              className="absolute right-3 top-3 inline-flex size-8 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition group-hover:opacity-100"
-              aria-label="Remove image"
-            >
-              <X className="size-4" />
-            </button>
+            <div className="absolute right-3 top-3">
+              <Button
+                type="button"
+                onClick={() => onRemove(item.id)}
+                variant="galleryClose"
+                aria-label="Remove image"
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
           </div>
         ))}
         {!gallery.length && (

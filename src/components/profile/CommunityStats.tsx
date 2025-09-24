@@ -21,7 +21,7 @@ export default function CommunityStats() {
                     <Star className="size-6 text-amber-400" />
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-neutral-900/80 px-4 py-3 text-sm text-white/70">
-                    “Vadim's sessions feel like stepping into a movie scene you secretly hope is real.”
+                    “Vadim&rsquo;s sessions feel like stepping into a movie scene you secretly hope is real.”
                 </div>
             </div>
         </section>

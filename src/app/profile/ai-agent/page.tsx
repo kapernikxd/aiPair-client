@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import AppShell from "@/components/AppShell";
+import { Button } from "@/components/ui/Button";
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 
 
@@ -36,7 +37,7 @@ export default function AiAgentProfilePage() {
               <HeaderCard />
               <div className="flex items-center gap-3 self-start md:self-center">
                 <Link href={routes.home} className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm text-white/80 hover:bg-white/10">Discover more</Link>
-                <button className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm text-white/80 hover:bg-white/10">Share</button>
+                <Button variant="ghostPill">Share</Button>
               </div>
             </div>
 

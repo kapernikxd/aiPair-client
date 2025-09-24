@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui/Button";
+
 export default function FormActions({
   onCancel,
 }: {
@@ -7,19 +9,19 @@ export default function FormActions({
 }) {
   return (
     <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-      <button
+      <Button
         type="button"
         onClick={onCancel}
-        className="inline-flex items-center justify-center rounded-2xl border border-white/15 px-6 py-3 text-sm font-medium text-white/70 transition hover:bg-white/10"
+        variant="outlineWide"
       >
         Cancel
-      </button>
-      <button
+      </Button>
+      <Button
         type="submit"
-        className="inline-flex items-center justify-center rounded-2xl bg-white px-6 py-3 text-sm font-semibold text-neutral-900 transition hover:bg-neutral-200"
+        variant="solidWhiteWide"
       >
         Save
-      </button>
+      </Button>
     </div>
   );
 }

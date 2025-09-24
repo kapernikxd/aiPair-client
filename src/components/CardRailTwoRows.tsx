@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
+import { Button } from '@/components/ui/Button';
 import HoverSwapCard from './AiCard';
 
 type Item = {
@@ -38,20 +39,16 @@ export default function CardRailTwoRows({
   return (
     <section className={`relative ${className}`}>
       {/* Кнопки пролистывания (опционально) */}
-      <button
-        aria-label="Prev"
-        onClick={() => scrollBy(-1)}
-        className="hidden md:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow hover:bg-white"
-      >
-        ‹
-      </button>
-      <button
-        aria-label="Next"
-        onClick={() => scrollBy(1)}
-        className="hidden md:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow hover:bg-white"
-      >
-        ›
-      </button>
+      <div className="hidden md:flex absolute left-2 top-1/2 z-10 -translate-y-1/2">
+        <Button aria-label="Prev" onClick={() => scrollBy(-1)} variant="carouselNav">
+          ‹
+        </Button>
+      </div>
+      <div className="hidden md:flex absolute right-2 top-1/2 z-10 -translate-y-1/2">
+        <Button aria-label="Next" onClick={() => scrollBy(1)} variant="carouselNav">
+          ›
+        </Button>
+      </div>
 
       {/* Сам скроллер */}
       <div

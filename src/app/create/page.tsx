@@ -130,7 +130,7 @@ export default function CreateAiAgentPage() {
             {completed && (
               <div className="flex items-center gap-3 rounded-3xl border border-emerald-400/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
                 <CheckCircle2 className="size-5" />
-                <span>Your draft is ready! Feel free to revisit any step or publish when you're set.</span>
+                <span>Your draft is ready! Feel free to revisit any step or publish when you&rsquo;re set.</span>
               </div>
             )}
 
