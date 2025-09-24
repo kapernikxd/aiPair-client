@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
+import { Button } from '@/components/ui/Button';
 
 
 type Props = {
@@ -36,12 +37,9 @@ export default function HeaderProfile({ title, avatarSrc, stats, onFollow }: Pro
                         </div>
                     )}
                 </div>
-                <button
-                    onClick={onFollow}
-                    className="w-fit rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-neutral-900 transition hover:bg-white/90"
-                >
+                <Button onClick={onFollow} variant="solidWhitePillCompact">
                     Follow
-                </button>
+                </Button>
             </div>
         </header>
     );

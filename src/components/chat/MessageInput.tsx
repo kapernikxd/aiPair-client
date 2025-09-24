@@ -2,6 +2,7 @@
 
 
 import React, { useState } from 'react';
+import { Button } from '@/components/ui/Button';
 
 
 type Props = {
@@ -31,12 +32,9 @@ export default function MessageInput({ placeholder = 'Say something...', onSend 
                     className="flex-1 rounded-2xl border border-white/10 bg-transparent px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-white/40 focus:outline-none"
                     placeholder={placeholder}
                 />
-                <button
-                    type="submit"
-                    className="rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-neutral-900 transition hover:bg-white/90"
-                >
+                <Button type="submit" variant="solidWhite">
                     Send
-                </button>
+                </Button>
             </div>
         </form>
     );

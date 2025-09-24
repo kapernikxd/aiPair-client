@@ -3,6 +3,7 @@
 import { useState } from "react";
 import AppShell from "@/components/AppShell";
 import GradientOrbs from "@/components/ui/GradientOrbs";
+import { Button } from "@/components/ui/Button";
 import HeaderProfile from "@/components/chat/HeaderProfile";
 import IntroCard from "@/components/chat/IntroCard";
 import MessageList from "@/components/chat/MessageList";
@@ -55,16 +56,26 @@ export default function ChatPage() {
             {/* быстрые чипы — тоже остаются в зоне прокрутки сообщений или вынеси выше, если хочешь фиксированно */}
             <div className="flex flex-wrap items-center gap-3">
               {[
-                { label: 'Hi', gradient: 'from-amber-200/70 to-orange-300/80' },
-                { label: '😍', gradient: 'from-rose-300/80 to-purple-400/80' },
+                {
+                  label: 'Hi',
+                  gradientFrom: 'rgba(253, 230, 138, 0.7)',
+                  gradientTo: 'rgba(253, 186, 116, 0.8)',
+                },
+                {
+                  label: '😍',
+                  gradientFrom: 'rgba(253, 164, 175, 0.8)',
+                  gradientTo: 'rgba(192, 132, 252, 0.8)',
+                },
               ].map((chip) => (
-                <button
+                <Button
                   key={chip.label}
-                  className={`rounded-2xl bg-gradient-to-br ${chip.gradient} px-4 py-2 text-sm font-semibold text-neutral-900 shadow-lg transition hover:brightness-105`}
+                  variant="gradient"
+                  gradientFrom={chip.gradientFrom}
+                  gradientTo={chip.gradientTo}
                   onClick={() => handleSend(chip.label)}
                 >
                   {chip.label}
-                </button>
+                </Button>
               ))}
             </div>
           </div>

@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/Button';
 import {
     Menu,
     ChevronLeft,
@@ -59,13 +60,13 @@ export default function AppShell({
             >
                 {/* верх панели */}
                 <div className="flex items-center gap-2 px-3 py-3">
-                    <button
+                    <Button
                         onClick={() => setOpen((s) => !s)}
-                        className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 hover:bg-white/15"
+                        variant="sidebarIcon"
                         aria-label={open ? 'Collapse' : 'Expand'}
                     >
                         {open ? <ChevronLeft /> : <Menu />}
-                    </button>
+                    </Button>
                     {open && <span className="text-lg font-semibold">talkie</span>}
                 </div>
 
@@ -98,13 +99,13 @@ export default function AppShell({
             <div className="md:hidden">
                 {/* верхняя панель с кнопкой открытия */}
                 <div className="fixed top-0 left-0 right-0 z-40 flex items-center gap-3 border-b border-white/10 bg-neutral-900/90 px-3 py-3 backdrop-blur">
-                    <button
+                    <Button
                         onClick={() => setMobileOpen(true)}
-                        className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 hover:bg-white/15"
+                        variant="sidebarIcon"
                         aria-label="Open menu"
                     >
                         <Menu />
-                    </button>
+                    </Button>
                     <div className="flex-1">
                         <label className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2">
                             <Search className="size-4 text-white/70" aria-hidden />
@@ -136,13 +137,13 @@ export default function AppShell({
                         >
                             <div className="mb-2 flex items-center justify-between">
                                 <span className="text-lg font-semibold">Menu</span>
-                                <button
+                                <Button
                                     onClick={() => setMobileOpen(false)}
-                                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 hover:bg-white/15"
+                                    variant="sidebarIcon"
                                     aria-label="Close menu"
                                 >
                                     <ChevronLeft />
-                                </button>
+                                </Button>
                             </div>
                             <nav className="space-y-1">
                                 <NavItem href={routes.discover} label="Discover" icon={<Home className="size-5" />} open />

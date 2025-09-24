@@ -2,7 +2,8 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Mic, Sparkles, Shield, Globe2, Bot, PlayCircle, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Mic, Bot } from "lucide-react";
 // импорт иконок, ваших Badge/Pill и т.п.
 
 function Bubble({ role, text }: { role: "ai" | "me"; text: string }) {
@@ -40,7 +41,7 @@ export default function DeviceMockup() {
                 </div>
                 <div className="mt-5 flex items-center justify-between rounded-xl border border-white/10 bg-neutral-800/60 p-3">
                   <div className="flex items-center gap-2 text-white/70"><Mic className="h-4 w-4" /> Tap and talk</div>
-                  <button className="rounded-lg bg-[#6f2da8] px-3 py-1.5 text-sm font-medium">Hold</button>
+                  <Button variant="mockup">Hold</Button>
                 </div>
               </div>
             </div>
