@@ -3,27 +3,56 @@ import AuthService from "@/services/auth/AuthService";
 import { LoginParams, RegistrationParams, ParamsVerificateEmail, NewPasswordParams } from "@/helpers/types/auth";
 import $api from '@/helpers/http';
 import { storageHelper } from "@/helpers/utils/storageHelper";
+import { BaseStore } from './BaseStore';
+import type { RootStore } from './RootStore';
 
 export type AuthProvider = 'google' | 'apple' | 'demo';
+
+type AuthUserLike = {
+  id: string;
+  email: string;
+  isActivated?: boolean;
+  fullName?: string;
+  name?: string;
+};
 
 export type AuthUser = {
   id: string;
   email: string;
   isActivated: boolean;
   fullName: string;
+  name: string;
 };
 
-class AuthStore {
+export class AuthStore extends BaseStore {
 
-  isAuth: boolean = false;
+  private root?: RootStore;
+
+  isAuth = false;
   user: AuthUser | null = null;
   isLoading = false;
   accessToken: string | null = null;
 
-  lastProvider: AuthProvider | null = null
+  lastProvider: AuthProvider | null = null;
 
-  constructor() {
-    makeAutoObservable(this);
+  constructor(root?: RootStore) {
+    super();
+    this.root = root;
+    makeAutoObservable(this, {
+      root: false,
+    });
+  }
+
+  private normalizeUser(user: AuthUserLike): AuthUser {
+    const fullName = user.fullName ?? user.name ?? '';
+    const name = user.name ?? fullName;
+    return {
+      id: user.id,
+      email: user.email,
+      isActivated: user.isActivated ?? true,
+      fullName,
+      name,
+    };
   }
 
   get isAuthenticated() {
@@ -32,28 +61,54 @@ class AuthStore {
 
   setLoading(value: boolean) {
     this.isLoading = value;
+    this.notify();
   }
 
   setAuth(value: boolean) {
     this.isAuth = value;
+    this.notify();
+  }
+
+  startAuth(provider: AuthProvider) {
+    this.lastProvider = provider;
+    this.notify();
+  }
+
+  completeAuth(user: AuthUserLike) {
+    const normalizedUser = this.normalizeUser(user);
+    runInAction(() => {
+      this.user = normalizedUser;
+      this.isAuth = true;
+      this.lastProvider = this.lastProvider ?? 'demo';
+    });
+    this.notify();
+  }
+
+  cancelAuth() {
+    this.lastProvider = null;
+    this.notify();
   }
 
   async loginByGoogle(credential: string, expoPushToken?: string) {
     try {
       const { data } = await AuthService.loginByGoogle(credential);
 
+      const normalizedUser = this.normalizeUser(data.user);
       runInAction(() => {
-        this.user = data.user;
+        this.user = normalizedUser;
         this.isAuth = true;
-        this.accessToken = data.accessToken
+        this.accessToken = data.accessToken;
+        this.lastProvider = 'google';
       });
+
+      this.notify();
 
       await storageHelper.setRefreshToken(data.refreshToken);
       await storageHelper.setAccessToken(data.accessToken);
 
       $api.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
 
-      return data
+      return data;
     } catch (e: any) {
       throw e;
     }
@@ -63,11 +118,15 @@ class AuthStore {
     try {
       const { data } = await AuthService.loginByApple(identityToken);
 
+      const normalizedUser = this.normalizeUser(data.user);
       runInAction(() => {
-        this.user = data.user;
+        this.user = normalizedUser;
         this.isAuth = true;
         this.accessToken = data.accessToken;
+        this.lastProvider = 'apple';
       });
+
+      this.notify();
 
       await storageHelper.setRefreshToken(data.refreshToken);
       await storageHelper.setAccessToken(data.accessToken);
@@ -85,20 +144,22 @@ class AuthStore {
       this.setLoading(true);
       const { data } = await AuthService.login(props);
 
+      const normalizedUser = this.normalizeUser(data.user);
       runInAction(() => {
-        this.user = data.user;
+        this.user = normalizedUser;
         this.isAuth = true;
-        this.accessToken = data.accessToken
+        this.accessToken = data.accessToken;
+        this.lastProvider = this.lastProvider ?? 'demo';
       });
+
+      this.notify();
 
       await storageHelper.setRefreshToken(data.refreshToken);
       await storageHelper.setAccessToken(data.accessToken);
 
       $api.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
 
-      this.setLoading(false);
-
-      return data
+      return data;
     } catch (e: any) {
       // Преобразуем ошибки в формат react-hook-form
       if (e.response?.data?.errors) {
@@ -112,6 +173,8 @@ class AuthStore {
         throw formattedErrors; // Бросаем обработанные ошибки
       }
       throw e;
+    } finally {
+      this.setLoading(false);
     }
   }
 
@@ -122,7 +185,9 @@ class AuthStore {
       this.user = null;
       this.isAuth = false;
       this.accessToken = null;
+      this.lastProvider = null;
     });
+    this.notify();
     await storageHelper.removeRefreshToken();
     await storageHelper.removeAccessToken();
 
@@ -133,18 +198,21 @@ class AuthStore {
       this.setLoading(true);
       const { data } = await AuthService.registration(props);
 
+      const normalizedUser = this.normalizeUser(data.user);
       runInAction(() => {
-        this.user = data.user;
+        this.user = normalizedUser;
         this.isAuth = true;
-        this.accessToken = data.accessToken
+        this.accessToken = data.accessToken;
+        this.lastProvider = this.lastProvider ?? 'demo';
       });
+
+      this.notify();
 
       await storageHelper.setAccessToken(data.accessToken);
       await storageHelper.setRefreshToken(data.refreshToken);
 
       $api.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
 
-      this.setLoading(false);
     } catch (e: any) {
       // Преобразуем ошибки в формат react-hook-form
       if (e.response?.data?.errors) {
@@ -158,6 +226,8 @@ class AuthStore {
         throw formattedErrors; // Бросаем обработанные ошибки
       }
       throw e;
+    } finally {
+      this.setLoading(false);
     }
   }
 
@@ -166,12 +236,15 @@ class AuthStore {
       this.setLoading(true);
       const { data } = await AuthService.verificateEmail(props);
 
+      const normalizedUser = this.normalizeUser(data.user);
       runInAction(() => {
-        this.user = data.user;
+        this.user = normalizedUser;
         this.isAuth = true;
-      })
+      });
 
-      return data
+      this.notify();
+
+      return data;
 
     } catch (e: any) {
       // Преобразуем ошибки в формат react-hook-form
@@ -186,6 +259,8 @@ class AuthStore {
         throw formattedErrors; // Бросаем обработанные ошибки
       }
       throw e;
+    } finally {
+      this.setLoading(false);
     }
   }
 
@@ -215,7 +290,7 @@ class AuthStore {
     try {
       this.setLoading(true);
       const { data } = await AuthService.resetPassword(props);
-      return data
+      return data;
 
     } catch (e: any) {
       // Преобразуем ошибки в формат react-hook-form
@@ -230,6 +305,8 @@ class AuthStore {
         throw formattedErrors; // Бросаем обработанные ошибки
       }
       throw e;
+    } finally {
+      this.setLoading(false);
     }
   }
 
@@ -261,11 +338,15 @@ class AuthStore {
         throw new Error();
       }
       const { data } = await AuthService.refreshAccessTokenRequest(refreshToken);
+      const normalizedUser = this.normalizeUser(data.user);
       runInAction(() => {
-        this.user = data.user;
+        this.user = normalizedUser;
         this.accessToken = data.accessToken;
         this.isAuth = true;
+        this.lastProvider = this.lastProvider ?? 'demo';
       });
+
+      this.notify();
 
       // Persist обновленные токены для последующих запросов
       await storageHelper.setAccessToken(data.accessToken);
@@ -283,4 +364,4 @@ class AuthStore {
   }
 }
 
-export default new AuthStore();
+export default AuthStore;
