@@ -38,9 +38,7 @@ export default function MyProfilePage() {
           onSave={(updated) => profileStore.updateProfile(updated)}
         />
 
-
         <GradientBackdrop />
-
 
         <div className="mx-auto w-full max-w-5xl px-4 pb-20 pt-14">
           <header className="space-y-8">
@@ -49,13 +47,11 @@ export default function MyProfilePage() {
             <BadgesRow badges={badges} />
           </header>
 
-
           <section className="mt-12 grid gap-6 lg:grid-cols-[1fr_320px]">
             <div className="space-y-6">
               <TalkieTimeline items={talkies} />
               <Milestones items={milestones} />
             </div>
-
 
             <aside className="space-y-6">
               <CommunityStats />

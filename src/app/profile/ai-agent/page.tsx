@@ -35,7 +35,6 @@ export default function AiAgentProfilePage() {
       <div className="relative min-h-screen bg-neutral-950 text-white overflow-y-auto">
         <GradientBackdrop />
 
-
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-4 pb-16 pt-16">
           {/* Top card */}
           <div className="flex flex-col gap-6 rounded-3xl border border-white/10 bg-white/5/50 p-8 backdrop-blur">
@@ -47,11 +46,9 @@ export default function AiAgentProfilePage() {
               </div>
             </div>
 
-
             <StatChips items={statsChips} />
             <PrimaryCTAs chatHref={routes.adminChat} />
           </div>
-
 
           {/* Main grid */}
           <section className="grid gap-6 md:grid-cols-[1.3fr,1fr]">
@@ -60,7 +57,6 @@ export default function AiAgentProfilePage() {
               <SignatureMoves items={signatureMoves} />
               <OpeningsList openings={openings} />
             </div>
-
 
             <HighlightsSidebar highlights={highlights} />
           </section>

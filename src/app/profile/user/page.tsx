@@ -26,7 +26,6 @@ export default function UserProfilePage() {
       <div className="relative min-h-screen overflow-y-auto bg-neutral-950 text-white">
         <GradientBackdrop />
 
-
         <div className="mx-auto w-full max-w-5xl px-4 pb-20 pt-14">
           <header className="space-y-8">
             <HeaderBar />
@@ -39,7 +38,6 @@ export default function UserProfilePage() {
               messageHref={routes.adminChat}
             />
           </header>
-
 
           <section className="mt-12 space-y-6">
             <SectionHeader title="Talkie List" subtitle="Where the stories stay safe and the signal stays clear." actionLabel="View archive" />

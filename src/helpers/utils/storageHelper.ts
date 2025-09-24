@@ -3,7 +3,7 @@ const ACCESS_TOKEN_KEY = 'ACCESS_TOKEN';
 
 const isBrowser = () => typeof window !== 'undefined';
 
-const storageHelper = {
+export const storageHelper = {
     setRefreshToken(token: string) {
         if (!isBrowser()) return;
         localStorage.setItem(REFRESH_TOKEN_KEY, token);
@@ -29,5 +29,3 @@ const storageHelper = {
         localStorage.removeItem(ACCESS_TOKEN_KEY);
     },
 };
-
-export default storageHelper;
