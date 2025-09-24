@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from "react";
-import { ArrowRight, Mic, Sparkles, Shield, Globe2, Bot, PlayCircle, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Mic, Sparkles, Shield, Globe2, PlayCircle, CheckCircle2, X } from "lucide-react";
 import LandingClient from '@/components/LandingClient';
 import DeviceMockup from '@/components/DeviceMockup';
 import CardRailTwoRows from "@/components/CardRailTwoRows";
@@ -68,6 +68,7 @@ const GradientBlob = ({ className = "" }: { className?: string }) => (
 
 export default function Landing() {
   const [open, setOpen] = useState(false);
+  const [showMobileBanner, setShowMobileBanner] = useState(true);
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
@@ -281,6 +282,33 @@ export default function Landing() {
         onGoogle={() => console.log('google')}
         onApple={() => console.log('apple')}
       />
+      {showMobileBanner && (
+        <div className="fixed inset-x-0 bottom-4 z-50 px-4 md:hidden">
+          <div className="mx-auto flex max-w-xl items-center gap-3 rounded-3xl border border-white/15 bg-neutral-900/95 p-3 shadow-2xl shadow-black/40 backdrop-blur">
+            <button
+              type="button"
+              onClick={() => setShowMobileBanner(false)}
+              className="flex h-8 w-8 items-center justify-center rounded-full text-white/50 hover:bg-white/10 hover:text-white"
+              aria-label="Dismiss mobile banner"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#6f2da8] text-lg font-semibold text-white">
+              t
+            </div>
+            <div className="flex flex-1 flex-col text-left">
+              <span className="text-sm font-semibold text-white">Download Talkie</span>
+              <span className="text-xs text-white/60">For full features and a superior experience.</span>
+            </div>
+            <a
+              href="#"
+              className="inline-flex items-center rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-neutral-900 shadow-sm hover:bg-white/90"
+            >
+              Get
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
