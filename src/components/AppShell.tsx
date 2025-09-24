@@ -166,7 +166,7 @@ export default function AppShell({
                     <div className="text-sm text-white/50">Right content header</div>
                 </div>
 
-                <div className="flex h-full min-h-0 flex-col pt-[76px] md:pt-0">{children}</div>
+                <div className="flex h-full min-h-0 flex-col pt-[67px] md:pt-0">{children}</div>
             </main>
 
             {/* ==== МОБИЛЬНОЕ НИЖНЕЕ МЕНЮ ==== */}
@@ -176,21 +176,18 @@ export default function AppShell({
                     className="flex flex-col items-center text-xs text-white/70"
                 >
                     <Home className="size-6" />
-                    <span className="mt-1">Главная</span>
                 </Link>
                 <Link
                     href="/create"
                     className="flex flex-col items-center text-xs text-white/70"
                 >
                     <PlusCircle className="size-6" />
-                    <span className="mt-1">Создать</span>
                 </Link>
                 <Link
                     href="/admin/chats"
                     className="flex flex-col items-center text-xs text-white/70"
                 >
                     <MessageSquare className="size-6" />
-                    <span className="mt-1">Чаты</span>
                 </Link>
             </nav>
         </div>
