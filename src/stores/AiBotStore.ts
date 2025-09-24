@@ -39,6 +39,7 @@ export class AiBotStore extends BaseStore {
   botPhotos: string[] = [];
 
   myBots: UserDTO[] = [];
+  subscribedBots: UserDTO[] = [];
   photosLoading = false;
   photosUpdating = false;
   isAiUserLoading = false;
@@ -225,6 +226,19 @@ export class AiBotStore extends BaseStore {
       const { data } = await this.profileService.getMyAiBots();
       runInAction(() => {
         this.myBots = data;
+        this.notify();
+      });
+    } catch (e) {
+      // uiStore.showSnackbar("Failed", "error");
+    }
+  }
+
+  async fetchSubscribedAiBots() {
+    try {
+      const { data } = await this.profileService.getSubscribedAiBots();
+      runInAction(() => {
+        this.subscribedBots = data;
+        this.notify();
       });
     } catch (e) {
       // uiStore.showSnackbar("Failed", "error");
@@ -236,6 +250,7 @@ export class AiBotStore extends BaseStore {
       const { data } = await this.profileService.createAiBot(formData);
       runInAction(() => {
         this.myBots.push(data);
+        this.notify();
       });
       // uiStore.showSnackbar("Created", "success");
       return data;
@@ -263,7 +278,10 @@ export class AiBotStore extends BaseStore {
       if (updated) {
         runInAction(() => {
           const idx = this.myBots.findIndex(b => b._id === id);
-          if (idx !== -1) this.myBots[idx] = updated!;
+          if (idx !== -1) {
+            this.myBots[idx] = updated!;
+            this.notify();
+          }
         });
         // uiStore.showSnackbar("Updated", "success");
       }
@@ -277,6 +295,7 @@ export class AiBotStore extends BaseStore {
       await this.profileService.deleteAiBot(id);
       runInAction(() => {
         this.myBots = this.myBots.filter(b => b._id !== id);
+        this.notify();
       });
       // uiStore.showSnackbar("Deleted", "success");
     } catch (e) {

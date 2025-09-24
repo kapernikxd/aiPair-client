@@ -181,6 +181,13 @@ export class ProfileService {
   }
 
   /**
+   * Получить список AI-ботов, на которых подписан текущий пользователь.
+   */
+  public async getSubscribedAiBots(): Promise<AxiosResponse<UserDTO[], any>> {
+    return $api.get(`/profile/ai-bots/subscribed`);
+  }
+
+  /**
    * Создать нового AI-бота. Для передачи аватара необходимо использовать FormData.
    */
   public async createAiBot(formData: FormData): Promise<AxiosResponse<UserDTO, any>> {
