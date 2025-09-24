@@ -186,7 +186,7 @@ export default function ChatsPage() {
                 <li key={thread.id}>
                   <Link
                     href={thread.href}
-                    className="group flex w-full items-center gap-4 px-4 py-4 transition hover:bg-white/10"
+                    className="group flex w-full items-center gap-4 py-2 transition hover:bg-white/10"
                   >
                     <ChatAvatar name={thread.name} avatar={thread.avatar} />
                     <div className="min-w-0 flex-1">
