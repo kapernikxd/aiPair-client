@@ -351,27 +351,32 @@ export class AiBotStore extends BaseStore {
 
   async fetchBotPhotos(id: string) {
     this.photosLoading = true;
+    this.notify();
     try {
       const { data } = await this.profileService.getAiBotPhotos(id);
       runInAction(() => {
         this.botPhotos = data.photos ?? [];
       });
+      this.notify();
     } catch (e) {
       // uiStore.showSnackbar("Failed", "error");
     } finally {
       runInAction(() => {
         this.photosLoading = false;
       });
+      this.notify();
     }
   }
 
   async addBotPhotos(id: string, formData: FormData) {
     this.photosUpdating = true;
+    this.notify();
     try {
       const { data } = await this.profileService.addAiBotPhotos(id, formData);
       runInAction(() => {
         this.botPhotos = data.photos ?? [];
       });
+      this.notify();
       // uiStore.showSnackbar("Saved", "success");
     } catch (e) {
       // uiStore.showSnackbar("Upload failed", "error");
@@ -379,17 +384,20 @@ export class AiBotStore extends BaseStore {
       runInAction(() => {
         this.photosUpdating = false;
       });
+      this.notify();
     }
   }
 
   async deleteBotPhotos(id: string, photoUrls: string[]) {
     if (!photoUrls.length) return;
     this.photosUpdating = true;
+    this.notify();
     try {
       const { data } = await this.profileService.deleteAiBotPhotos(id, photoUrls);
       runInAction(() => {
         this.botPhotos = data.photos ?? [];
       });
+      this.notify();
       // uiStore.showSnackbar("Deleted", "success");
     } catch (e) {
       // uiStore.showSnackbar("Delete failed", "error");
@@ -397,6 +405,12 @@ export class AiBotStore extends BaseStore {
       runInAction(() => {
         this.photosUpdating = false;
       });
+      this.notify();
     }
+  }
+
+  clearBotPhotos() {
+    this.botPhotos = [];
+    this.notify();
   }
 }
