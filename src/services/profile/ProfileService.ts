@@ -164,7 +164,7 @@ export class ProfileService {
    * Получить список созданных AI-ботов.
    */
 
-  public async getAllAiBots(params: ProfilesFilterParams): Promise<AxiosResponse<{ profiles: ProfileDTO[], hasMore: boolean }>> {
+  public async getAllAiBots(params: ProfilesFilterParams = {}): Promise<AxiosResponse<{ profiles: ProfileDTO[], hasMore: boolean }>> {
     return $api.get(getQueriedUrl({ url: "/profile/ai-bots/all", query: params }));
   }
 

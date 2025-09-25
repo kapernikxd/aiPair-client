@@ -10,6 +10,7 @@ export default function ActionBar({
   onReset,
   onNext,
   isFinal,
+  isLoading = false,
 }: {
   canBack: boolean;
   canNext: boolean;
@@ -17,6 +18,7 @@ export default function ActionBar({
   onReset: () => void;
   onNext: () => void;
   isFinal: boolean;
+  isLoading?: boolean;
 }) {
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -42,11 +44,11 @@ export default function ActionBar({
         <Button
           type="button"
           onClick={onNext}
-          disabled={!canNext}
+          disabled={!canNext || isLoading}
           variant="primaryTight"
         >
-          {isFinal ? "Create aiAgent" : "Continue"}
-          <ArrowRight className="size-4" />
+          {isFinal ? (isLoading ? "Creating…" : "Create aiAgent") : "Continue"}
+          {!isLoading && <ArrowRight className="size-4" />}
         </Button>
       </div>
     </div>

@@ -35,6 +35,10 @@ export class AiBotStore extends BaseStore {
 
   private profileService = ProfileService;
 
+  createdBot: UserDTO | null = null;
+  isSubmitting = false;
+  creationError: string | null = null;
+
   selectAiBot: AiBotDTO | null = null;
   userAiBots: AiBotDTO[] = [];
   botPhotos: string[] = [];
@@ -98,6 +102,7 @@ export class AiBotStore extends BaseStore {
     if (step === this.step) return;
     this.step = step;
     this.completed = false;
+    this.creationError = null;
     this.notify();
   }
 
@@ -172,6 +177,9 @@ export class AiBotStore extends BaseStore {
     this.gallery = [];
     this.step = 0;
     this.completed = false;
+    this.creationError = null;
+    this.createdBot = null;
+    this.isSubmitting = false;
     this.notify();
   }
 
@@ -181,15 +189,18 @@ export class AiBotStore extends BaseStore {
     this.gallery = [];
   }
 
-  async fetchAllAiBots(params: ProfilesFilterParams) {
-    if (this.isLoadingAiProfiles || (!this.hasMoreAiProfiles && params?.page && params.page > 1)) return;
+  async fetchAllAiBots(params: ProfilesFilterParams = {}) {
+    const page = params.page ?? 1;
+    const limit = params.limit;
+
+    if (this.isLoadingAiProfiles || (!this.hasMoreAiProfiles && page > 1)) return;
 
     this.isLoadingAiProfiles = true;
     try {
-      const { data } = await this.profileService.getAllAiBots(params);
+      const { data } = await this.profileService.getAllAiBots({ page, limit });
       runInAction(() => {
         // Если это первая страница — заменяем события
-        if (params?.page === 1) {
+        if (page === 1) {
           this.bots = data.profiles;
           // Если загружаем следующую страницу — добавляем к существующим
         } else {
@@ -296,9 +307,109 @@ export class AiBotStore extends BaseStore {
       });
       // uiStore.showSnackbar("Created", "success");
       return data;
-    } catch (e) {
+    } catch (error: unknown) {
       // uiStore.showSnackbar("Failed", "error");
+      throw error;
     }
+  }
+
+  private buildCreationFormData() {
+    const formData = new FormData();
+    formData.append('name', this.form.firstName.trim());
+    formData.append('lastname', this.form.lastName.trim());
+    formData.append('userBio', this.form.description.trim());
+    formData.append('aiPrompt', this.form.prompt.trim());
+    const intro = this.form.intro.trim();
+    if (intro) {
+      formData.append('intro', intro);
+      formData.append('introMessage', intro);
+    }
+    if (this.avatar) {
+      formData.append('avatar', this.avatar);
+    }
+    return formData;
+  }
+
+  private buildGalleryFormData() {
+    if (!this.gallery.length) {
+      return null;
+    }
+
+    const formData = new FormData();
+    this.gallery.forEach((item) => {
+      formData.append('photos', item.file, item.file.name);
+    });
+    return formData;
+  }
+
+  async submitCreation() {
+    if (this.isSubmitting || this.completed) {
+      return;
+    }
+
+    this.isSubmitting = true;
+    this.creationError = null;
+    this.notify();
+
+    try {
+      const payload = this.buildCreationFormData();
+      const created = await this.createBot(payload);
+
+      if (!created) {
+        throw new Error('Failed to create AI agent');
+      }
+
+      const galleryPayload = this.buildGalleryFormData();
+      if (galleryPayload) {
+        await this.addBotPhotos(created._id, galleryPayload);
+      }
+
+      runInAction(() => {
+        this.completed = true;
+        this.createdBot = created;
+      });
+      this.notify();
+
+      this.root.uiStore.showSnackbar('AI agent created', 'success');
+    } catch (error: unknown) {
+      const message = this.resolveErrorMessage(error);
+
+      runInAction(() => {
+        this.creationError = message;
+      });
+      this.notify();
+
+      this.root.uiStore.showSnackbar('Failed to create AI agent', 'error');
+    } finally {
+      runInAction(() => {
+        this.isSubmitting = false;
+      });
+      this.notify();
+    }
+  }
+
+  private resolveErrorMessage(error: unknown) {
+    if (typeof error === 'string') {
+      return error;
+    }
+
+    if (error && typeof error === 'object') {
+      const maybeResponse = (error as any).response;
+      const responseMessage = maybeResponse?.data?.message;
+      if (typeof responseMessage === 'string') {
+        return responseMessage;
+      }
+
+      if (Array.isArray(responseMessage) && responseMessage.length) {
+        return String(responseMessage[0]);
+      }
+
+      if ('message' in error && typeof (error as any).message === 'string') {
+        return (error as any).message;
+      }
+    }
+
+    return 'Failed to create AI agent';
   }
 
   async updateBot(id: string, data: AiBotUpdatePayload, avatar?: AvatarFile) {
