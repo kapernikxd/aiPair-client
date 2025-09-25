@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import AppShell from "@/components/AppShell";
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
@@ -25,6 +25,10 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
   const profile = useStoreData(profileStore, (store) => store.profile);
   const templateProfile = useStoreData(profileStore, (store) => store.getProfileInitial);
   const isLoadingProfile = useStoreData(profileStore, (store) => store.isLoadingProfile);
+  const isFollowing = profile?.isFollowing;
+  const profileUserId = profile?._id;
+
+  const [isUpdatingFollow, setIsUpdatingFollow] = useState(false);
 
   useEffect(() => {
     if (!profileId) return;
@@ -49,6 +53,18 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
     };
   }, [profile, templateProfile]);
 
+  const handleToggleFollow = useCallback(async () => {
+    if (!profileUserId) return;
+
+    setIsUpdatingFollow(true);
+
+    try {
+      await profileStore.followProfile(profileUserId);
+    } finally {
+      setIsUpdatingFollow(false);
+    }
+  }, [profileStore, profileUserId]);
+
   return (
     <AppShell>
       <div className="relative min-h-screen overflow-y-auto bg-neutral-950 text-white">
@@ -56,7 +72,12 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
 
         <div className="mx-auto w-full max-w-5xl px-4 pb-20 pt-14">
           <header className="space-y-8">
-            <HeaderBar />
+            <HeaderBar
+              isFollowing={isFollowing}
+              isBusy={isUpdatingFollow}
+              onToggleFollow={handleToggleFollow}
+              disableFollowAction={!profileUserId}
+            />
             <UserHero
               name={heroData.name}
               intro={heroData.intro}
