@@ -67,6 +67,7 @@ export default function MyProfilePage() {
             <ProfileCard
               profile={profile}
               genderLabel={profile?.gender ? genderLabels[profile.gender] ?? profile.gender : "Not specified"}
+              isCurrentUser
             />
           </header>
 
