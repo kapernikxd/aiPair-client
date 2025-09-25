@@ -35,7 +35,7 @@ export class AiBotStore extends BaseStore {
 
   private profileService = ProfileService;
 
-  selectAiBot: AiBotDTO = {} as AiBotDTO;
+  selectAiBot: AiBotDTO | null = null;
   botPhotos: string[] = [];
 
   myBots: UserDTO[] = [];
@@ -207,18 +207,31 @@ export class AiBotStore extends BaseStore {
 
   async fetchAiBotById(id: string) {
     this.isAiUserLoading = true;
+    this.notify();
     try {
       const { data } = await this.profileService.getAiBotById(id);
       runInAction(() => {
-        this.selectAiBot = data
+        this.selectAiBot = data;
       });
+      this.notify();
+      return data;
     } catch (e) {
+      runInAction(() => {
+        this.selectAiBot = null;
+      });
+      this.notify();
       // UiStore.showSnackbar("Failed", "error");
     } finally {
       runInAction(() => {
         this.isAiUserLoading = false;
       });
+      this.notify();
     }
+  }
+
+  clearSelectedAiBot() {
+    this.selectAiBot = null;
+    this.notify();
   }
 
   async fetchMyAiBots() {
