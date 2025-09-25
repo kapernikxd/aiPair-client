@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import ModalShell from "./edit/overview/ModalShell";
 import { UserDTO } from "@/helpers/types";
@@ -58,25 +59,37 @@ export default function UserListModal({
               const username = getUsername(user);
 
               return (
-                <li
-                  key={user._id}
-                  className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-4"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="relative size-12 overflow-hidden rounded-2xl border border-white/10">
-                      <Image
-                        src={avatar}
-                        alt={`${fullName} avatar`}
-                        fill
-                        className="object-cover"
-                        sizes="48px"
-                      />
+                <li key={user._id}>
+                  <Link
+                    href={`/profile/user/${user._id}`}
+                    onClick={onClose}
+                    className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-white/20 hover:bg-white/10"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="relative size-12 overflow-hidden rounded-2xl border border-white/10">
+                        <Image
+                          src={avatar}
+                          alt={`${fullName} avatar`}
+                          fill
+                          className="object-cover"
+                          sizes="48px"
+                        />
+                      </div>
+                      <div>
+                        <p className="font-medium text-white">{fullName}</p>
+                        {username ? <p className="text-sm text-white/50">{username}</p> : null}
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium text-white">{fullName}</p>
-                      {username ? <p className="text-sm text-white/50">{username}</p> : null}
-                    </div>
-                  </div>
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="size-4 shrink-0 text-white/50"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 6l6 6-6 6" />
+                    </svg>
+                  </Link>
                 </li>
               );
             })}
