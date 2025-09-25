@@ -2,9 +2,8 @@ import { Clock3, Flame, Heart } from "lucide-react";
 import type { TalkieCard } from "@/helpers/types/profile";
 
 export const genderOptions = [
-  { value: "he_him", label: "He/Him" },
-  { value: "she_her", label: "She/Her" },
-  { value: "they_them", label: "They/Them" },
+  { value: "MALE", label: "Male" },
+  { value: "FEMALE", label: "Female" },
 ] as const;
 
 export const relationshipOptions = [
@@ -94,14 +93,13 @@ export const milestones = [
 
 export const initialProfile = {
     userName: "Vadim Stepanov",
-    gender: "he_him",
+    gender: "MALE",
     intro: "AI product designer exploring the edges of digital companions.",
     relationshipPreference: "View your relationship preference",
 };
 
 
 export const genderLabels: Record<string, string> = {
-    he_him: "He/Him",
-    she_her: "She/Her",
-    they_them: "They/Them",
+    MALE: "Male",
+    FEMALE: "Female",
 };
