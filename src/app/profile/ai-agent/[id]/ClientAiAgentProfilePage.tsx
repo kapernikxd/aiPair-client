@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
 import AppShell from "@/components/AppShell";
@@ -83,6 +83,7 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
   const isLoading = useStoreData(aiBotStore, (store) => store.isAiUserLoading);
   const botPhotos = useStoreData(aiBotStore, (store) => store.botPhotos);
   const photosLoading = useStoreData(aiBotStore, (store) => store.photosLoading);
+  const [activeTab, setActiveTab] = useState<"info" | "gallery">("info");
 
   useEffect(() => {
     if (!aiBotId) return;
@@ -245,11 +246,43 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
               </div>
 
               <section className="grid gap-6 md:grid-cols-[1.3fr,1fr]">
-                <div className="space-y-6 rounded-3xl border border-white/10 bg-neutral-900/60 p-8">
-                  <Introduction text={introduction} />
-                  <BotGallery photos={botPhotos} isLoading={photosLoading} />
-                  <SignatureMoves items={signatureMoves} />
-                  <OpeningsList openings={openings} />
+                <div className="rounded-3xl border border-white/10 bg-neutral-900/60 p-8">
+                  <div className="inline-flex rounded-full bg-white/5 p-1 text-sm font-medium text-white/70">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("info")}
+                      className={`rounded-full px-4 py-2 transition ${
+                        activeTab === "info"
+                          ? "bg-white text-neutral-900 shadow"
+                          : "hover:text-white"
+                      }`}
+                    >
+                      Information
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("gallery")}
+                      className={`rounded-full px-4 py-2 transition ${
+                        activeTab === "gallery"
+                          ? "bg-white text-neutral-900 shadow"
+                          : "hover:text-white"
+                      }`}
+                    >
+                      Gallery
+                    </button>
+                  </div>
+
+                  <div className="mt-6 space-y-6">
+                    {activeTab === "info" ? (
+                      <>
+                        <Introduction text={introduction} />
+                        <SignatureMoves items={signatureMoves} />
+                        <OpeningsList openings={openings} />
+                      </>
+                    ) : (
+                      <BotGallery photos={botPhotos} isLoading={photosLoading} />
+                    )}
+                  </div>
                 </div>
 
                 <HighlightsSidebar highlights={highlights} />
