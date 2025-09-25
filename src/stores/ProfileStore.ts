@@ -34,6 +34,7 @@ export class ProfileStore extends BaseStore {
   myProfile: MyProfileDTO = {} as MyProfileDTO;
   /** Просматриваемый профиль (например, другого пользователя) */
   profile: ProfileDTO = {} as ProfileDTO;
+  isLoadingProfile: boolean = false;
   /** Список всех профилей */
   profiles: ProfileDTO[] = [];
   hasMoreProfiles: boolean = true;
@@ -132,16 +133,31 @@ export class ProfileStore extends BaseStore {
    * @param id Идентификатор профиля
    */
   async fetchProfileById(id: string) {
+    this.isLoadingProfile = true;
+    this.notify();
+
     try {
       const { data } = await this.profileService.getProfileById(id);
       runInAction(() => {
         this.profile = data;
+        this.isLoadingProfile = false;
       });
+      this.notify();
       return data;
     } catch (error) {
+      runInAction(() => {
+        this.isLoadingProfile = false;
+      });
+      this.notify();
       console.error("Error fetching profile by id", error);
     }
   }
+
+  clearViewedProfile = () => {
+    this.profile = {} as ProfileDTO;
+    this.isLoadingProfile = false;
+    this.notify();
+  };
 
   /**
    * Получает список всех профилей.
