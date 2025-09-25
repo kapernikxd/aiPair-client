@@ -9,9 +9,17 @@ type Props = {
   onAvatarSelect?: (file: File) => void;
   onAvatarRemove?: () => void;
   canRemoveAvatar?: boolean;
+  description?: string;
 };
 
-export default function HeroRow({ userName, avatarUrl, onAvatarSelect, onAvatarRemove, canRemoveAvatar }: Props) {
+export default function HeroRow({
+  userName,
+  avatarUrl,
+  onAvatarSelect,
+  onAvatarRemove,
+  canRemoveAvatar,
+  description = "Update your personal details to help others know you better.",
+}: Props) {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -75,7 +83,7 @@ export default function HeroRow({ userName, avatarUrl, onAvatarSelect, onAvatarR
       </div>
 
       <p className="text-center text-sm text-neutral-300 sm:mt-2 sm:text-left">
-        Update your personal details to help others know you better.
+        {description}
       </p>
     </div>
   );

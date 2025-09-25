@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, MoreHorizontal, Share2 } from "lucide-react";
 
 import AppShell from "@/components/AppShell";
 import GradientBackdrop from "@/components/ai-agent/GradientBackdrop";
@@ -14,6 +16,7 @@ import OpeningsList from "@/components/ai-agent/OpeningsList";
 import HighlightsSidebar from "@/components/ai-agent/HighlightsSidebar";
 import BotGallery from "@/components/ai-agent/BotGallery";
 import { Button } from "@/components/ui/Button";
+import EditAiAgentDialog from "@/components/ai-agent/edit/EditAiAgentDialog";
 
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 import { getUserAvatar, getUserFullName, getUsername } from "@/helpers/utils/user";
@@ -77,13 +80,17 @@ const parsePromptToHighlights = (prompt?: string) => {
 
 export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfilePageProps) {
   const { routes } = useAuthRoutes();
-  const { aiBotStore } = useRootStore();
+  const { aiBotStore, authStore } = useRootStore();
+  const router = useRouter();
 
   const aiBot = useStoreData(aiBotStore, (store) => store.selectAiBot);
   const isLoading = useStoreData(aiBotStore, (store) => store.isAiUserLoading);
   const botPhotos = useStoreData(aiBotStore, (store) => store.botPhotos);
   const photosLoading = useStoreData(aiBotStore, (store) => store.photosLoading);
+  const myBots = useStoreData(aiBotStore, (store) => store.myBots);
+  const isAuthenticated = useStoreData(authStore, (store) => store.isAuthenticated);
   const [activeTab, setActiveTab] = useState<"info" | "gallery">("info");
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   useEffect(() => {
     if (!aiBotId) return;
@@ -99,6 +106,13 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
       aiBotStore.clearBotPhotos();
     };
   }, [aiBotId, aiBotStore]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    if (myBots.length) return;
+
+    void aiBotStore.fetchMyAiBots();
+  }, [isAuthenticated, myBots.length, aiBotStore]);
 
   const header = useMemo<AiAgentHeader>(() => {
     if (!aiBot) {
@@ -214,13 +228,60 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
   }, [aiBot]);
 
   const chatHref = aiBot?.chatLink || routes.adminChat;
+  const isCreator = useMemo(() => {
+    if (!aiBot) return false;
+    return myBots.some((bot) => bot._id === aiBot._id);
+  }, [aiBot, myBots]);
+  const canEdit = Boolean(aiBot) && isCreator;
+
+  useEffect(() => {
+    if (!isCreator) {
+      setIsEditOpen(false);
+    }
+  }, [isCreator]);
+
+  const closeEditDialog = () => setIsEditOpen(false);
 
   return (
     <AppShell>
       <div className="relative min-h-screen overflow-y-auto bg-neutral-950 text-white">
         <GradientBackdrop />
 
+        {canEdit && aiBot && (
+          <EditAiAgentDialog open={isEditOpen} aiAgent={aiBot} onClose={closeEditDialog} />
+        )}
+
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-4 pb-16 pt-16">
+          {canEdit && (
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  onClick={() => router.back()}
+                  variant="frostedIcon"
+                  aria-label="Go back"
+                >
+                  <ArrowLeft className="size-5" />
+                </Button>
+                <Button type="button" variant="frostedIcon" aria-label="Share agent">
+                  <Share2 className="size-5" />
+                </Button>
+                <Button type="button" variant="frostedIcon" aria-label="More options">
+                  <MoreHorizontal className="size-5" />
+                </Button>
+              </div>
+              <div className="flex items-center gap-3">
+                <Button
+                  type="button"
+                  onClick={() => setIsEditOpen(true)}
+                  variant="solidWhitePill"
+                >
+                  Edit AI Agent
+                </Button>
+              </div>
+            </div>
+          )}
+
           {!aiBot ? (
             <div className="rounded-3xl border border-white/10 bg-neutral-900/70 p-8 text-center text-sm text-white/70">
               {isLoading ? "Loading agent profile…" : "This agent is unavailable or no longer exists."}

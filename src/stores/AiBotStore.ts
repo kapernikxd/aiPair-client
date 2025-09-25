@@ -412,7 +412,7 @@ export class AiBotStore extends BaseStore {
     return 'Failed to create AI agent';
   }
 
-  async updateBot(id: string, data: AiBotUpdatePayload, avatar?: AvatarFile) {
+  async updateBot(id: string, data: AiBotUpdatePayload, avatar?: AvatarFile | File) {
     try {
       let updated: UserDTO | undefined;
 
@@ -430,16 +430,31 @@ export class AiBotStore extends BaseStore {
 
       if (updated) {
         runInAction(() => {
-          const idx = this.myBots.findIndex(b => b._id === id);
-          if (idx !== -1) {
-            this.myBots[idx] = updated!;
-            this.notify();
+          const applyUpdate = <T extends UserDTO>(collection: T[]) =>
+            collection.map((bot) => (bot._id === id ? ({ ...bot, ...updated } as T) : bot));
+
+          this.myBots = applyUpdate(this.myBots);
+          this.userAiBots = applyUpdate(this.userAiBots);
+          this.bots = applyUpdate(this.bots);
+
+          if (this.selectAiBot && this.selectAiBot._id === id) {
+            this.selectAiBot = { ...this.selectAiBot, ...updated };
           }
+
+          if (this.createdBot && this.createdBot._id === id) {
+            this.createdBot = { ...this.createdBot, ...updated };
+          }
+
+          this.notify();
         });
-        // uiStore.showSnackbar("Updated", "success");
+
+        this.root.uiStore.showSnackbar('AI agent updated', 'success');
       }
+
+      return updated as AiBotDTO | undefined;
     } catch (e) {
-      // uiStore.showSnackbar("Failed", "error");
+      this.root.uiStore.showSnackbar('Failed to update AI agent', 'error');
+      throw e;
     }
   }
 
