@@ -121,7 +121,14 @@ export default function EditProfileDialog({ open, profile, onClose, onSave }: Pr
     };
 
     const filteredPayload = Object.fromEntries(
-      Object.entries(payload).filter(([, value]) => value !== undefined && value !== "")
+      Object.entries(payload).filter(([key, value]) => {
+        if (value === undefined || value === "") {
+          return false;
+        }
+
+        const originalValue = profile?.[key as keyof MyProfileDTO];
+        return value !== originalValue;
+      })
     ) as UpdateProfileProps;
 
     setIsSubmitting(true);
@@ -132,7 +139,7 @@ export default function EditProfileDialog({ open, profile, onClose, onSave }: Pr
 
       if (avatarFile) {
         const formData = new FormData();
-        formData.append("avatar", avatarFile);
+        formData.append("file", avatarFile);
         await profileStore.uploadProfilePhoto(formData);
       } else if (shouldRemoveAvatar && profile?.avatarFile) {
         await profileStore.deleteProfilePhoto(profile.avatarFile);

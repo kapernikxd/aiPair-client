@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 export default function MyProfilePage() {
   const { profileStore, uiStore, aiBotStore } = useRootStore();
   const profile = useStoreData(profileStore, (store) => store.myProfile);
+  const genderLabels = useStoreData(profileStore, (store) => store.genderLabels);
   const aiAgents = useStoreData(aiBotStore, (store) => store.myBots);
   const subscribedAiAgents = useStoreData(aiBotStore, (store) => store.subscribedBots);
 
@@ -37,12 +38,12 @@ export default function MyProfilePage() {
       ? {
           title: "My AI Agents",
           description: "Here are the AI agents you have created.",
-          empty: "You haven't created any AI agents yet.",
+          empty: "You haven’t created any AI agents yet.",
         }
       : {
           title: "Subscribed AI Agents",
           description: "AI agents you follow will appear here.",
-          empty: "You aren't subscribed to any AI agents yet.",
+          empty: "You aren’t subscribed to any AI agents yet.",
         };
 
   const filteredAiAgents = activeFilter === "my" ? aiAgents : subscribedAiAgents;
@@ -63,7 +64,10 @@ export default function MyProfilePage() {
         <div className="mx-auto w-full max-w-5xl px-4 pb-20 pt-14">
           <header className="space-y-8">
             <HeaderActions onEdit={() => uiStore.openEditProfileDialog()} />
-            <ProfileCard profile={profile} genderLabel={'Male'} />
+            <ProfileCard
+              profile={profile}
+              genderLabel={profile?.gender ? genderLabels[profile.gender] ?? profile.gender : "Not specified"}
+            />
           </header>
 
           <section className="mt-12 grid gap-6 lg:grid-cols-[1fr_320px]">
@@ -80,7 +84,7 @@ export default function MyProfilePage() {
               <section className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
                 <h2 className="text-lg font-semibold text-white">Filter AI Agents</h2>
                 <p className="mt-2 text-sm text-white/70">
-                  Choose whether to see your own creations or the agents you're subscribed to.
+                  Choose whether to see your own creations or the agents you’re subscribed to.
                 </p>
                 <div className="mt-4 grid gap-3">
                   {filters.map((filter) => {
