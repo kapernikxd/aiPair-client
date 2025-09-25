@@ -5,6 +5,7 @@ export type AvatarFile = { uri: string; name: string; type: string };
 
 export interface ProfilesFilterParams {
   page?: number;
+  limit?: number;
 }
 
 export type UpdateProfileProps = {

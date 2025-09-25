@@ -2,8 +2,9 @@
 
 import type { ChangeEvent } from 'react';
 import { useEffect } from 'react';
+import Link from 'next/link';
+import { AlertCircle, CheckCircle2, Sparkles } from 'lucide-react';
 import AppShell from '@/components/AppShell';
-import { CheckCircle2, Sparkles } from 'lucide-react';
 
 import GradientBackdrop from '@/components/ai-agent-create/GradientBackdrop';
 import Stepper from '@/components/ai-agent-create/Stepper';
@@ -25,6 +26,9 @@ export default function CreateAiAgentPage() {
   const gallery = useStoreData(aiBotStore, (store) => store.gallery);
   const completed = useStoreData(aiBotStore, (store) => store.completed);
   const currentStepComplete = useStoreData(aiBotStore, (store) => store.currentStepComplete);
+  const isSubmitting = useStoreData(aiBotStore, (store) => store.isSubmitting);
+  const creationError = useStoreData(aiBotStore, (store) => store.creationError);
+  const createdBot = useStoreData(aiBotStore, (store) => store.createdBot);
   const steps = aiBotStore.steps;
   const maxGalleryItems = aiBotStore.maxGalleryItems;
 
@@ -54,6 +58,10 @@ export default function CreateAiAgentPage() {
   };
 
   const goNext = () => {
+    if (step === steps.length - 1) {
+      void aiBotStore.submitCreation();
+      return;
+    }
     aiBotStore.goNext();
   };
 
@@ -79,10 +87,27 @@ export default function CreateAiAgentPage() {
               </p>
             </header>
 
+            {creationError && (
+              <div className="flex items-center gap-3 rounded-3xl border border-rose-400/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">
+                <AlertCircle className="size-5" />
+                <span>{creationError}</span>
+              </div>
+            )}
+
             {completed && (
-              <div className="flex items-center gap-3 rounded-3xl border border-emerald-400/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
-                <CheckCircle2 className="size-5" />
-                <span>Your draft is ready! Feel free to revisit any step or publish when you&rsquo;re set.</span>
+              <div className="flex flex-col gap-2 rounded-3xl border border-emerald-400/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200 sm:flex-row sm:items-center sm:gap-3">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="size-5" />
+                  <span>Your AI agent is live! You can revisit any step or publish when you&rsquo;re set.</span>
+                </div>
+                {createdBot && (
+                  <Link
+                    href={`/profile/ai-agent/${createdBot._id}`}
+                    className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-100 underline hover:text-emerald-50"
+                  >
+                    View profile
+                  </Link>
+                )}
               </div>
             )}
 
@@ -122,6 +147,7 @@ export default function CreateAiAgentPage() {
               onReset={resetFlow}
               onNext={goNext}
               isFinal={step === steps.length - 1}
+              isLoading={isSubmitting}
             />
           </div>
 
