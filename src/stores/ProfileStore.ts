@@ -91,16 +91,19 @@ export class ProfileStore extends BaseStore {
     this.following = [];
     this.followersHasMore = true;
     this.followingHasMore = true;
+    this.notify();
   };
 
   resetFollowing = () => {
     this.following = [];
     this.followingHasMore = true;
+    this.notify();
   };
 
   resetFollowers = () => {
     this.followers = [];
     this.followersHasMore = true;
+    this.notify();
   };
 
   /**
@@ -117,6 +120,7 @@ export class ProfileStore extends BaseStore {
       runInAction(() => {
         this.myProfile = data;
       });
+      this.notify();
       return data;
     } catch (error) {
       console.error("Error fetching my profile", error);
@@ -213,6 +217,7 @@ export class ProfileStore extends BaseStore {
       runInAction(() => {
         Object.assign(this.myProfile, data.user);
       });
+      this.notify();
     } catch (error) {
       console.error("Error updating profile", error);
     }
@@ -260,6 +265,7 @@ export class ProfileStore extends BaseStore {
             : this.myProfile.following - 1;
         }
       });
+      this.notify();
     } catch (error) {
       // uiStore.showSnackbar("Failed", "error");
     }
@@ -271,7 +277,10 @@ export class ProfileStore extends BaseStore {
   async fetchMyFollowers(params: UsersFilterParams) {
     if (this.isLoadingFollowers || (!this.followersHasMore && params.page && params.page > 1)) return;
 
-    this.isLoadingFollowers = true;
+    runInAction(() => {
+      this.isLoadingFollowers = true;
+    });
+    this.notify();
     try {
       const { data } = await this.profileService.getMyFollowers(params);
       runInAction(() => {
@@ -282,10 +291,14 @@ export class ProfileStore extends BaseStore {
         }
         this.followersHasMore = data.hasMore;
       });
+      this.notify();
     } catch (error) {
       console.error("Error fetching my followers", error);
     } finally {
-      runInAction(() => { this.isLoadingFollowers = false; });
+      runInAction(() => {
+        this.isLoadingFollowers = false;
+      });
+      this.notify();
     }
   }
 
@@ -295,7 +308,10 @@ export class ProfileStore extends BaseStore {
   async fetchMyFollowing(params: UsersFilterParams) {
     if (this.isLoadingFollowing || (!this.followingHasMore && params.page && params.page > 1)) return;
 
-    this.isLoadingFollowing = true;
+    runInAction(() => {
+      this.isLoadingFollowing = true;
+    });
+    this.notify();
     try {
       const { data } = await this.profileService.getMyFollowing(params);
       runInAction(() => {
@@ -306,10 +322,14 @@ export class ProfileStore extends BaseStore {
         }
         this.followingHasMore = data.hasMore;
       });
+      this.notify();
     } catch (error) {
       console.error("Error fetching my following", error);
     } finally {
-      runInAction(() => { this.isLoadingFollowing = false; });
+      runInAction(() => {
+        this.isLoadingFollowing = false;
+      });
+      this.notify();
     }
   }
 
@@ -320,7 +340,10 @@ export class ProfileStore extends BaseStore {
   async fetchFollowers(userId: string, params: UsersFilterParams) {
     if (this.isLoadingFollowers || (!this.followersHasMore && params.page && params.page > 1)) return;
 
-    this.isLoadingFollowers = true;
+    runInAction(() => {
+      this.isLoadingFollowers = true;
+    });
+    this.notify();
     try {
       const { data } = await this.profileService.getFollowersById(userId, params);
       runInAction(() => {
@@ -331,10 +354,14 @@ export class ProfileStore extends BaseStore {
         }
         this.followersHasMore = data.hasMore;
       });
+      this.notify();
     } catch (error) {
       console.error("Error fetching followers", error);
     } finally {
-      runInAction(() => { this.isLoadingFollowers = false; });
+      runInAction(() => {
+        this.isLoadingFollowers = false;
+      });
+      this.notify();
     }
   }
 
@@ -345,7 +372,10 @@ export class ProfileStore extends BaseStore {
   async fetchFollowing(userId: string, params: UsersFilterParams) {
     if (this.isLoadingFollowing || (!this.followingHasMore && params.page && params.page > 1)) return;
 
-    this.isLoadingFollowing = true;
+    runInAction(() => {
+      this.isLoadingFollowing = true;
+    });
+    this.notify();
     try {
       const { data } = await this.profileService.getFollowingById(userId, params);
       runInAction(() => {
@@ -356,10 +386,14 @@ export class ProfileStore extends BaseStore {
         }
         this.followingHasMore = data.hasMore;
       });
+      this.notify();
     } catch (error) {
       console.error("Error fetching following", error);
     } finally {
-      runInAction(() => { this.isLoadingFollowing = false; });
+      runInAction(() => {
+        this.isLoadingFollowing = false;
+      });
+      this.notify();
     }
   }
 
