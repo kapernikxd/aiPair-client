@@ -16,7 +16,7 @@ export default function ModalShell({
     <AnimatePresence>
       {open ? (
         <motion.div
-          className="fixed inset-0 z-50 grid place-items-center px-4"
+          className="fixed inset-0 z-50 grid place-items-center overflow-y-auto px-4 py-6"
           onMouseDown={handleBackdropClick}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -24,13 +24,15 @@ export default function ModalShell({
         >
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
           <motion.div
-            className="relative z-10 w-full max-w-xl rounded-3xl border border-white/10 bg-neutral-900 text-white shadow-2xl"
+            className="relative z-10 w-full max-w-xl overflow-hidden rounded-3xl border border-white/10 bg-neutral-900 text-white shadow-2xl"
             initial={{ scale: 0.96, opacity: 0, y: 16 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.97, opacity: 0, y: 12 }}
             transition={{ type: "spring", stiffness: 220, damping: 20 }}
           >
-            {children}
+            <div className="max-h-[min(85vh,40rem)] overflow-y-auto">
+              {children}
+            </div>
           </motion.div>
         </motion.div>
       ) : null}
