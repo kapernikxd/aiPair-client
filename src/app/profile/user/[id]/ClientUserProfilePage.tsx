@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import AppShell from "@/components/AppShell";
 
@@ -18,6 +19,7 @@ interface UserProfilePageProps {
 
 export default function UserProfilePage({ profileId }: UserProfilePageProps) {
   const { profileStore, aiBotStore } = useRootStore();
+  const router = useRouter();
 
   const profile = useStoreData(profileStore, (store) => store.profile);
   const genderLabels = useStoreData(profileStore, (store) => store.genderLabels);
@@ -34,6 +36,18 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
   useEffect(() => {
     if (!profileId) return;
 
+    if (myProfile?._id && myProfile._id === profileId) {
+      router.replace("/profile/my");
+    }
+  }, [myProfile?._id, profileId, router]);
+
+  useEffect(() => {
+    if (!profileId) return;
+
+    if (myProfile?._id && myProfile._id === profileId) {
+      return;
+    }
+
     void profileStore.fetchProfileById(profileId);
     void aiBotStore.fetchAiBotsByUserId(profileId);
 
@@ -42,7 +56,7 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
       aiBotStore.clearSelectedAiBot();
       aiBotStore.clearUserAiBots();
     };
-  }, [profileId, profileStore, aiBotStore]);
+  }, [profileId, profileStore, aiBotStore, myProfile?._id]);
 
   const handleToggleFollow = useCallback(async () => {
     if (!profileUserId) return;
