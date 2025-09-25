@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 import { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
 import { getUserAvatar } from "@/helpers/utils/user";
@@ -7,6 +8,7 @@ import { Clock3, Flame, Heart } from "lucide-react";
 export default function AiAgentCard({ aiAgent }: { aiAgent: AiBotDTO }) {
 
     const userAvatar = getUserAvatar(aiAgent);
+    const aiAgentHref = `/profile/ai-agent/${encodeURIComponent(aiAgent._id)}`;
 
     const stats = [
             { label: "episodes", value: "02", icon: Clock3 },
@@ -15,9 +17,13 @@ export default function AiAgentCard({ aiAgent }: { aiAgent: AiBotDTO }) {
         ]
 
     return (
-        <article className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-neutral-900/80 p-4 sm:flex-row">
+        <Link
+            href={aiAgentHref}
+            className="group flex flex-col gap-4 rounded-2xl border border-white/10 bg-neutral-900/80 p-4 transition hover:border-violet-400/50 focus-visible:border-violet-400/70 focus-visible:outline-none sm:flex-row"
+            aria-label={`Открыть профиль AI-бота ${aiAgent.name}`}
+        >
             <div className="relative h-40 w-full shrink-0 overflow-hidden rounded-2xl sm:h-32 sm:w-32">
-                <Image src={userAvatar} alt={aiAgent.name} fill className="object-cover" sizes="(max-width: 640px) 100vw, 128px" />
+                <Image src={userAvatar} alt={aiAgent.name} fill className="object-cover transition duration-500 group-hover:scale-105 group-focus-visible:scale-105" sizes="(max-width: 640px) 100vw, 128px" />
             </div>
             <div className="flex flex-1 flex-col justify-between">
                 <div>
@@ -33,6 +39,6 @@ export default function AiAgentCard({ aiAgent }: { aiAgent: AiBotDTO }) {
                     ))}
                 </div>
             </div>
-        </article>
+        </Link>
     );
 }
