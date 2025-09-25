@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import AppShell from "@/components/AppShell";
 
@@ -26,7 +26,7 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
   const isFollowing = profile?.isFollowing;
   const profileUserId = profile?._id;
 
-  const selectedAiBot = useStoreData(aiBotStore, (store) => store.selectAiBot);
+  const userAiBots = useStoreData(aiBotStore, (store) => store.userAiBots);
   const isLoadingAiBot = useStoreData(aiBotStore, (store) => store.isAiUserLoading);
 
   const [isUpdatingFollow, setIsUpdatingFollow] = useState(false);
@@ -35,11 +35,12 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
     if (!profileId) return;
 
     void profileStore.fetchProfileById(profileId);
-    void aiBotStore.fetchAiBotById(profileId);
+    void aiBotStore.fetchAiBotsByUserId(profileId);
 
     return () => {
       profileStore.clearViewedProfile();
       aiBotStore.clearSelectedAiBot();
+      aiBotStore.clearUserAiBots();
     };
   }, [profileId, profileStore, aiBotStore]);
 
@@ -59,8 +60,6 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
     ? genderLabels[profile.gender] ?? profile.gender
     : "Not specified";
   const isViewingOwnProfile = Boolean(profileUserId && myProfile?._id === profileUserId);
-
-  const aiBots = useMemo(() => (selectedAiBot ? [selectedAiBot] : []), [selectedAiBot]);
 
   return (
     <AppShell>
@@ -88,7 +87,7 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
               subtitle={"Персональные напарники, созданные этим пользователем."}
               actionLabel="View archive"
             />
-            <AiBotGrid items={aiBots} isLoading={isLoadingAiBot} />
+            <AiBotGrid items={userAiBots} isLoading={isLoadingAiBot} />
             {(isLoadingProfile || isLoadingAiBot) && (
               <p className="text-sm text-white/60">Loading profile…</p>
             )}
