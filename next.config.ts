@@ -9,7 +9,7 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  // output: 'export',
   images: { unoptimized: true }, // иначе картинки не прогрузятся на чистом экспорте
 };
 export default nextConfig;

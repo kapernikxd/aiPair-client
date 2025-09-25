@@ -1,8 +1,10 @@
 'use client';
 
 import React from "react";
-import CardRailTwoRows from "@/components/CardRailTwoRows";
+import CardRailTwoRows from "@/components/ui/CardRailTwoRows";
 import AppShell from "@/components/AppShell";
+import CardRailOneRow from "@/components/ui/CardRailOneRow";
+import { Spacer } from "@/components/ui/Spacer";
 
 // export const metadata = {
 //   title: 'AI Pair — Talk with an AI companion',
@@ -44,11 +46,28 @@ export default function Landing() {
     <AppShell>
       {/* любой контент справа */}
       <div className="flex h-full min-h-0 flex-col">
-        <div className="flex-1 overflow-y-auto">
-          <CardRailTwoRows items={data} className="mx-auto max-w-[1400px]" />
-          <CardRailTwoRows items={data} className="mx-auto max-w-[1400px]" />
-          <CardRailTwoRows items={data} className="mx-auto max-w-[1400px]" />
-          <CardRailTwoRows items={data} className="mx-auto max-w-[1400px]" />
+        <div className="flex-1 p-9 overflow-y-auto">
+          <Spacer size={8} />
+          <CardRailOneRow
+            title="Teachers"
+            items={data}
+          />
+          <Spacer size={90} />
+          <CardRailOneRow
+            title="Romantic"
+            items={data}
+          />
+          <Spacer size={90} />
+
+
+          <CardRailOneRow
+            title="Story"
+            items={data}
+          />
+          <Spacer size={90} />
+
+          <CardRailTwoRows title="For fun" items={data} className="mx-auto max-w-[1400px]" />
+          <Spacer size={40} />
         </div>
       </div>
     </AppShell>

@@ -2,7 +2,7 @@
 
 import React, { useRef } from 'react';
 import { Button } from '@/components/ui/Button';
-import HoverSwapCard from './AiCard';
+import HoverSwapCard from '../AiCard';
 
 type Item = {
   id: string | number;
@@ -16,12 +16,14 @@ type Item = {
 
 type Props = {
   items: Item[];
+  title?: string;
   cardWidth?: number;   // px, для кнопок пролистывания
   gap?: number;         // px
   className?: string;
 };
 
 export default function CardRailTwoRows({
+  title,
   items,
   cardWidth = 220,
   gap = 16,
@@ -38,6 +40,14 @@ export default function CardRailTwoRows({
 
   return (
     <section className={`relative ${className}`}>
+      {/* Заголовок */}
+      {title && (
+        <h2 className="mb-3 text-lg font-semibold text-white flex items-center gap-2">
+          {title}
+          <span className="text-yellow-400">✨</span>
+        </h2>
+      )}
+
       {/* Кнопки пролистывания (опционально) */}
       <div className="hidden md:flex absolute left-2 top-1/2 z-10 -translate-y-1/2">
         <Button aria-label="Prev" onClick={() => scrollBy(-1)} variant="carouselNav">

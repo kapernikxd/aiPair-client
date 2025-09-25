@@ -278,14 +278,13 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
                         <Introduction text={introduction} />
                         <SignatureMoves items={signatureMoves} />
                         <OpeningsList openings={openings} />
+                        <HighlightsSidebar highlights={highlights} />
                       </>
                     ) : (
                       <BotGallery photos={botPhotos} isLoading={photosLoading} />
                     )}
                   </div>
                 </div>
-
-                <HighlightsSidebar highlights={highlights} />
               </section>
             </>
           )}

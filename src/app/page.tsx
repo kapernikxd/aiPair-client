@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import { ArrowRight, Mic, Sparkles, Shield, Globe2, PlayCircle, CheckCircle2, X } from "lucide-react";
 import LandingClient from '@/components/LandingClient';
 import DeviceMockup from '@/components/DeviceMockup';
-import CardRailTwoRows from "@/components/CardRailTwoRows";
+import CardRailTwoRows from "@/components/ui/CardRailTwoRows";
 import AuthPopup from "@/components/AuthPopup";
 import { Button } from "@/components/ui/Button";
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
