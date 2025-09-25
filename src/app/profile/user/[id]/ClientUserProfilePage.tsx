@@ -1,29 +1,28 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import AppShell from "@/components/AppShell";
-import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 
 import GradientBackdrop from "@/components/user/GradientBackdrop";
 import HeaderBar from "@/components/user/HeaderBar";
-import UserHero from "@/components/user/UserHero";
 import SectionHeader from "@/components/user/SectionHeader";
 import TalkieGrid from "@/components/user/TalkieGrid";
+import ProfileCard from "@/components/profile/ProfileCard";
 
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
-import { getUserAvatar, getUserFullName } from "@/helpers/utils/user";
 
 interface UserProfilePageProps {
   profileId?: string;
 }
 
 export default function UserProfilePage({ profileId }: UserProfilePageProps) {
-  const { routes } = useAuthRoutes();
   const { profileStore } = useRootStore();
 
   const profile = useStoreData(profileStore, (store) => store.profile);
   const templateProfile = useStoreData(profileStore, (store) => store.getProfileInitial);
+  const genderLabels = useStoreData(profileStore, (store) => store.genderLabels);
+  const myProfile = useStoreData(profileStore, (store) => store.myProfile);
   const isLoadingProfile = useStoreData(profileStore, (store) => store.isLoadingProfile);
   const isFollowing = profile?.isFollowing;
   const profileUserId = profile?._id;
@@ -40,19 +39,6 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
     };
   }, [profileId, profileStore]);
 
-  const heroData = useMemo(() => {
-    const hasProfile = Boolean(profile?._id);
-    const source = hasProfile ? profile : undefined;
-
-    return {
-      name: hasProfile ? getUserFullName(profile) : templateProfile.name,
-      intro: source?.userBio ?? templateProfile.intro,
-      location: source?.city?.name ?? templateProfile.location,
-      avatar: hasProfile ? getUserAvatar(profile) : templateProfile.avatar,
-      badges: templateProfile.badges,
-    };
-  }, [profile, templateProfile]);
-
   const handleToggleFollow = useCallback(async () => {
     if (!profileUserId) return;
 
@@ -64,6 +50,11 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
       setIsUpdatingFollow(false);
     }
   }, [profileStore, profileUserId]);
+
+  const genderLabel = profile?.gender
+    ? genderLabels[profile.gender] ?? profile.gender
+    : "Not specified";
+  const isViewingOwnProfile = Boolean(profileUserId && myProfile?._id === profileUserId);
 
   return (
     <AppShell>
@@ -78,13 +69,10 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
               onToggleFollow={handleToggleFollow}
               disableFollowAction={!profileUserId}
             />
-            <UserHero
-              name={heroData.name}
-              intro={heroData.intro}
-              location={heroData.location}
-              avatar={heroData.avatar}
-              badges={heroData.badges}
-              messageHref={routes.adminChat}
+            <ProfileCard
+              profile={profile}
+              genderLabel={genderLabel}
+              isCurrentUser={isViewingOwnProfile}
             />
           </header>
 

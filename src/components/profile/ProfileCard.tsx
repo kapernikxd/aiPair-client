@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { MyProfileDTO } from "@/helpers/types";
+import { MyProfileDTO, ProfileDTO } from "@/helpers/types";
 import { getUserAvatar, getUserFullName } from "@/helpers/utils/user";
 import { getMonthYear, getTimeAgo } from "@/helpers/utils/date";
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
@@ -12,9 +12,16 @@ const PAGE_SIZE = 12;
 
 type ActiveModal = "followers" | "following" | null;
 
-export default function ProfileCard({ profile, genderLabel }: { profile: MyProfileDTO; genderLabel: string }) {
+type ProfileCardProps = {
+    profile?: MyProfileDTO | ProfileDTO;
+    genderLabel: string;
+    isCurrentUser?: boolean;
+};
+
+export default function ProfileCard({ profile, genderLabel, isCurrentUser = false }: ProfileCardProps) {
     const profileAvatar = getUserAvatar(profile);
     const userFullName = getUserFullName(profile);
+    const profileId = profile?._id;
     const followerCount = profile?.followers ?? 0;
     const followingCount = profile?.following ?? 0;
 
@@ -35,14 +42,22 @@ export default function ProfileCard({ profile, genderLabel }: { profile: MyProfi
 
         if (activeModal === "followers") {
             profileStore.resetFollowers();
-            void profileStore.fetchMyFollowers(params);
+            if (isCurrentUser) {
+                void profileStore.fetchMyFollowers(params);
+            } else if (profileId) {
+                void profileStore.fetchFollowers(profileId, params);
+            }
         }
 
         if (activeModal === "following") {
             profileStore.resetFollowing();
-            void profileStore.fetchMyFollowing(params);
+            if (isCurrentUser) {
+                void profileStore.fetchMyFollowing(params);
+            } else if (profileId) {
+                void profileStore.fetchFollowing(profileId, params);
+            }
         }
-    }, [activeModal, profileStore]);
+    }, [activeModal, isCurrentUser, profileId, profileStore]);
 
     const activeUsers = useMemo(() => {
         if (activeModal === "followers") return followers;
@@ -79,12 +94,20 @@ export default function ProfileCard({ profile, genderLabel }: { profile: MyProfi
 
         if (activeModal === "followers") {
             const nextPage = Math.floor(followers.length / PAGE_SIZE) + 1;
-            void profileStore.fetchMyFollowers({ page: nextPage, limit: PAGE_SIZE });
+            if (isCurrentUser) {
+                void profileStore.fetchMyFollowers({ page: nextPage, limit: PAGE_SIZE });
+            } else if (profileId) {
+                void profileStore.fetchFollowers(profileId, { page: nextPage, limit: PAGE_SIZE });
+            }
             return;
         }
 
         const nextPage = Math.floor(following.length / PAGE_SIZE) + 1;
-        void profileStore.fetchMyFollowing({ page: nextPage, limit: PAGE_SIZE });
+        if (isCurrentUser) {
+            void profileStore.fetchMyFollowing({ page: nextPage, limit: PAGE_SIZE });
+        } else if (profileId) {
+            void profileStore.fetchFollowing(profileId, { page: nextPage, limit: PAGE_SIZE });
+        }
     };
 
     return (
