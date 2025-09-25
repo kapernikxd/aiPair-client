@@ -36,6 +36,7 @@ export class AiBotStore extends BaseStore {
   private profileService = ProfileService;
 
   selectAiBot: AiBotDTO | null = null;
+  userAiBots: AiBotDTO[] = [];
   botPhotos: string[] = [];
 
   myBots: UserDTO[] = [];
@@ -229,8 +230,36 @@ export class AiBotStore extends BaseStore {
     }
   }
 
+  async fetchAiBotsByUserId(userId: string) {
+    this.isAiUserLoading = true;
+    this.notify();
+    try {
+      const { data } = await this.profileService.getAiBotsByCreator(userId);
+      runInAction(() => {
+        this.userAiBots = data;
+      });
+      this.notify();
+      return data;
+    } catch (e) {
+      runInAction(() => {
+        this.userAiBots = [];
+      });
+      this.notify();
+    } finally {
+      runInAction(() => {
+        this.isAiUserLoading = false;
+      });
+      this.notify();
+    }
+  }
+
   clearSelectedAiBot() {
     this.selectAiBot = null;
+    this.notify();
+  }
+
+  clearUserAiBots() {
+    this.userAiBots = [];
     this.notify();
   }
 

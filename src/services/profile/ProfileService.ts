@@ -172,6 +172,10 @@ export class ProfileService {
     return $api.get(`/profile/ai-bots/${botId}`);
   }
 
+  public async getAiBotsByCreator(creatorId: string): Promise<AxiosResponse<AiBotDTO[], any>> {
+    return $api.get(`/profile/ai-bots/created-by/${creatorId}`);
+  }
+
 
   /**
    * Получить список созданных AI-ботов текущего пользователя.
