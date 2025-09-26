@@ -1,19 +1,19 @@
 import Image from "next/image";
-import { ChatThread } from "../../helpers/types/chats";
-
 export default function ChatAvatar({
   name,
-  avatar,
+  avatarUrl,
+  avatarAlt,
 }: {
   name: string;
-  avatar?: ChatThread["avatar"];
+  avatarUrl?: string;
+  avatarAlt?: string;
 }) {
-  if (avatar?.src) {
+  if (avatarUrl) {
     return (
       <div className="relative h-12 w-12 overflow-hidden rounded-full border border-white/10">
         <Image
-          src={avatar.src}
-          alt={avatar.alt ?? name}
+          src={avatarUrl}
+          alt={avatarAlt ?? name}
           fill
           sizes="48px"
           className="object-cover"
