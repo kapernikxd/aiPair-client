@@ -68,7 +68,7 @@ export default function AiAgentsTimeline({
             Загружаем подборку AI-агентов…
           </p>
         ) : hasItems ? (
-          <div className="grid grid-cols-3 gap-6 items-stretch">
+          <div className="grid grid-cols-2 gap-6 items-stretch md:grid-cols-3">
             {items.map((aiAgent) => (
               <HoverSwapCard
                 key={(aiAgent as any)._id ?? aiAgent.name}
