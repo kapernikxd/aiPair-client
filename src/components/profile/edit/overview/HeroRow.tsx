@@ -38,7 +38,7 @@ export default function HeroRow({
     <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
       <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-4">
         <div className="relative">
-          <div className="relative flex size-20 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-orange-400 to-red-500 text-2xl font-semibold">
+          <div className="relative left-[26px] flex size-20 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-orange-400 to-red-500 text-2xl font-semibold">
             {avatarUrl ? (
               <Image
                 src={avatarUrl}

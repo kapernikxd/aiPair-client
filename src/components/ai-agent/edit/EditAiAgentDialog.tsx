@@ -286,7 +286,7 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
       <form onSubmit={handleSubmit}>
         <DialogHeader onClose={onClose} />
 
-        <div className="space-y-8 px-6 pb-6 sm:px-8 sm:pb-8">
+        <div className="space-y-8 px-1 md:px-6 pb-6 sm:pb-8">
           <HeroRow
             userName={formState.name || "agent"}
             avatarUrl={avatarPreview}
@@ -335,23 +335,6 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
                 />
               </label>
             </div>
-
-            <label className="space-y-2">
-              <div className={fieldLabelClasses}>
-                <span>Expertise</span>
-                <span>{charCounters.profession}/32</span>
-              </div>
-              <input
-                type="text"
-                value={formState.profession}
-                onChange={(event) =>
-                  setFormState((prev) => ({ ...prev, profession: event.target.value.slice(0, 32) }))
-                }
-                placeholder="What role or specialty defines this agent?"
-                maxLength={32}
-                className={inputClasses}
-              />
-            </label>
 
             <label className="space-y-2">
               <div className={fieldLabelClasses}>
@@ -471,7 +454,7 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
                 }
                 rows={5}
                 placeholder="You are a strategic confidant who helps people reframe their challenges with empathy..."
-                className="min-h-[140px] rounded-3xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-neutral-500 focus:border-white/40 focus:outline-none"
+                className="min-h-[140px] w-full rounded-3xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-neutral-500 focus:border-white/40 focus:outline-none"
               />
             </label>
 
@@ -484,7 +467,7 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
                 }
                 rows={3}
                 placeholder="How does the first hello sound? Set the scene in one paragraph."
-                className="rounded-3xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-neutral-500 focus:border-white/40 focus:outline-none"
+                className="rounded-3xl w-full border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-neutral-500 focus:border-white/40 focus:outline-none"
               />
             </label>
           </section>
