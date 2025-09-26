@@ -215,9 +215,10 @@ export class ChatStore extends BaseStore {
       runInAction(() => {
         this.selectedChat = response.data;
         if (!response.data.isGroupChat) {
-          this.opponentId = response.data?.users?.find(user => user._id !== myId)?._id
-        }
-        else {
+          if (myId) {
+            this.opponentId = response.data?.users?.find(user => user._id !== myId)?._id;
+          }
+        } else {
           this.opponentId = undefined
         }
       });

@@ -111,7 +111,7 @@ export default function ChatPage() {
   }, [chatId, chatStore]);
 
   useEffect(() => {
-    if (!chatId || !myId) return;
+    if (!chatId) return;
     void chatStore.fetchChat(chatId, myId);
   }, [chatId, chatStore, myId]);
 
