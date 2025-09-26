@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, MoreHorizontal, Share2 } from "lucide-react";
 
@@ -41,6 +41,7 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
   const isAuthenticated = useStoreData(authStore, (store) => store.isAuthenticated);
   const [activeTab, setActiveTab] = useState<"info" | "gallery">("info");
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isFollowUpdating, setIsFollowUpdating] = useState(false);
 
   useEffect(() => {
     if (!aiBotId) return;
@@ -79,6 +80,9 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
   }, [aiBot]);
 
   const chatHref = aiBot?.chatLink || routes.adminChat;
+  const aiBotProfileId = aiBot?._id;
+  const isFollowing = Boolean(botDetails?.isFollowing);
+  const disableFollowAction = !isAuthenticated || !aiBotProfileId;
 
   const isCreator = useMemo(() => {
     if (!aiBot) return false;
@@ -93,6 +97,19 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
   }, [isCreator]);
 
   const closeEditDialog = () => setIsEditOpen(false);
+
+  const handleToggleFollow = useCallback(async () => {
+    if (!aiBotProfileId || disableFollowAction) {
+      return;
+    }
+
+    setIsFollowUpdating(true);
+    try {
+      await aiBotStore.followAiBot(aiBotProfileId);
+    } finally {
+      setIsFollowUpdating(false);
+    }
+  }, [aiBotStore, aiBotProfileId, disableFollowAction]);
 
   return (
     <AppShell>
@@ -145,7 +162,13 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
                   <HeaderCard user={aiBot} />
                 </div>
                 {botDetails?.categories && <StatChips items={botDetails.categories} />}
-                <PrimaryCTAs chatHref={chatHref} />
+                <PrimaryCTAs
+                  chatHref={chatHref}
+                  isFollowing={isFollowing}
+                  isBusy={isFollowUpdating}
+                  disableFollowAction={disableFollowAction}
+                  onToggleFollow={handleToggleFollow}
+                />
               </div>
 
               <section className="grid gap-6 md:grid-cols-[1.3fr,1fr]">

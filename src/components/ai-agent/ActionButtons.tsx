@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MessageCircle, UserPlus, Share2 } from "lucide-react";
+import { Check, MessageCircle, Share2, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 
@@ -25,17 +25,50 @@ export default function ActionButtons({
 }
 
 
-export function PrimaryCTAs({ chatHref }: { chatHref: string }) {
-    return (
-        <div className="flex flex-col gap-3 md:flex-row">
-            <div className="flex flex-1">
-                <Button variant="primary">
-                    <UserPlus className="size-4" /> Follow
-                </Button>
-            </div>
-            <Link href={chatHref} className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/15 px-4 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/5">
-                <MessageCircle className="size-4" /> Chat with aiAgent
-            </Link>
-        </div>
-    );
+interface PrimaryCTAProps {
+  chatHref: string;
+  isFollowing?: boolean;
+  isBusy?: boolean;
+  disableFollowAction?: boolean;
+  onToggleFollow?: () => void;
+}
+
+export function PrimaryCTAs({
+  chatHref,
+  isFollowing,
+  isBusy,
+  disableFollowAction,
+  onToggleFollow,
+}: PrimaryCTAProps) {
+  const isActionDisabled = disableFollowAction || isBusy || !onToggleFollow;
+  const buttonLabel = isBusy
+    ? "Processing..."
+    : isFollowing
+      ? "Subscribed"
+      : "Follow";
+  const ButtonIcon = isFollowing ? Check : UserPlus;
+  const buttonVariant = isFollowing ? "outline" : "primary";
+
+  return (
+    <div className="flex flex-col gap-3 md:flex-row">
+      <div className="flex flex-1">
+        <Button
+          variant={buttonVariant}
+          className="w-full justify-center"
+          disabled={isActionDisabled}
+          onClick={onToggleFollow}
+          aria-pressed={Boolean(isFollowing)}
+        >
+          <ButtonIcon className="size-4" />
+          {buttonLabel}
+        </Button>
+      </div>
+      <Link
+        href={chatHref}
+        className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/15 px-4 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/5"
+      >
+        <MessageCircle className="size-4" /> Chat with aiAgent
+      </Link>
+    </div>
+  );
 }

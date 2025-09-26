@@ -193,6 +193,13 @@ export class ProfileService {
   }
 
   /**
+   * Подписаться или отписаться от AI-бота по его идентификатору.
+   */
+  public async followAiBotById(id: string): Promise<AxiosResponse<{ followers: number; isFollowing: boolean }, any>> {
+    return $api.put(`/profile/ai-bots/${id}/follow`);
+  }
+
+  /**
    * Создать нового AI-бота. Для передачи аватара необходимо использовать FormData.
    */
   public async createAiBot(formData: FormData): Promise<AxiosResponse<UserDTO, any>> {

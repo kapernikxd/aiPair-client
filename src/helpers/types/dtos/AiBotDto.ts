@@ -19,4 +19,5 @@ export interface AiBotDetails {
   categories?: string[];
   botId?: string;
   createdBy?: ProfileMinData;
+  isFollowing?: boolean;
 }
