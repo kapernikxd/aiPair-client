@@ -285,19 +285,15 @@ export class ChatStore extends BaseStore {
       );
 
       const messageData = {
-        _id: data.data._id,
-        sender: data.data.sender,
-        content: data.data.content,
-        chat: data.data.chat,
-        createdAt: data.data.createdAt,
-        // ...(!_.isEmpty(data.data.replyTo) && { replyTo: data.data.replyTo }),
-        ...(data.data.images && { images: data.data.images }),
-        ...(data.data.attachments && { attachments: data.data.attachments }),
-      };
+        ...data.data,
+        readBy: data.data.readBy ?? [],
+        isEdited: data.data.isEdited ?? false,
+      } as MessageDTO;
 
       runInAction(() => {
-        this.messages.push(messageData as any);
+        this.messages.push(messageData);
       });
+      this.notify();
     } catch (err) {
       // uiStore.showSnackbar("Failed", "error");
       console.error("Ошибка при отправке сообщения:", err);
