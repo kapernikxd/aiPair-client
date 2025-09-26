@@ -88,6 +88,12 @@ export class ChatStore extends BaseStore {
     }
   }
 
+  clearPinnedMessages() {
+    runInAction(() => {
+      this.pinnedMessages = [];
+    });
+  }
+
   isMessagePinned(id: string) {
     return this.pinnedMessages?.some((m) => m._id === id);
   }

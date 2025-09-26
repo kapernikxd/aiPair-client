@@ -1,84 +1,248 @@
 'use client';
 
-import AppShell from "@/components/AppShell";
-import GradientOrbs from "@/components/ui/GradientOrbs";
-import { Button } from "@/components/ui/Button";
-import HeaderProfile from "@/components/chat/HeaderProfile";
-import IntroCard from "@/components/chat/IntroCard";
-import MessageList from "@/components/chat/MessageList";
-import MessageInput from "@/components/chat/MessageInput";
-import { useRootStore, useStoreData } from "@/stores/StoreProvider";
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import AppShell from '@/components/AppShell';
+import MessageList from '@/components/chat/MessageList';
+import MessageInput from '@/components/chat/MessageInput';
+import GradientOrbs from '@/components/ui/GradientOrbs';
+import { Button } from '@/components/ui/Button';
+import type { MessageDTO } from '@/helpers/types';
+import { useRootStore, useStoreData } from '@/stores/StoreProvider';
 
+function formatPinnedTimestamp(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+  return date.toLocaleString();
+}
+
+function PinnedMessagesSection({ messages, onUnpin }: { messages: MessageDTO[]; onUnpin: (messageId: string) => void }) {
+  if (!messages.length) {
+    return null;
+  }
+
+  return (
+    <section className="flex flex-col gap-3">
+      <header className="flex items-center justify-between">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-white/70">Pinned messages</h2>
+        <span className="text-xs text-white/50">{messages.length}</span>
+      </header>
+      <div className="space-y-3">
+        {messages.map((message) => (
+          <div
+            key={message._id}
+            className="flex items-start justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/90"
+          >
+            <div className="flex-1 space-y-1">
+              <p className="font-medium text-white">{message.content}</p>
+              <span className="text-[11px] uppercase tracking-wide text-white/60">
+                {formatPinnedTimestamp(message.createdAt)}
+              </span>
+            </div>
+            <Button
+              variant="ghostPillCompact"
+              className="border-white/20 text-white/80 hover:border-white/40 hover:text-white"
+              onClick={() => onUnpin(message._id)}
+            >
+              Unpin
+            </Button>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 export default function ChatPage() {
-  const { chatStore } = useRootStore();
-  const messages = useStoreData(chatStore, (store) => store.activeMessages);
-  const activeThread = useStoreData(chatStore, (store) => store.activeThread);
+  const searchParams = useSearchParams();
+  const chatId = searchParams.get('chatId');
+  const { chatStore, authStore } = useRootStore();
 
-  const handleSend = (text: string) => {
-    if (!text.trim()) return;
-    chatStore.sendMessage(text);
-  };
+  const messages = useStoreData(chatStore, (store) => store.messages);
+  const pinnedMessages = useStoreData(chatStore, (store) => store.pinnedMessages);
+  const hasMoreMessages = useStoreData(chatStore, (store) => store.hasMoreMessages);
+  const selectedChat = useStoreData(chatStore, (store) => store.selectedChat);
+  const myId = useStoreData(authStore, (store) => store.user?.id ?? '');
+
+  const [isLoadingConversation, setIsLoadingConversation] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  useEffect(() => {
+    if (!chatId) {
+      chatStore.cleanMessages();
+      chatStore.clearPinnedMessages();
+      chatStore.cleanOpponentId();
+      return;
+    }
+
+    let isCancelled = false;
+
+    const loadConversation = async () => {
+      setIsLoadingConversation(true);
+      chatStore.cleanMessages();
+      chatStore.clearPinnedMessages();
+      try {
+        await Promise.all([
+          chatStore.fetchChatMessages(chatId, 0),
+          chatStore.loadPinnedMessages(chatId),
+        ]);
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingConversation(false);
+        }
+      }
+    };
+
+    void loadConversation();
+
+    return () => {
+      isCancelled = true;
+      chatStore.cleanMessages();
+      chatStore.clearPinnedMessages();
+      chatStore.cleanOpponentId();
+    };
+  }, [chatId, chatStore]);
+
+  useEffect(() => {
+    if (!chatId || !myId) return;
+    void chatStore.fetchChat(chatId, myId);
+  }, [chatId, chatStore, myId]);
+
+  useEffect(() => {
+    if (!chatId) return;
+    chatStore.subscribeToChat(chatId);
+    return () => {
+      chatStore.unsubscribeFromChat(chatId);
+    };
+  }, [chatId, chatStore]);
+
+  const handleSend = useCallback(async (text: string) => {
+    if (!chatId || !text.trim()) return;
+    await chatStore.sendMessage(text, chatId);
+  }, [chatId, chatStore]);
+
+  const handlePin = useCallback((message: MessageDTO) => {
+    if (chatStore.isMessagePinned(message._id)) return;
+    void chatStore.pinMessage(message);
+  }, [chatStore]);
+
+  const handleUnpin = useCallback((messageId: string) => {
+    void chatStore.unpinMessage(messageId);
+  }, [chatStore]);
+
+  const isPinned = useCallback((id: string) => chatStore.isMessagePinned(id), [chatStore]);
+
+  const handleLoadMore = useCallback(async () => {
+    if (!chatId || isLoadingMore) return;
+    setIsLoadingMore(true);
+    try {
+      await chatStore.fetchChatMessages(chatId, messages.length);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [chatId, chatStore, isLoadingMore, messages.length]);
+
+  const conversationTitle = useMemo(() => {
+    if (!selectedChat) return 'Chat';
+    if (selectedChat.isGroupChat) {
+      return selectedChat.chatName || selectedChat.post?.title || 'Group chat';
+    }
+    const opponent = selectedChat.users?.find((user) => user._id !== myId);
+    const name = [opponent?.name, opponent?.lastname].filter(Boolean).join(' ').trim();
+    return name || opponent?.username || 'Direct chat';
+  }, [myId, selectedChat]);
+
+  const senderNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    selectedChat?.users?.forEach((user) => {
+      const fullName = [user.name, user.lastname].filter(Boolean).join(' ').trim();
+      const displayName = fullName || user.username || user.email || user._id;
+      map.set(user._id, displayName);
+    });
+    return map;
+  }, [selectedChat]);
+
+  const resolveSenderName = useCallback((message: MessageDTO) => {
+    const id = message.sender?._id;
+    if (!id) return 'Anonymous';
+    const stored = senderNameMap.get(id);
+    if (stored) return stored;
+    return id.length > 8 ? `${id.slice(0, 6)}…` : id;
+  }, [senderNameMap]);
+
+  const renderEmptyState = () => (
+    <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-3xl border border-dashed border-white/10 bg-white/5 p-8 text-center text-sm text-white/60">
+      <p>Select a chat from the list to start messaging.</p>
+      <p className="text-xs text-white/40">Pinned messages and history will appear here.</p>
+    </div>
+  );
 
   return (
     <AppShell>
-      {/* весь экран, внешняя прокрутка отключена */}
       <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
         <GradientOrbs />
-
-        {/* три строки: Header / Messages(scroll) / Input */}
-        <div className="relative z-10 mx-auto grid h-full w-full max-w-3xl flex-1 grid-rows-[auto,1fr,auto] gap-y-3 md:gap-y-6 px-4 pt-4 pb-16">
-          {/* 1) ШАПКА — статично */}
-          <HeaderProfile
-            title={activeThread?.name ?? 'Angelina'}
-            avatarSrc={activeThread?.avatar?.src ?? '/img/mizuhara.png'}
-            stats={{ views: '1.0K', duration: "2'30", author: 'Keyser Soze' }}
-            onFollow={() => console.log('follow')}
-          />
-
-          {/* 2) СРЕДНИЙ РЯД — ТОЛЬКО ЗДЕСЬ СКРОЛЛ */}
-          <div className="min-h-0 overflow-y-auto space-y-6 pr-1">
-            <IntroCard>
-              <p>
-                You just met Angelina for the first time just before walking down the aisle. The marriage is a
-                &quot;backstop&quot; to both of your &quot;cover&quot; identities as undercover intelligence agents.
-              </p>
-              <p>
-                You both &quot;wheel up&quot; and off to your first mission together after the reception. Congratulations and good luck.
-              </p>
-            </IntroCard>
-
-            <MessageList messages={messages} />
-
-            {/* быстрые чипы — тоже остаются в зоне прокрутки сообщений или вынеси выше, если хочешь фиксированно */}
-            <div className="flex flex-wrap items-center gap-3">
-              {[
-                {
-                  label: 'Hi',
-                  gradientFrom: 'rgba(253, 230, 138, 0.7)',
-                  gradientTo: 'rgba(253, 186, 116, 0.8)',
-                },
-                {
-                  label: '😍',
-                  gradientFrom: 'rgba(253, 164, 175, 0.8)',
-                  gradientTo: 'rgba(192, 132, 252, 0.8)',
-                },
-              ].map((chip) => (
-                <Button
-                  key={chip.label}
-                  variant="gradient"
-                  gradientFrom={chip.gradientFrom}
-                  gradientTo={chip.gradientTo}
-                  onClick={() => handleSend(chip.label)}
-                >
-                  {chip.label}
-                </Button>
-              ))}
+        <div className="relative z-10 mx-auto grid h-full w-full max-w-4xl flex-1 grid-rows-[auto,1fr,auto] gap-y-4 px-4 pb-16 pt-4 md:gap-y-6">
+          <header className="rounded-3xl border border-white/10 bg-white/5 px-6 py-5 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur">
+            <div className="flex flex-col gap-2">
+              <span className="text-xs uppercase tracking-[0.28em] text-white/40">Conversation</span>
+              <h1 className="text-2xl font-semibold text-white">{conversationTitle}</h1>
+              {selectedChat?.users?.length ? (
+                <p className="text-sm text-white/60">
+                  {selectedChat.users.length} participant{selectedChat.users.length === 1 ? '' : 's'}
+                </p>
+              ) : null}
             </div>
+          </header>
+
+          <div className="min-h-0 overflow-hidden">
+            {!chatId ? (
+              renderEmptyState()
+            ) : (
+              <div className="flex h-full flex-col gap-4 rounded-3xl border border-white/10 bg-white/5 p-4 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur">
+                {isLoadingConversation ? (
+                  <div className="flex flex-1 items-center justify-center text-sm text-white/60">Loading conversation…</div>
+                ) : (
+                  <>
+                    <PinnedMessagesSection messages={pinnedMessages} onUnpin={handleUnpin} />
+                    <div className="flex-1 overflow-y-auto pr-2">
+                      {hasMoreMessages ? (
+                        <div className="mb-4 flex justify-center">
+                          <Button
+                            variant="outline"
+                            className="rounded-full border-white/20 px-4 py-1 text-xs text-white/70 hover:border-white/50 hover:text-white"
+                            onClick={handleLoadMore}
+                            disabled={isLoadingMore}
+                          >
+                            {isLoadingMore ? 'Loading…' : 'Load previous messages'}
+                          </Button>
+                        </div>
+                      ) : null}
+                      <MessageList
+                        messages={messages}
+                        currentUserId={myId}
+                        isMessagePinned={isPinned}
+                        onPinMessage={handlePin}
+                        onUnpinMessage={handleUnpin}
+                        resolveSenderName={resolveSenderName}
+                      />
+                      {!messages.length ? (
+                        <p className="pt-6 text-center text-sm text-white/50">No messages yet. Say hello!</p>
+                      ) : null}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* 3) ИНПУТ — статично снизу */}
-          <MessageInput onSend={handleSend} placeholder="Message Angelina, reply from AI" />
+          <div>
+            <MessageInput
+              onSend={handleSend}
+              placeholder={chatId ? `Message ${conversationTitle}` : 'Select a chat to start messaging'}
+            />
+          </div>
         </div>
       </div>
     </AppShell>
