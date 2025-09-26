@@ -4,6 +4,8 @@ export type FormState = {
   prompt: string;
   description: string;
   intro: string;
+  categories: string[];
+  usefulness: string[];
 };
 
 export type GalleryItem = {

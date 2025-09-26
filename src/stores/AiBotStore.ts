@@ -26,6 +26,8 @@ export class AiBotStore extends BaseStore {
     prompt: '',
     description: '',
     intro: '',
+    categories: [],
+    usefulness: [],
   };
   avatar: File | null = null;
   avatarPreview: string | null = null;
@@ -81,21 +83,24 @@ export class AiBotStore extends BaseStore {
   }
 
   get currentStepComplete(): boolean {
-    if (this.step === 0) {
-      return Boolean(
-        this.form.firstName.trim() &&
-        this.form.lastName.trim() &&
-        (this.avatar !== null || this.avatarPreview !== null),
-      );
+    switch (this.step) {
+      case 0:
+        return Boolean(
+          this.form.firstName.trim() &&
+            this.form.lastName.trim() &&
+            (this.avatar !== null || this.avatarPreview !== null),
+        );
+      case 1:
+        return this.form.categories.length > 0 && this.form.usefulness.length > 0;
+      case 2:
+        return Boolean(
+          this.form.prompt.trim() &&
+            this.form.description.trim() &&
+            this.form.intro.trim(),
+        );
+      default:
+        return this.gallery.length > 0;
     }
-    if (this.step === 1) {
-      return Boolean(
-        this.form.prompt.trim() &&
-        this.form.description.trim() &&
-        this.form.intro.trim(),
-      );
-    }
-    return this.gallery.length > 0;
   }
 
   setStep(step: number) {
@@ -106,7 +111,7 @@ export class AiBotStore extends BaseStore {
     this.notify();
   }
 
-  setFormField(field: keyof FormState, value: string) {
+  setFormField<K extends keyof FormState>(field: K, value: FormState[K]) {
     this.form = { ...this.form, [field]: value };
     this.notify();
   }
@@ -171,7 +176,15 @@ export class AiBotStore extends BaseStore {
 
   resetFlow() {
     revokeGallery(this.gallery);
-    this.form = { firstName: '', lastName: '', prompt: '', description: '', intro: '' };
+    this.form = {
+      firstName: '',
+      lastName: '',
+      prompt: '',
+      description: '',
+      intro: '',
+      categories: [],
+      usefulness: [],
+    };
     this.avatar = null;
     this.replaceAvatarPreview(null);
     this.gallery = [];
@@ -323,6 +336,12 @@ export class AiBotStore extends BaseStore {
     if (intro) {
       formData.append('intro', intro);
       formData.append('introMessage', intro);
+    }
+    if (this.form.categories.length) {
+      formData.append('categories', JSON.stringify(this.form.categories));
+    }
+    if (this.form.usefulness.length) {
+      formData.append('usefulness', JSON.stringify(this.form.usefulness));
     }
     if (this.avatar) {
       formData.append('avatar', this.avatar);

@@ -4,17 +4,21 @@
 import { Upload } from "lucide-react";
 import { FormState } from "../../helpers/types/agent-create";
 
+type IdentityForm = Pick<FormState, "firstName" | "lastName">;
+
+type IdentityStepProps = {
+  form: IdentityForm;
+  avatarPreview: string | null;
+  onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: <K extends keyof IdentityForm>(field: K, value: IdentityForm[K]) => void;
+};
+
 export default function IdentityStep({
   form,
   avatarPreview,
   onAvatarChange,
   onChange,
-}: {
-  form: Pick<FormState, "firstName" | "lastName">;
-  avatarPreview: string | null;
-  onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onChange: (field: keyof FormState, value: string) => void;
-}) {
+}: IdentityStepProps) {
   return (
     <div className="space-y-6">
       <div>
