@@ -8,7 +8,7 @@ import AppShell from "@/components/AppShell";
 import GradientBackdrop from "@/components/user/GradientBackdrop";
 import HeaderBar from "@/components/user/HeaderBar";
 import SectionHeader from "@/components/user/SectionHeader";
-import CardRailOneRow from "@/components/ui/CardRailOneRow";
+import HoverSwapCard from "@/components/AiCard";
 import ProfileCard from "@/components/profile/ProfileCard";
 
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
@@ -103,17 +103,32 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
               subtitle={"Персональные напарники, созданные этим пользователем."}
               actionLabel="View archive"
             />
-            <CardRailOneRow
-              items={botCards}
-              isLoading={isLoadingAiBot}
-              loadingMessage="Загружаем подборку AI-ботов…"
-              emptyMessage="Пока что здесь пусто — добавьте своего первого AI-бота, чтобы показать его миру."
-              cardWidth={280}
-              gap={18}
-              contentClassName="mt-2"
-              gridClassName="p-0 gap-4 md:gap-6"
-              itemClassName="h-full"
-            />
+            <div className="mt-2">
+              {isLoadingAiBot ? (
+                <p className="rounded-3xl border border-white/10 bg-neutral-900/60 p-6 text-center text-sm text-white/60">
+                  Загружаем подборку AI-ботов…
+                </p>
+              ) : botCards.length > 0 ? (
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                  {botCards.map((item) => (
+                    <div key={item.id} className="flex justify-center">
+                      <HoverSwapCard
+                        src={item.src}
+                        avatarSrc={item.avatarSrc}
+                        title={item.title}
+                        views={item.views}
+                        hoverText={item.hoverText}
+                        href={item.href}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="rounded-3xl border border-white/10 bg-neutral-900/60 p-6 text-center text-sm text-white/60">
+                  Пока что здесь пусто — добавьте своего первого AI-бота, чтобы показать его миру.
+                </p>
+              )}
+            </div>
             {(isLoadingProfile || isLoadingAiBot) && (
               <p className="text-sm text-white/60">Loading profile…</p>
             )}
