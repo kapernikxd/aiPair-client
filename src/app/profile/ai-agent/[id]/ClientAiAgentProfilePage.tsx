@@ -81,7 +81,7 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
 
   const chatHref = aiBot?.chatLink || routes.adminChat;
   const aiBotProfileId = aiBot?._id;
-  const isFollowing = Boolean(botDetails?.isFollowing);
+  const isFollowing = botDetails?.isFollowing ?? aiBot?.isFollowing ?? false;
   const disableFollowAction = !isAuthenticated || !aiBotProfileId;
 
   const isCreator = useMemo(() => {
