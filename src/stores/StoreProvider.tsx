@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useRef, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, type ReactNode } from 'react';
 import { useSyncExternalStore } from 'react';
 import { RootStore } from './RootStore';
 import { BaseStore } from './BaseStore';
@@ -12,6 +12,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   if (!storeRef.current) {
     storeRef.current = new RootStore();
   }
+  useEffect(() => {
+    void storeRef.current?.authStore.refreshAccessToken();
+  }, []);
   return <StoreContext.Provider value={storeRef.current}>{children}</StoreContext.Provider>;
 }
 
