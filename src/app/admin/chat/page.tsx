@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import MessageList from '@/components/chat/MessageList';
@@ -68,6 +68,9 @@ export default function ChatPage() {
 
   const [isLoadingConversation, setIsLoadingConversation] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const previousLastMessageIdRef = useRef<string | undefined>(undefined);
+  const previousChatIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!chatId) {
@@ -144,6 +147,26 @@ export default function ChatPage() {
     }
   }, [chatId, chatStore, isLoadingMore, messages.length]);
 
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container || !messages.length) {
+      previousLastMessageIdRef.current = messages[messages.length - 1]?._id;
+      previousChatIdRef.current = chatId;
+      return;
+    }
+
+    const currentLastMessageId = messages[messages.length - 1]?._id;
+    const chatHasChanged = chatId && chatId !== previousChatIdRef.current;
+    const hasNewLastMessage = currentLastMessageId && currentLastMessageId !== previousLastMessageIdRef.current;
+
+    if (chatHasChanged || hasNewLastMessage) {
+      container.scrollTop = container.scrollHeight;
+    }
+
+    previousLastMessageIdRef.current = currentLastMessageId;
+    previousChatIdRef.current = chatId;
+  }, [chatId, messages]);
+
   const conversationTitle = useMemo(() => {
     if (!selectedChat) return 'Chat';
     if (selectedChat.isGroupChat) {
@@ -206,7 +229,7 @@ export default function ChatPage() {
                 ) : (
                   <>
                     <PinnedMessagesSection messages={pinnedMessages} onUnpin={handleUnpin} />
-                    <div className="flex-1 overflow-y-auto pr-2">
+                    <div ref={scrollContainerRef} className="flex-1 overflow-y-auto pr-2">
                       {hasMoreMessages ? (
                         <div className="mb-4 flex justify-center">
                           <Button
