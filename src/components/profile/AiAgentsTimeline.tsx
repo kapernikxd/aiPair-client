@@ -1,6 +1,6 @@
 import CardRailOneRow from "@/components/ui/CardRailOneRow";
 import { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
-import AiAgentCard from "./AiAgentCard";
+import { mapAiBotsToHoverSwapCards } from "@/helpers/utils/aiBot";
 
 type AiAgentsTimelineProps = {
   items: AiBotDTO[];
@@ -11,10 +11,11 @@ type AiAgentsTimelineProps = {
 
 export default function AiAgentsTimeline({ items, title, description, emptyMessage }: AiAgentsTimelineProps) {
   const resolvedEmptyMessage = emptyMessage ?? "No AI agents to display yet.";
+  const cardItems = mapAiBotsToHoverSwapCards(items);
 
   return (
-    <CardRailOneRow<AiBotDTO>
-      items={items}
+    <CardRailOneRow
+      items={cardItems}
       title={title}
       description={description}
       titleAdornment={null}
@@ -29,8 +30,6 @@ export default function AiAgentsTimeline({ items, title, description, emptyMessa
       gap={20}
       gridClassName="p-0"
       itemClassName="h-full"
-      renderItem={(aiAgent) => <AiAgentCard aiAgent={aiAgent} />}
-      getItemKey={(aiAgent) => aiAgent._id ?? aiAgent.name}
     />
   );
 }

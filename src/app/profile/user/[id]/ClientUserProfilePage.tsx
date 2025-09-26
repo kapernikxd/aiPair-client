@@ -9,10 +9,10 @@ import GradientBackdrop from "@/components/user/GradientBackdrop";
 import HeaderBar from "@/components/user/HeaderBar";
 import SectionHeader from "@/components/user/SectionHeader";
 import CardRailOneRow from "@/components/ui/CardRailOneRow";
-import AiBotCard from "@/components/user/AiBotCard";
 import ProfileCard from "@/components/profile/ProfileCard";
 
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
+import { mapAiBotsToHoverSwapCards } from "@/helpers/utils/aiBot";
 
 interface UserProfilePageProps {
   profileId?: string;
@@ -31,6 +31,7 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
 
   const userAiBots = useStoreData(aiBotStore, (store) => store.userAiBots);
   const isLoadingAiBot = useStoreData(aiBotStore, (store) => store.isAiUserLoading);
+  const botCards = mapAiBotsToHoverSwapCards(userAiBots);
 
   const [isUpdatingFollow, setIsUpdatingFollow] = useState(false);
 
@@ -103,7 +104,7 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
               actionLabel="View archive"
             />
             <CardRailOneRow
-              items={userAiBots}
+              items={botCards}
               isLoading={isLoadingAiBot}
               loadingMessage="Загружаем подборку AI-ботов…"
               emptyMessage="Пока что здесь пусто — добавьте своего первого AI-бота, чтобы показать его миру."
@@ -112,8 +113,6 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
               contentClassName="mt-2"
               gridClassName="p-0 gap-4 md:gap-6"
               itemClassName="h-full"
-              renderItem={(bot) => <AiBotCard bot={bot} />}
-              getItemKey={(bot) => bot._id}
             />
             {(isLoadingProfile || isLoadingAiBot) && (
               <p className="text-sm text-white/60">Loading profile…</p>
