@@ -5,7 +5,7 @@ import { MAX_GALLERY_ITEMS, steps } from '@/helpers/data/agent-create';
 import type { FormState, GalleryItem } from '@/helpers/types/agent-create';
 import { revokeGallery, revokeIfNeeded } from '@/helpers/utils/agent-create';
 import { highlights as defaultHighlights, openings as defaultOpenings } from '@/helpers/data/ai-agent';
-import { AiBotDTO } from '@/helpers/types/dtos/AiBotDto';
+import { AiBotDetails, AiBotDTO } from '@/helpers/types/dtos/AiBotDto';
 import { UserDTO } from '@/helpers/types';
 import { AvatarFile, ProfilesFilterParams } from '@/helpers/types/profile';
 import ProfileService, { AiBotUpdatePayload } from "@/services/profile/ProfileService";
@@ -44,6 +44,7 @@ export class AiBotStore extends BaseStore {
   selectAiBot: AiBotDTO | null = null;
   userAiBots: AiBotDTO[] = [];
   botPhotos: string[] = [];
+  botDetails: AiBotDetails | null = null;
 
   myBots: UserDTO[] = [];
   subscribedBots: UserDTO[] = [];
@@ -494,13 +495,14 @@ export class AiBotStore extends BaseStore {
     return this.myBots.find(b => b._id === id);
   }
 
-  async fetchBotPhotos(id: string) {
+  async fetchBotDetails(id: string) {
     this.photosLoading = true;
     this.notify();
     try {
-      const { data } = await this.profileService.getAiBotPhotos(id);
+      const { data } = await this.profileService.getAiBotDetails(id);
       runInAction(() => {
         this.botPhotos = data.photos ?? [];
+        this.botDetails = data;
       });
       this.notify();
     } catch (e) {
@@ -554,8 +556,9 @@ export class AiBotStore extends BaseStore {
     }
   }
 
-  clearBotPhotos() {
+  clearBotDetails() {
     this.botPhotos = [];
+    this.botDetails = null;
     this.notify();
   }
 }

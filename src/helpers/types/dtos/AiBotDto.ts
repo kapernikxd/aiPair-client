@@ -1,15 +1,22 @@
-import { Highlight, Opening } from "@/helpers/types/ai-agent";
+import { ProfileMinData } from "../profile";
 import { UserDTO } from "./UserDto";
 
 export interface AiBotDTO extends UserDTO {
-  curatorLabel?: string;
-  tagline?: string;
-  introduction?: string;
+  photos?: string[];
+  usefulness?: string[];
   intro?: string;
-  introMessage?: string;
-  signatureMoves?: string[];
-  highlights?: Highlight[];
-  openings?: Opening[];
-  statsChips?: string[];
-  chatLink?: string;
+  categories?: string[];
+  botId: string;
+  createdBy: ProfileMinData;
+  aiPrompt: string;
+}
+
+export interface AiBotDetails {
+  aiPrompt: string;
+  photos?: string[];
+  usefulness?: string[];
+  intro?: string;
+  categories?: string[];
+  botId?: string;
+  createdBy?: ProfileMinData;
 }

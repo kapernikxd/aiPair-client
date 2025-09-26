@@ -3,7 +3,7 @@ import { AuthProfileResponse, AuthResponse, ChangePasswordProps } from "../auth/
 import { MyProfileDTO, ProfileDTO, UserDTO } from "@/helpers/types";
 import $api from "@/helpers/http";
 import { ProfilesFilterParams, UpdateProfileProps } from "@/helpers/types/profile";
-import { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
+import { AiBotDetails, AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
 import { getQueriedUrl } from "@/helpers/queryStringHelper";
 
 
@@ -25,7 +25,7 @@ export interface AiBotUpdatePayload {
   userBio?: string;
 }
 
-export interface AiBotPhotoResponse {
+export interface AiBotPhotoResponse extends AiBotDetails {
   id?: string;
   botId: string;
   photos: string[];
@@ -219,8 +219,8 @@ export class ProfileService {
   /**
    * Получить фотографии для AI-бота.
    */
-  public async getAiBotPhotos(id: string): Promise<AxiosResponse<AiBotPhotoResponse, any>> {
-    return $api.get(`/profile/ai-bots/${id}/photos`);
+  public async getAiBotDetails(id: string): Promise<AxiosResponse<AiBotPhotoResponse, any>> {
+    return $api.get(`/profile/ai-bots/${id}/details`);
   }
 
   /**

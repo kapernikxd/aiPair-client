@@ -1,7 +1,15 @@
 import type { LucideIcon } from "lucide-react";
-import { PushNotificationSettings } from "./dtos";
+import { PushNotificationSettings, UserId } from "./dtos";
 
 export type AvatarFile = { uri: string; name: string; type: string };
+
+export interface ProfileMinData {
+  _id: UserId;
+  name: string;
+  lastname: string;
+  avatarFile?: string;
+  username?: string;
+}
 
 export interface ProfilesFilterParams {
   page?: number;
@@ -25,23 +33,23 @@ export type UpdateProfileProps = {
 }
 
 export type TalkieStat = {
-    label: string;
-    value: string;
-    icon: LucideIcon;
+  label: string;
+  value: string;
+  icon: LucideIcon;
 };
 
 
 export type AiAgentCard = {
-    name: string;
-    image: string;
-    description: string;
-    stats: TalkieStat[];
+  name: string;
+  image: string;
+  description: string;
+  stats: TalkieStat[];
 };
 
 
 export type EditableProfile = {
-    userName: string;
-    gender: string;
-    intro: string;
-    relationshipPreference: string;
+  userName: string;
+  gender: string;
+  intro: string;
+  relationshipPreference: string;
 };

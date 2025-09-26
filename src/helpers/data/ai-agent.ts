@@ -10,14 +10,6 @@ export const highlights: Highlight[] = [
             { label: "Created", value: "02/15/2026 09:41" },
         ],
     },
-    {
-        title: "Personality Keys",
-        lines: [
-            { label: "Tone", value: "Warm, incisive" },
-            { label: "Specialty", value: "Strategic empathy" },
-            { label: "Availability", value: "24/7" },
-        ],
-    },
 ];
 
 
