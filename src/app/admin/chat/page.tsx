@@ -8,9 +8,10 @@ import MessageList from '@/components/chat/MessageList';
 import MessageInput from '@/components/chat/MessageInput';
 import GradientOrbs from '@/components/ui/GradientOrbs';
 import { Button } from '@/components/ui/Button';
-import type { MessageDTO } from '@/helpers/types';
+import type { MessageDTO, UserBasicDTO, UserDTO } from '@/helpers/types';
 import { getUserAvatar, getUserFullName } from '@/helpers/utils/user';
 import { useRootStore, useStoreData } from '@/stores/StoreProvider';
+import { ProfileService } from '@/services/profile/ProfileService';
 
 function formatPinnedTimestamp(value: string) {
   const date = new Date(value);
@@ -73,6 +74,8 @@ export default function ChatPage() {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const previousLastMessageIdRef = useRef<string | undefined>(undefined);
   const previousChatIdRef = useRef<string | null>(null);
+  const profileServiceRef = useRef<ProfileService | null>(null);
+  const [opponentProfile, setOpponentProfile] = useState<UserBasicDTO | null>(null);
 
   useEffect(() => {
     if (!chatId) {
@@ -169,31 +172,142 @@ export default function ChatPage() {
     previousChatIdRef.current = chatId;
   }, [chatId, messages]);
 
+  const conversationOpponent = useMemo(() => {
+    if (!selectedChat || selectedChat.isGroupChat) return null;
+    const participants = (selectedChat.users ?? []) as Array<UserDTO | string>;
+    const opponent = participants.find((participant) => {
+      if (!participant) return false;
+      if (typeof participant === 'string') {
+        return participant !== myId;
+      }
+      return participant._id !== myId;
+    });
+    return opponent ?? null;
+  }, [myId, selectedChat]);
+
+  const isGroupChat = selectedChat?.isGroupChat ?? false;
+
+  useEffect(() => {
+    if (!chatId || isGroupChat) {
+      setOpponentProfile(null);
+      return;
+    }
+
+    const service = profileServiceRef.current ?? new ProfileService();
+    profileServiceRef.current = service;
+
+    const candidate = conversationOpponent;
+
+    if (!candidate) {
+      setOpponentProfile(null);
+      return;
+    }
+
+    const candidateObject = typeof candidate === 'object' && candidate !== null ? candidate : null;
+
+    if (candidateObject) {
+      setOpponentProfile((prev) => {
+        if (prev && prev._id === candidateObject._id) {
+          return {
+            _id: prev._id,
+            name: candidateObject.name ?? prev.name,
+            lastname: candidateObject.lastname ?? prev.lastname,
+            avatarFile: candidateObject.avatarFile ?? prev.avatarFile,
+          };
+        }
+
+        return {
+          _id: candidateObject._id,
+          name: candidateObject.name ?? '',
+          lastname: candidateObject.lastname ?? '',
+          avatarFile: candidateObject.avatarFile,
+        };
+      });
+
+      if (candidateObject.avatarFile) {
+        return;
+      }
+    }
+
+    const opponentId =
+      (typeof candidate === 'string' ? candidate : candidateObject?._id) ?? chatStore.opponentId ?? null;
+
+    if (!opponentId) {
+      return;
+    }
+
+    let isCancelled = false;
+
+    service
+      .getProfileById(opponentId)
+      .then(({ data }) => {
+        if (isCancelled) return;
+        setOpponentProfile({
+          _id: data._id,
+          name: data.name ?? '',
+          lastname: data.lastname ?? '',
+          avatarFile: data.avatarFile,
+        });
+      })
+      .catch((error) => {
+        console.error('Error fetching opponent profile:', error);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [chatId, chatStore.opponentId, conversationOpponent, isGroupChat]);
+
   const conversationTitle = useMemo(() => {
     if (!selectedChat) return 'Chat';
-    if (selectedChat.isGroupChat) {
+    if (isGroupChat) {
       return selectedChat.chatName || selectedChat.post?.title || 'Group chat';
     }
-    const opponent = selectedChat.users?.find((user) => user._id !== myId);
-    const name = [opponent?.name, opponent?.lastname].filter(Boolean).join(' ').trim();
-    return name || opponent?.username || 'Direct chat';
-  }, [myId, selectedChat]);
 
-  const conversationUser = useMemo(() => {
-    if (!selectedChat || selectedChat.isGroupChat) return null;
-    return selectedChat.users?.find((user) => user._id !== myId) ?? null;
-  }, [myId, selectedChat]);
+    if (opponentProfile) {
+      const name = getUserFullName(opponentProfile).trim();
+      if (name) {
+        return name;
+      }
+    }
+
+    const candidate = conversationOpponent;
+    if (candidate && typeof candidate === 'object') {
+      const name = [candidate.name, candidate.lastname].filter(Boolean).join(' ').trim();
+      if (name) {
+        return name;
+      }
+      return candidate.username || candidate.email || 'Direct chat';
+    }
+
+    return 'Direct chat';
+  }, [conversationOpponent, isGroupChat, opponentProfile, selectedChat]);
 
   const conversationFullName = useMemo(() => {
-    if (conversationUser) {
-      const fullName = getUserFullName(conversationUser).trim();
+    if (isGroupChat) return conversationTitle;
+    if (opponentProfile) {
+      const fullName = getUserFullName(opponentProfile).trim();
       if (fullName) {
         return fullName;
       }
-      return conversationUser.username || conversationUser.email || conversationTitle;
     }
+
     return conversationTitle;
-  }, [conversationTitle, conversationUser]);
+  }, [conversationTitle, isGroupChat, opponentProfile]);
+
+  const conversationAvatarUrl = useMemo(() => {
+    if (isGroupChat) return undefined;
+    if (opponentProfile?.avatarFile) {
+      return getUserAvatar(opponentProfile);
+    }
+
+    const candidate = conversationOpponent;
+    if (candidate && typeof candidate === 'object' && candidate.avatarFile) {
+      return getUserAvatar(candidate);
+    }
+
+    return undefined;
+  }, [conversationOpponent, isGroupChat, opponentProfile]);
 
   const senderNameMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -231,7 +345,7 @@ export default function ChatPage() {
               <div className="flex items-center gap-4">
                 <ChatAvatar
                   name={conversationFullName}
-                  avatarUrl={conversationUser ? getUserAvatar(conversationUser) : undefined}
+                  avatarUrl={conversationAvatarUrl}
                   avatarAlt={conversationFullName}
                 />
                 <div className="flex flex-col">
