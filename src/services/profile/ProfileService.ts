@@ -196,7 +196,7 @@ export class ProfileService {
    * Подписаться или отписаться от AI-бота по его идентификатору.
    */
   public async followAiBotById(id: string): Promise<AxiosResponse<{ followers: number; isFollowing: boolean }, any>> {
-    return $api.put(`/profile/ai-bots/${id}/follow`);
+    return $api.put(`/profile/${id}/follow`);
   }
 
   /**
