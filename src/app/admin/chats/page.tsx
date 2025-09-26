@@ -13,7 +13,7 @@ export default function ChatsPage() {
 
   return (
     <AppShell>
-      <div className="flex-1 overflow-y-auto px-4 pb-28 pt-4 md:px-8 md:pb-12 md:pt-8">
+      <div className="flex-1 overflow-y-auto px-4 pb-20 pt-4 md:px-8 md:pb-16 md:pt-8">
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
           <PageHeader />
           <ChatList

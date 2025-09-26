@@ -27,7 +27,7 @@ export default function ChatPage() {
         <GradientOrbs />
 
         {/* три строки: Header / Messages(scroll) / Input */}
-        <div className="relative z-10 mx-auto grid h-full w-full max-w-3xl flex-1 grid-rows-[auto,1fr,auto] gap-y-6 px-4 pt-4 pb-4">
+        <div className="relative z-10 mx-auto grid h-full w-full max-w-3xl flex-1 grid-rows-[auto,1fr,auto] gap-y-3 md:gap-y-6 px-4 pt-4 pb-16">
           {/* 1) ШАПКА — статично */}
           <HeaderProfile
             title={activeThread?.name ?? 'Angelina'}
@@ -78,9 +78,7 @@ export default function ChatPage() {
           </div>
 
           {/* 3) ИНПУТ — статично снизу */}
-          <div>
-            <MessageInput onSend={handleSend} placeholder="Message Angelina, reply from AI" />
-          </div>
+          <MessageInput onSend={handleSend} placeholder="Message Angelina, reply from AI" />
         </div>
       </div>
     </AppShell>

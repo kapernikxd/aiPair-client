@@ -21,11 +21,8 @@ export default function MessageInput({ placeholder = 'Say something...', onSend 
         setValue('');
     };
     return (
-        <form onSubmit={submit} className="rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-            <label className="block text-xs font-medium uppercase tracking-[0.3em] text-white/40">
-                Message, AI will reply
-            </label>
-            <div className="mt-3 flex items-center gap-3">
+        <form onSubmit={submit} className="backdrop-blur">
+            <div className="flex items-center gap-3">
                 <input
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
