@@ -2,14 +2,14 @@
 
 import { FormState } from "../../helpers/types/agent-create";
 
+type VoiceForm = Pick<FormState, "prompt" | "description" | "intro">;
 
-export default function VoiceStoryStep({
-  form,
-  onChange,
-}: {
-  form: Pick<FormState, "prompt" | "description" | "intro">;
-  onChange: (field: keyof FormState, value: string) => void;
-}) {
+type VoiceStoryStepProps = {
+  form: VoiceForm;
+  onChange: <K extends keyof VoiceForm>(field: K, value: VoiceForm[K]) => void;
+};
+
+export default function VoiceStoryStep({ form, onChange }: VoiceStoryStepProps) {
   return (
     <div className="space-y-6">
       <div>

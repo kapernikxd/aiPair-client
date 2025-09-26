@@ -9,6 +9,7 @@ import AppShell from '@/components/AppShell';
 import GradientBackdrop from '@/components/ai-agent-create/GradientBackdrop';
 import Stepper from '@/components/ai-agent-create/Stepper';
 import IdentityStep from '@/components/ai-agent-create/IdentityStep';
+import FocusStep from '@/components/ai-agent-create/FocusStep';
 import VoiceStoryStep from '@/components/ai-agent-create/VoiceStoryStep';
 import MediaKitStep from '@/components/ai-agent-create/MediaKitStep';
 import PreviewSidebar from '@/components/ai-agent-create/PreviewSidebar';
@@ -53,7 +54,7 @@ export default function CreateAiAgentPage() {
     aiBotStore.resetFlow();
   };
 
-  const handleChange = (field: keyof FormState, value: string) => {
+  const handleChange = <K extends keyof FormState>(field: K, value: FormState[K]) => {
     aiBotStore.setFormField(field, value);
   };
 
@@ -124,13 +125,17 @@ export default function CreateAiAgentPage() {
               )}
 
               {step === 1 && (
+                <FocusStep form={{ categories: form.categories, usefulness: form.usefulness }} onChange={handleChange} />
+              )}
+
+              {step === 2 && (
                 <VoiceStoryStep
                   form={{ prompt: form.prompt, description: form.description, intro: form.intro }}
                   onChange={handleChange}
                 />
               )}
 
-              {step === 2 && (
+              {step === 3 && (
                 <MediaKitStep
                   gallery={gallery}
                   maxItems={maxGalleryItems}

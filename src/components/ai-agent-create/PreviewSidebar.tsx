@@ -56,6 +56,44 @@ export default function PreviewSidebar({
           </div>
         </div>
 
+        <div className="space-y-4 rounded-3xl border border-white/10 bg-neutral-900/70 p-5">
+          <div>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-white/60">Categories</h3>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {form.categories.length ? (
+                form.categories.map((category) => (
+                  <span
+                    key={category}
+                    className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70"
+                  >
+                    {category}
+                  </span>
+                ))
+              ) : (
+                <p className="text-xs text-white/50">Select categories to spotlight the agent&rsquo;s niche.</p>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-white/60">Usefulness</h3>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {form.usefulness.length ? (
+                form.usefulness.map((item) => (
+                  <span
+                    key={item}
+                    className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70"
+                  >
+                    {item}
+                  </span>
+                ))
+              ) : (
+                <p className="text-xs text-white/50">Add scenarios to illustrate how the agent helps.</p>
+              )}
+            </div>
+          </div>
+        </div>
+
         <div className="space-y-3">
           <div className="flex items-center justify-between text-xs uppercase tracking-wider text-white/50">
             <span>Gallery</span>
