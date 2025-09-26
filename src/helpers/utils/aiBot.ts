@@ -14,7 +14,7 @@ type HoverSwapCardItem = {
 };
 
 const resolveIdentifier = (bot: AiBotDTO) =>
-  bot._id ?? bot.botId ?? bot.username ?? bot.name ?? "unknown";
+  bot.botId ?? bot._id ?? bot.username ?? bot.name ?? "unknown";
 
 const buildBotHref = (bot: AiBotDTO) => {
   const identifier = resolveIdentifier(bot);
@@ -34,12 +34,13 @@ const getPrimaryImage = (bot: AiBotDTO, fallback: string) => {
   return firstPhoto ?? fallback;
 };
 
-export const mapAiBotToHoverSwapCard = (bot: AiBotDTO): HoverSwapCardItem => {
+export const mapAiBotToHoverSwapCard = (bot: AiBotDTO, index?: number): HoverSwapCardItem => {
   const avatar = getUserAvatar(bot);
   const identifier = resolveIdentifier(bot);
+  const id = identifier === "unknown" && typeof index === "number" ? `${identifier}-${index}` : identifier;
 
   return {
-    id: identifier.toString(),
+    id: id.toString(),
     src: getPrimaryImage(bot, avatar),
     avatarSrc: avatar,
     title: bot.name ?? "AI Companion",
@@ -50,5 +51,5 @@ export const mapAiBotToHoverSwapCard = (bot: AiBotDTO): HoverSwapCardItem => {
 };
 
 export const mapAiBotsToHoverSwapCards = (bots: AiBotDTO[]): HoverSwapCardItem[] =>
-  bots.map((bot) => mapAiBotToHoverSwapCard(bot));
+  bots.map((bot, index) => mapAiBotToHoverSwapCard(bot, index));
 
