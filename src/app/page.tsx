@@ -8,50 +8,13 @@ import CardRailTwoRows from "@/components/ui/CardRailTwoRows";
 import AuthPopup from "@/components/AuthPopup";
 import { Button } from "@/components/ui/Button";
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
-import type { AuthRouteKey } from "@/helpers/hooks/useAuthRoutes";
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import type { AuthProvider } from "@/stores/AuthStore";
+import type { CatalogItem } from "@/stores/CatalogStore";
 
 // export const metadata = {
 //   title: 'AI Pair — Talk with an AI companion',
 // }
-
-type CardItem = {
-  id: number;
-  cardWidth?: string;
-  src: string;
-  title: string;
-  views: string;
-  hoverText: string;
-  routeKey: AuthRouteKey;
-};
-
-const baseCardData: CardItem[] = [
-  { id: 0, cardWidth: "200", src: '/img/mizuhara.png', title: 'aiAgent α', views: 'New', hoverText: 'Meet the undercover strategist.', routeKey: 'aiAgentProfile' },
-  { id: 1, cardWidth: "200", src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
-  { id: 2, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
-  { id: 3, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
-  { id: 4, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
-  { id: 5, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
-  { id: 6, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
-  { id: 7, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
-  { id: 8, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
-  { id: 9, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
-  { id: 10, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
-  { id: 11, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
-  { id: 12, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
-  { id: 13, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
-  { id: 14, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
-  { id: 15, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
-  { id: 16, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
-  { id: 17, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
-  { id: 18, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
-  { id: 19, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
-  { id: 20, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
-  { id: 21, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
-  { id: 22, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
-  // ...добавляй дальше сколько нужно
-];
 
 // Tailwind is assumed available in the preview. Primary brand color from your prefs: #6f2da8
 // Minimalistic, fast, single-file landing you can paste into a Next.js page or CRA component.
@@ -83,7 +46,7 @@ const GradientBlob = ({ className = "" }: { className?: string }) => (
 
 export default function Landing() {
   const { routes } = useAuthRoutes();
-  const { uiStore, authStore, profileStore } = useRootStore();
+  const { uiStore, authStore, profileStore, catalogStore } = useRootStore();
   const open = useStoreData(uiStore, (store) => store.isAuthPopupOpen);
   const showMobileBanner = useStoreData(uiStore, (store) => store.isMobileBannerVisible);
   const isAuthenticated = useStoreData(authStore, (store) => store.isAuthenticated);
@@ -100,13 +63,15 @@ export default function Landing() {
     });
     uiStore.closeAuthPopup();
   };
+  const featuredItems = useStoreData(catalogStore, (store) => store.featuredItems);
+
   const cardItems = useMemo(
     () =>
-      baseCardData.map(({ routeKey, ...rest }) => ({
-        ...rest,
-        href: routes[routeKey],
+      featuredItems.map((item: CatalogItem) => ({
+        ...item,
+        href: routes[item.routeKey],
       })),
-    [routes],
+    [featuredItems, routes],
   );
 
   return (
