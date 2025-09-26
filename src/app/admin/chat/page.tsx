@@ -3,11 +3,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import AppShell from '@/components/AppShell';
+import ChatAvatar from '@/components/chats/ChatAvatar';
 import MessageList from '@/components/chat/MessageList';
 import MessageInput from '@/components/chat/MessageInput';
 import GradientOrbs from '@/components/ui/GradientOrbs';
 import { Button } from '@/components/ui/Button';
 import type { MessageDTO } from '@/helpers/types';
+import { getUserAvatar, getUserFullName } from '@/helpers/utils/user';
 import { useRootStore, useStoreData } from '@/stores/StoreProvider';
 
 function formatPinnedTimestamp(value: string) {
@@ -177,6 +179,22 @@ export default function ChatPage() {
     return name || opponent?.username || 'Direct chat';
   }, [myId, selectedChat]);
 
+  const conversationUser = useMemo(() => {
+    if (!selectedChat || selectedChat.isGroupChat) return null;
+    return selectedChat.users?.find((user) => user._id !== myId) ?? null;
+  }, [myId, selectedChat]);
+
+  const conversationFullName = useMemo(() => {
+    if (conversationUser) {
+      const fullName = getUserFullName(conversationUser).trim();
+      if (fullName) {
+        return fullName;
+      }
+      return conversationUser.username || conversationUser.email || conversationTitle;
+    }
+    return conversationTitle;
+  }, [conversationTitle, conversationUser]);
+
   const senderNameMap = useMemo(() => {
     const map = new Map<string, string>();
     selectedChat?.users?.forEach((user) => {
@@ -210,12 +228,21 @@ export default function ChatPage() {
           <header className="rounded-3xl border border-white/10 bg-white/5 px-6 py-5 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur">
             <div className="flex flex-col gap-2">
               <span className="text-xs uppercase tracking-[0.28em] text-white/40">Conversation</span>
-              <h1 className="text-2xl font-semibold text-white">{conversationTitle}</h1>
-              {selectedChat?.users?.length ? (
-                <p className="text-sm text-white/60">
-                  {selectedChat.users.length} participant{selectedChat.users.length === 1 ? '' : 's'}
-                </p>
-              ) : null}
+              <div className="flex items-center gap-4">
+                <ChatAvatar
+                  name={conversationFullName}
+                  avatarUrl={conversationUser ? getUserAvatar(conversationUser) : undefined}
+                  avatarAlt={conversationFullName}
+                />
+                <div className="flex flex-col">
+                  <h1 className="text-2xl font-semibold text-white">{conversationFullName}</h1>
+                  {selectedChat?.users?.length ? (
+                    <p className="text-sm text-white/60">
+                      {selectedChat.users.length} participant{selectedChat.users.length === 1 ? '' : 's'}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
             </div>
           </header>
 
