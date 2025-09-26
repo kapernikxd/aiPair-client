@@ -8,7 +8,8 @@ import AppShell from "@/components/AppShell";
 import GradientBackdrop from "@/components/user/GradientBackdrop";
 import HeaderBar from "@/components/user/HeaderBar";
 import SectionHeader from "@/components/user/SectionHeader";
-import AiBotGrid from "@/components/user/AiBotGrid";
+import CardRailOneRow from "@/components/ui/CardRailOneRow";
+import AiBotCard from "@/components/user/AiBotCard";
 import ProfileCard from "@/components/profile/ProfileCard";
 
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
@@ -101,7 +102,19 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
               subtitle={"Персональные напарники, созданные этим пользователем."}
               actionLabel="View archive"
             />
-            <AiBotGrid items={userAiBots} isLoading={isLoadingAiBot} />
+            <CardRailOneRow
+              items={userAiBots}
+              isLoading={isLoadingAiBot}
+              loadingMessage="Загружаем подборку AI-ботов…"
+              emptyMessage="Пока что здесь пусто — добавьте своего первого AI-бота, чтобы показать его миру."
+              cardWidth={280}
+              gap={18}
+              contentClassName="mt-2"
+              gridClassName="p-0 gap-4 md:gap-6"
+              itemClassName="h-full"
+              renderItem={(bot) => <AiBotCard bot={bot} />}
+              getItemKey={(bot) => bot._id}
+            />
             {(isLoadingProfile || isLoadingAiBot) && (
               <p className="text-sm text-white/60">Loading profile…</p>
             )}
