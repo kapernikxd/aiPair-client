@@ -1,7 +1,10 @@
-import HoverSwapCard from "@/components/AiCard";
-import { getUserAvatar } from "@/helpers/utils/user";
-import type { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
-import type { UserDTO } from "@/helpers/types";
+'use client';
+
+import HoverSwapCard from '@/components/AiCard';
+import { getUserAvatar } from '@/helpers/utils/user';
+import type { AiBotDTO } from '@/helpers/types/dtos/AiBotDto';
+import type { UserDTO } from '@/helpers/types';
+import React from 'react';
 
 type TimelineAgent = AiBotDTO | UserDTO;
 
@@ -13,23 +16,34 @@ type AiAgentsTimelineProps = {
   isLoading?: boolean;
 };
 
-const formatFollowers = (count?: number) =>
-  typeof count === "number" ? count.toLocaleString("ru-RU") : undefined;
-
-const getCoverImage = (agent: TimelineAgent) => {
-  if ("photos" in agent && Array.isArray(agent.photos) && agent.photos.length > 0) {
-    return agent.photos[0];
+// Универсально вытягиваем URL из строки или объекта
+const toUrl = (val: any): string | undefined => {
+  if (!val) return undefined;
+  if (typeof val === 'string') return val;
+  if (typeof val === 'object') {
+    return val.url || val.src || val.path || val.location || undefined;
   }
-
-  return getUserAvatar(agent);
+  return undefined;
 };
 
-const getHoverDescription = (agent: TimelineAgent) => {
-  if ("intro" in agent && agent.intro) {
-    return agent.intro;
-  }
+const formatFollowers = (count?: number) =>
+  typeof count === 'number' ? count.toLocaleString('ru-RU') : undefined;
 
-  return agent.userBio ?? agent.aiPrompt ?? undefined;
+const getCoverImage = (agent: TimelineAgent): string | undefined => {
+  if ('photos' in agent && Array.isArray(agent.photos) && agent.photos.length > 0) {
+    return toUrl(agent.photos[0]);
+  }
+  return toUrl(getUserAvatar(agent));
+};
+
+const getAvatarImage = (agent: TimelineAgent): string | undefined => {
+  return toUrl(getUserAvatar(agent));
+};
+
+const getHoverDescription = (agent: TimelineAgent): string | undefined => {
+  if ('intro' in agent && agent.intro) return agent.intro;
+  // userBio для людей, aiPrompt — для ботов (если есть)
+  return (agent as any).userBio ?? (agent as any).aiPrompt ?? undefined;
 };
 
 export default function AiAgentsTimeline({
@@ -54,22 +68,26 @@ export default function AiAgentsTimeline({
             Загружаем подборку AI-агентов…
           </p>
         ) : hasItems ? (
-          <div className="grid grid-cols-2 place-items-center gap-4 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-3 gap-6 items-stretch">
             {items.map((aiAgent) => (
               <HoverSwapCard
-                key={aiAgent._id ?? aiAgent.name}
+                key={(aiAgent as any)._id ?? aiAgent.name}
                 src={getCoverImage(aiAgent)}
-                avatarSrc={getUserAvatar(aiAgent)}
+                avatarSrc={getAvatarImage(aiAgent)}
                 title={aiAgent.name}
-                views={formatFollowers(aiAgent.followers)}
+                views={formatFollowers((aiAgent as any).followers)}
                 hoverText={getHoverDescription(aiAgent)}
-                href={`/profile/ai-agent/${encodeURIComponent(aiAgent._id)}`}
+                href={
+                  (aiAgent as any)._id
+                    ? `/profile/ai-agent/${encodeURIComponent((aiAgent as any)._id)}`
+                    : undefined
+                }
               />
             ))}
           </div>
         ) : (
           <p className="rounded-2xl border border-dashed border-white/15 bg-transparent px-4 py-8 text-center text-sm text-white/60">
-            {emptyMessage ?? "No AI agents to display yet."}
+            {emptyMessage ?? 'No AI agents to display yet.'}
           </p>
         )}
 
