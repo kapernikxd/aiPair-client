@@ -31,6 +31,7 @@ export interface AiBotPhotoResponse extends AiBotDetails {
   photos: string[];
   createdAt?: string;
   updatedAt?: string;
+  isFollowing: boolean;
 }
 
 export class ProfileService {
