@@ -9,6 +9,7 @@ export interface AiBotDTO extends UserDTO {
   botId: string;
   createdBy: ProfileMinData;
   aiPrompt: string;
+  isFollowing?: boolean;
 }
 
 export interface AiBotDetails {

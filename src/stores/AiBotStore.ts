@@ -324,7 +324,7 @@ export class AiBotStore extends BaseStore {
         this.bots = updateFollowers(this.bots);
 
         if (this.selectAiBot && this.selectAiBot._id === id) {
-          this.selectAiBot = { ...this.selectAiBot, followers: data.followers };
+          this.selectAiBot = { ...this.selectAiBot, followers: data.followers, isFollowing: data.isFollowing };
         }
 
         if (this.botDetails) {
