@@ -75,7 +75,7 @@ export default function CreateAiAgentPage() {
       <div className="relative min-h-screen overflow-y-auto bg-neutral-950 text-white">
         <GradientBackdrop />
 
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 pb-24 pt-12 lg:flex-row lg:gap-12">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 lg:flex-row lg:gap-12 pb-32 md:pb-20 pt-4 md:pt-14">
           <div className="flex w-full flex-col gap-6 lg:w-[60%]">
             <header className="space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white/70">

@@ -79,7 +79,7 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
       <div className="relative min-h-screen overflow-y-auto bg-neutral-950 text-white">
         <GradientBackdrop />
 
-        <div className="mx-auto w-full max-w-5xl px-4 pb-20 pt-14">
+        <div className="mx-auto w-full max-w-5xl px-4 pb-32 md:pb-20 pt-4 md:pt-14">
           <header className="space-y-8">
             <HeaderBar
               isFollowing={isFollowing}

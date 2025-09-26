@@ -3,7 +3,7 @@ import { Sparkles } from "lucide-react";
 
 export default function SignatureMoves({ items }: { items: string[] }) {
     return (
-        <section>
+        <section className="p-2 md:p-0">
             <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-white/60">
                 <Sparkles className="size-4 text-violet-300" /> Чем будет полезно:
             </h3>

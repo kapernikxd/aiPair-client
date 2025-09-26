@@ -21,7 +21,7 @@ export default function UserHero({
     messageHref: string;
 }) {
     return (
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur">
+        <div className="rounded-3xl border border-white/10 bg-white/5 p-1 md:p-8 backdrop-blur">
             <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
                 <div className="flex flex-1 items-start gap-5">
                     <div className="relative size-24 shrink-0 overflow-hidden rounded-3xl border border-white/15">

@@ -56,8 +56,8 @@ export default function AiAgentsTimeline({
   const hasItems = items.length > 0;
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
-      <div className="space-y-2">
+    <section className="rounded-3xl border border-white/10 bg-white/5 p-1 md:p-6 backdrop-blur">
+      <div className="space-y-2 p-3 md:p-0">
         <h2 className="text-lg font-semibold text-white">{title}</h2>
         <p className="text-sm text-white/70">{description}</p>
       </div>
@@ -68,7 +68,7 @@ export default function AiAgentsTimeline({
             Загружаем подборку AI-агентов…
           </p>
         ) : hasItems ? (
-          <div className="grid grid-cols-3 gap-6 items-stretch">
+          <div className="grid grid-cols-2 gap-2 md:gap-6 items-stretch md:grid-cols-3">
             {items.map((aiAgent) => (
               <HoverSwapCard
                 key={(aiAgent as any)._id ?? aiAgent.name}

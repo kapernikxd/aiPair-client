@@ -7,6 +7,7 @@ import { getUserAvatar, getUserFullName } from "@/helpers/utils/user";
 import { getMonthYear, getTimeAgo } from "@/helpers/utils/date";
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import UserListModal from "./UserListModal";
+import TruncatedReveal from "../ui/TruncatedReveal";
 
 const PAGE_SIZE = 12;
 
@@ -112,7 +113,7 @@ export default function ProfileCard({ profile, genderLabel, isCurrentUser = fals
 
     return (
         <>
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur">
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-1 md:p-8 backdrop-blur">
                 <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
                     <div className="flex flex-1 items-start gap-5">
                         <div className="relative size-24 shrink-0 overflow-hidden rounded-3xl border border-white/15">
@@ -126,8 +127,13 @@ export default function ProfileCard({ profile, genderLabel, isCurrentUser = fals
                         </div>
                         <div className="space-y-3">
                             <div>
-                                <h1 className="text-4xl font-semibold tracking-tight">{userFullName}</h1>
-                                <p className="mt-2 text-sm leading-6 text-white/70">{profile?.userBio}</p>
+                                <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">{userFullName}</h1>
+                                {profile?.userBio && <TruncatedReveal
+                                    text={profile?.userBio}
+                                    maxChars={160}
+                                    className="mt-2 text-sm leading-6 text-white/70"
+                                    title="Подробнее"
+                                />}
                             </div>
                             <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-wide text-white/60">
                                 <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1">{genderLabel}</span>

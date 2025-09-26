@@ -120,7 +120,7 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
           <EditAiAgentDialog open={isEditOpen} aiAgent={aiBot} onClose={closeEditDialog} />
         )}
 
-        <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-4 pb-16 pt-16">
+        <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-4 pb-32 md:pb-20 pt-4 md:pt-14">
           {canEdit && (
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-2">
@@ -157,7 +157,7 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
             </div>
           ) : (
             <>
-              <div className="flex flex-col gap-6 rounded-3xl border border-white/10 bg-white/5/50 p-8 backdrop-blur">
+              <div className="flex flex-col gap-6 rounded-3xl border border-white/10 bg-white/5/50 p-1 md:p-8 backdrop-blur">
                 <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
                   <HeaderCard user={aiBot} />
                 </div>
@@ -172,8 +172,8 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
               </div>
 
               <section className="grid gap-6 md:grid-cols-[1.3fr,1fr]">
-                <div className="rounded-3xl border border-white/10 bg-neutral-900/60 p-8">
-                  <div className="inline-flex rounded-full bg-white/5 p-1 text-sm font-medium text-white/70">
+                <div className="rounded-3xl border border-white/10 bg-neutral-900/60 p-1 md:p-8">
+                  <div className="inline-flex rounded-full bg-white/5 p-1 text-sm font-medium text-white/70 p-2 md:p-0" >
                     <button
                       type="button"
                       onClick={() => setActiveTab("info")}

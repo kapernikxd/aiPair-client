@@ -61,7 +61,7 @@ export default function MyProfilePage() {
 
         <GradientBackdrop />
 
-        <div className="mx-auto w-full max-w-5xl px-4 pb-20 pt-14">
+        <div className="mx-auto w-full max-w-5xl px-4 pb-32 md:pb-20 pt-4 md:pt-14">
           <header className="space-y-8">
             <HeaderActions onEdit={() => uiStore.openEditProfileDialog()} />
             <ProfileCard
@@ -82,11 +82,13 @@ export default function MyProfilePage() {
             </div>
 
             <aside className="space-y-6">
-              <section className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+              <section className="rounded-3xl border border-white/10 bg-white/5 p-1 md:p-6 backdrop-blur">
+                <div className="p-3 md:p-0">
                 <h2 className="text-lg font-semibold text-white">Filter AI Agents</h2>
                 <p className="mt-2 text-sm text-white/70">
                   Choose whether to see your own creations or the agents you’re subscribed to.
                 </p>
+                </div>
                 <div className="mt-4 grid gap-3">
                   {filters.map((filter) => {
                     const isActive = activeFilter === filter.value;

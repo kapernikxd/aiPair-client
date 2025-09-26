@@ -46,7 +46,7 @@ export default function HoverSwapCard({
 
       {/* Заголовок + просмотры */}
       <div className="absolute inset-x-0 bottom-0 p-5">
-        <h3 className="text-ellipsis break-words text-3xl font-bold text-white drop-shadow-sm">
+        <h3 className="text-ellipsis break-words text-2xl font-bold text-white drop-shadow-sm">
           {title}
         </h3>
 
