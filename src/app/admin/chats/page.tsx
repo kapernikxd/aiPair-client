@@ -1,6 +1,7 @@
 'use client';
 
 import AppShell from "@/components/AppShell";
+import { useEffect } from "react";
 import PageHeader from "@/components/chats/PageHeader";
 import ChatList from "@/components/chats/ChatList";
 import { AuthRouteKey, useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
@@ -8,8 +9,20 @@ import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 
 export default function ChatsPage() {
   const { routes } = useAuthRoutes();
-  const { chatStore } = useRootStore();
-  const threads = useStoreData(chatStore, (store) => store.threads);
+  const { chatStore, authStore } = useRootStore();
+  const chats = useStoreData(chatStore, (store) => store.chats);
+  const isLoadingChats = useStoreData(chatStore, (store) => store.isLoadingChats);
+  const myId = useStoreData(authStore, (store) => store.user?.id ?? "");
+
+  useEffect(() => {
+    void chatStore.fetchChats({ page: 1 });
+  }, [chatStore]);
+
+  const chatHrefBuilder = (chatId: string) => `${routes.adminChat}?chatId=${chatId}`;
+
+  const handleChatSelect = (chatId: string) => {
+    void chatStore.fetchChat(chatId, myId);
+  };
 
   return (
     <AppShell>
@@ -17,9 +30,11 @@ export default function ChatsPage() {
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
           <PageHeader />
           <ChatList
-            threads={threads}
+            chats={chats}
             routeFor={(key: AuthRouteKey) => routes[key]}
-            onSelect={(thread) => chatStore.setActiveThread(thread.id)}
+            onSelect={(chat) => handleChatSelect(chat._id)}
+            isLoading={isLoadingChats}
+            getChatHref={(chat) => chatHrefBuilder(chat._id)}
           />
         </div>
       </div>
