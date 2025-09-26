@@ -312,6 +312,47 @@ export class AiBotStore extends BaseStore {
     }
   }
 
+  async followAiBot(id: string) {
+    try {
+      const { data } = await this.profileService.followAiBotById(id);
+      runInAction(() => {
+        const updateFollowers = <T extends UserDTO>(collection: T[]) =>
+          collection.map((bot) => (bot._id === id ? ({ ...bot, followers: data.followers } as T) : bot));
+
+        this.myBots = updateFollowers(this.myBots);
+        this.userAiBots = updateFollowers(this.userAiBots);
+        this.bots = updateFollowers(this.bots);
+
+        if (this.selectAiBot && this.selectAiBot._id === id) {
+          this.selectAiBot = { ...this.selectAiBot, followers: data.followers };
+        }
+
+        if (this.botDetails) {
+          this.botDetails = { ...this.botDetails, isFollowing: data.isFollowing };
+        }
+
+        if (data.isFollowing) {
+          const existsInSubscribed = this.subscribedBots.some((bot) => bot._id === id);
+          const botToAdd =
+            this.selectAiBot && this.selectAiBot._id === id
+              ? this.selectAiBot
+              : this.userAiBots.find((bot) => bot._id === id) ?? this.bots.find((bot) => bot._id === id);
+
+          if (!existsInSubscribed && botToAdd) {
+            this.subscribedBots = [...this.subscribedBots, botToAdd];
+          } else if (existsInSubscribed) {
+            this.subscribedBots = updateFollowers(this.subscribedBots);
+          }
+        } else {
+          this.subscribedBots = this.subscribedBots.filter((bot) => bot._id !== id);
+        }
+      });
+      this.notify();
+    } catch (e) {
+      // this.root.uiStore.showSnackbar('Failed to update follow status', 'error');
+    }
+  }
+
   async createBot(formData: FormData) {
     try {
       const { data } = await this.profileService.createAiBot(formData);
