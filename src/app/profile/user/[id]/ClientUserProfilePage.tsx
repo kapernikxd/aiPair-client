@@ -7,8 +7,7 @@ import AppShell from "@/components/AppShell";
 
 import GradientBackdrop from "@/components/user/GradientBackdrop";
 import HeaderBar from "@/components/user/HeaderBar";
-import SectionHeader from "@/components/user/SectionHeader";
-import AiBotGrid from "@/components/user/AiBotGrid";
+import AiAgentsTimeline from "@/components/profile/AiAgentsTimeline";
 import ProfileCard from "@/components/profile/ProfileCard";
 
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
@@ -96,13 +95,14 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
           </header>
 
           <section className="mt-12 space-y-6">
-            <SectionHeader
+            <AiAgentsTimeline
+              items={userAiBots}
+              isLoading={isLoadingAiBot}
               title="AI Companions"
-              subtitle={"Персональные напарники, созданные этим пользователем."}
-              actionLabel="View archive"
+              description="Персональные напарники, созданные этим пользователем."
+              emptyMessage="Пока что здесь пусто — добавьте своего первого AI-бота, чтобы показать его миру."
             />
-            <AiBotGrid items={userAiBots} isLoading={isLoadingAiBot} />
-            {(isLoadingProfile || isLoadingAiBot) && (
+            {isLoadingProfile && (
               <p className="text-sm text-white/60">Loading profile…</p>
             )}
           </section>

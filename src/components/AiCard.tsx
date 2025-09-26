@@ -29,7 +29,7 @@ export default function HoverSwapCard({
   href,
 }: HoverSwapCardProps) {
   const CardInner = (
-    <div className="group relative isolate w-[220px] h-[280px] overflow-hidden rounded-3xl bg-zinc-900 shadow-xl ring-1 ring-black/10 hover:ring-black/20 transition-all">
+    <div className="group relative isolate w-full max-w-[220px] aspect-[11/14] overflow-hidden rounded-3xl bg-zinc-900 shadow-xl ring-1 ring-black/10 transition-all hover:ring-black/20">
       {/* Image */}
       <img
         src={src}
