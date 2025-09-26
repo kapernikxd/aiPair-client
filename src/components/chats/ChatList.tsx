@@ -10,6 +10,7 @@ export default function ChatList({
   isLoading = false,
   emptyState,
   getChatHref,
+  currentUserId,
 }: {
   chats: ChatDTO[];
   routeFor: (routeKey: AuthRouteKey) => string;
@@ -17,6 +18,7 @@ export default function ChatList({
   isLoading?: boolean;
   emptyState?: ReactNode;
   getChatHref?: (chat: ChatDTO) => string;
+  currentUserId: string;
 }) {
   const renderSkeleton = () => (
     <ul className="divide-y divide-white/5 overflow-hidden rounded-[28px]">
@@ -60,6 +62,7 @@ export default function ChatList({
             chat={chat}
             href={getChatHref?.(chat) ?? fallbackHref(chat)}
             onSelect={onSelect}
+            currentUserId={currentUserId}
           />
         ))}
       </ul>
