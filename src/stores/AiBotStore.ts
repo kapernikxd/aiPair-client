@@ -473,12 +473,12 @@ export class AiBotStore extends BaseStore {
     return 'Failed to create AI agent';
   }
 
-  async updateBot(id: string, data: AiBotUpdatePayload, avatar?: AvatarFile | File) {
+  async updateBot(id: string, payload: AiBotUpdatePayload, avatar?: AvatarFile | File) {
     try {
       let updated: UserDTO | undefined;
 
-      if (Object.keys(data).length) {
-        const res = await this.profileService.updateAiBot(id, data);
+      if (Object.keys(payload).length) {
+        const res = await this.profileService.updateAiBot(id, payload);
         updated = res.data;
       }
 
@@ -490,20 +490,46 @@ export class AiBotStore extends BaseStore {
       }
 
       if (updated) {
-        runInAction(() => {
-          const applyUpdate = <T extends UserDTO>(collection: T[]) =>
-            collection.map((bot) => (bot._id === id ? ({ ...bot, ...updated } as T) : bot));
+        const additionalFields: Partial<AiBotDTO> = {};
+        if (payload.aiPrompt !== undefined) {
+          additionalFields.aiPrompt = payload.aiPrompt;
+        }
+        if (payload.intro !== undefined) {
+          additionalFields.intro = payload.intro;
+        }
+        if (payload.categories !== undefined) {
+          additionalFields.categories = payload.categories;
+        }
+        if (payload.usefulness !== undefined) {
+          additionalFields.usefulness = payload.usefulness;
+        }
 
-          this.myBots = applyUpdate(this.myBots);
-          this.userAiBots = applyUpdate(this.userAiBots);
-          this.bots = applyUpdate(this.bots);
+        runInAction(() => {
+          const applyUserUpdate = <T extends UserDTO>(collection: T[]) =>
+            collection.map((bot) => (bot._id === id ? ({ ...bot, ...updated } as T) : bot));
+          const applyAiBotUpdate = (collection: AiBotDTO[]) =>
+            collection.map((bot) => (bot._id === id ? ({ ...bot, ...updated, ...additionalFields }) : bot));
+
+          this.myBots = applyUserUpdate(this.myBots);
+          this.userAiBots = applyAiBotUpdate(this.userAiBots);
+          this.bots = applyUserUpdate(this.bots);
 
           if (this.selectAiBot && this.selectAiBot._id === id) {
-            this.selectAiBot = { ...this.selectAiBot, ...updated };
+            this.selectAiBot = { ...this.selectAiBot, ...updated, ...additionalFields };
           }
 
           if (this.createdBot && this.createdBot._id === id) {
             this.createdBot = { ...this.createdBot, ...updated };
+          }
+
+          if (this.botDetails && this.selectAiBot && this.selectAiBot._id === id) {
+            this.botDetails = {
+              ...this.botDetails,
+              ...(payload.aiPrompt !== undefined ? { aiPrompt: payload.aiPrompt } : {}),
+              ...(payload.intro !== undefined ? { intro: payload.intro } : {}),
+              ...(payload.categories !== undefined ? { categories: payload.categories } : {}),
+              ...(payload.usefulness !== undefined ? { usefulness: payload.usefulness } : {}),
+            };
           }
 
           this.notify();
