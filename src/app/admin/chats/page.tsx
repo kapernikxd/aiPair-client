@@ -35,6 +35,7 @@ export default function ChatsPage() {
             onSelect={(chat) => handleChatSelect(chat._id)}
             isLoading={isLoadingChats}
             getChatHref={(chat) => chatHrefBuilder(chat._id)}
+            currentUserId={myId}
           />
         </div>
       </div>
