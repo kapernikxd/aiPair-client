@@ -23,6 +23,11 @@ export interface AiBotUpdatePayload {
   lastname?: string;
   profession?: string;
   userBio?: string;
+  aiPrompt?: string;
+  intro?: string;
+  introMessage?: string;
+  categories?: string[];
+  usefulness?: string[];
 }
 
 export interface AiBotPhotoResponse extends AiBotDetails {
