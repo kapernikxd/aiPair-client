@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
 import ProfileSection from './ProfileSection';
+import AuthPopupContainer from './AuthPopupContainer';
 import { useRootStore, useStoreData } from '@/stores/StoreProvider';
 import { getUserAvatar, getUserFullName } from '@/helpers/utils/user';
 import { textRefactor } from '@/helpers/utils/common';
@@ -311,6 +312,7 @@ export default function AppShell({
                     <MessageSquare className="size-6" />
                 </Link>
             </nav>
+            <AuthPopupContainer />
         </div>
     );
 }
