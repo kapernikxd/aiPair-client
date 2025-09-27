@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 const ROUTES = {
   home: '/',
-  discover: '/',
+  discover: '/admin/page',
   createAgent: '/create',
   aiAgentProfile: '/profile/ai-agent',
   userProfile: '/profile/user',
