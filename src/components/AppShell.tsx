@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import {
@@ -18,7 +19,7 @@ import {
 import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
 import ProfileSection from './ProfileSection';
 import { useRootStore, useStoreData } from '@/stores/StoreProvider';
-import { getUserFullName } from '@/helpers/utils/user';
+import { getUserAvatar, getUserFullName } from '@/helpers/utils/user';
 
 type AppShellProps = {
     children: React.ReactNode;
@@ -33,7 +34,7 @@ export default function AppShell({
 }: AppShellProps) {
     const { routes } = useAuthRoutes();
 
-    const { uiStore, profileStore, authStore } = useRootStore();
+    const { uiStore, profileStore, authStore, chatStore } = useRootStore();
     const open = useStoreData(uiStore, (store) => store.isSidebarOpen);
     const mobileOpen = useStoreData(uiStore, (store) => store.isMobileSidebarOpen);
   
@@ -67,7 +68,12 @@ export default function AppShell({
     const adminChatRoute = routes.adminChat;
 
     const recentChatLinks = useMemo(() => {
-        type ChatParticipant = { _id: string; name: string; lastname: string };
+        type ChatParticipant = {
+            _id: string;
+            name: string;
+            lastname: string;
+            avatarFile?: string;
+        };
 
         const sorted = [...chats]
             .sort((a, b) => {
@@ -97,11 +103,13 @@ export default function AppShell({
             const chatName = opponent
                 ? getUserFullName(opponent)
                 : chat.chatName ?? chat.bot?.name ?? 'Untitled chat';
+            const avatarUrl = opponent ? getUserAvatar(opponent) : undefined;
 
             return {
                 id: chat._id,
                 label: chatName,
                 href: `${adminChatRoute}?chatId=${chat._id}`,
+                avatarUrl,
             };
         });
     }, [adminChatRoute, chats, currentUserId]);
@@ -120,11 +128,11 @@ export default function AppShell({
         }
 
         return recentChatLinks.map((chat) => (
-            <NavItem
+            <ChatNavItem
                 key={chat.id}
                 href={chat.href}
                 label={chat.label}
-                icon={<MessageSquare className="size-5" />}
+                avatarUrl={chat.avatarUrl}
                 open={isOpen}
             />
         ));
@@ -154,19 +162,28 @@ export default function AppShell({
                 </div>
 
                 {/* содержимое меню; при необходимости можно дать собственный вертикальный скролл */}
-                <nav className="mt-2 flex-1 px-2">
-                    <NavItem href={routes.discover} label="Discover" icon={<Home className="size-5" />} open={open} />
-                    <NavItem
-                        href={routes.createAgent}
-                        label="Create aiAgent"
-                        icon={<PlusCircle className="size-5" />}
-                        open={open}
-                    />
-                    <NavItem href={routes.aiAgentProfile} label="aiAgent α" icon={<MessageSquare className="size-5" />} open={open} />
-                    <NavItem href={routes.userProfile} label="Keyser Soze" icon={<UserRound className="size-5" />} open={open} />
+                <nav className="mt-2 flex flex-1 flex-col px-2">
+                    <div className="space-y-1">
+                        <NavItem href={routes.discover} label="Discover" icon={<Home className="size-5" />} open={open} />
+                        <NavItem
+                            href={routes.createAgent}
+                            label="Create aiAgent"
+                            icon={<PlusCircle className="size-5" />}
+                            open={open}
+                        />
+                        <NavItem
+                            href={routes.aiAgentProfile}
+                            label="aiAgent α"
+                            icon={<MessageSquare className="size-5" />}
+                            open={open}
+                        />
+                        <NavItem href={routes.userProfile} label="Keyser Soze" icon={<UserRound className="size-5" />} open={open} />
+                    </div>
                     <div className="mt-4 border-t border-white/5 pt-3" />
                     <SectionTitle open={open}>Chats</SectionTitle>
-                    {renderChatNav(open)}
+                    <div className="flex-1 overflow-y-auto pr-1">
+                        <div className="space-y-1">{renderChatNav(open)}</div>
+                    </div>
                 </nav>
 
                 <div className="mt-4 border-t border-white/5 pt-3" />
@@ -332,5 +349,41 @@ function SectionTitle({ children, open }: { children: React.ReactNode; open: boo
         <div className="px-3 pb-1 text-xs uppercase tracking-wide text-white/50">
             {children}
         </div>
+    );
+}
+
+function ChatNavItem({
+    href,
+    label,
+    avatarUrl,
+    open,
+}: {
+    href: string;
+    label: string;
+    avatarUrl?: string;
+    open: boolean;
+}) {
+    const initials = label
+        .split(' ')
+        .map((part) => part[0])
+        .filter(Boolean)
+        .join('')
+        .slice(0, 2)
+        .toUpperCase();
+
+    return (
+        <Link
+            href={href}
+            className="group flex items-center gap-3 rounded-2xl px-3 py-2 transition hover:bg-white/10"
+        >
+            <div className="relative inline-flex size-9 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-white/10 text-sm font-semibold uppercase text-white">
+                {avatarUrl ? (
+                    <Image src={avatarUrl} alt={label} fill sizes="36px" className="object-cover" />
+                ) : (
+                    initials || label.charAt(0).toUpperCase()
+                )}
+            </div>
+            {open && <span className="truncate text-[15px]">{label}</span>}
+        </Link>
     );
 }
