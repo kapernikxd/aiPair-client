@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import {
@@ -33,6 +34,7 @@ export default function AppShell({
     sidebarWidth = 280,
     sidebarCollapsed = 80,
 }: AppShellProps) {
+    const router = useRouter();
     const { routes } = useAuthRoutes();
 
     const { uiStore, profileStore, authStore, chatStore } = useRootStore();
@@ -191,11 +193,11 @@ export default function AppShell({
                 {/* верхняя панель с кнопкой открытия */}
                 <div className="fixed top-0 left-0 right-0 z-40 flex items-center gap-3 border-b border-white/10 bg-neutral-900/90 px-3 py-3 backdrop-blur">
                     <Button
-                        onClick={() => uiStore.openMobileSidebar()}
+                        onClick={() => router.back()}
                         variant="sidebarIcon"
-                        aria-label="Open menu"
+                        aria-label="Go back"
                     >
-                        <Menu />
+                        <ChevronLeft />
                     </Button>
                     <div className="flex-1">
                         <label className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2">
