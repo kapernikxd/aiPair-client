@@ -32,14 +32,22 @@ export default function AppShell({
     sidebarCollapsed = 80,
 }: AppShellProps) {
     const { routes } = useAuthRoutes();
-    const { uiStore, profileStore, chatStore, authStore } = useRootStore();
+
+    const { uiStore, profileStore, authStore } = useRootStore();
     const open = useStoreData(uiStore, (store) => store.isSidebarOpen);
     const mobileOpen = useStoreData(uiStore, (store) => store.isMobileSidebarOpen);
+  
     const profile = useStoreData(profileStore, (store) => store.profile);
+    const profileName = useStoreData(profileStore, (store) => store.profile.userName);
+    const profileInitial = profile?.name?.[0]?.toUpperCase() ?? 'U';
+  
+    const authUser = useStoreData(authStore, (store) => store.user);
+    const isAuthenticated = useStoreData(authStore, (store) => store.isAuthenticated);
+    const avatarInitial = (authUser?.name ?? profileName ?? 'U').charAt(0).toUpperCase();
+
     const chats = useStoreData(chatStore, (store) => store.chats);
     const isLoadingChats = useStoreData(chatStore, (store) => store.isLoadingChats);
     const currentUserId = useStoreData(authStore, (store) => store.user?.id ?? '');
-    const profileInitial = profile?.name?.[0]?.toUpperCase() ?? 'U';
 
     useEffect(() => {
         uiStore.hydrateSidebarFromStorage();
@@ -189,9 +197,23 @@ export default function AppShell({
                             />
                         </label>
                     </div>
-                    <div className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-400 text-sm font-semibold">
-                        {profileInitial}
-                    </div>
+                    {isAuthenticated ? (
+                        <Link
+                            href={routes.myProfile}
+                            className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-400 text-sm font-semibold"
+                            aria-label="Перейти в профиль"
+                        >
+                            {avatarInitial}
+                        </Link>
+                    ) : (
+                        <Button
+                            onClick={() => uiStore.openAuthPopup()}
+                            variant="ghostRounded"
+                            className="h-10 px-3 text-xs font-semibold"
+                        >
+                            Авторизоваться
+                        </Button>
+                    )}
                 </div>
 
                 {mobileOpen && (
