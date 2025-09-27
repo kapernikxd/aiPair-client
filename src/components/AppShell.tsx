@@ -38,13 +38,10 @@ export default function AppShell({
     const open = useStoreData(uiStore, (store) => store.isSidebarOpen);
     const mobileOpen = useStoreData(uiStore, (store) => store.isMobileSidebarOpen);
   
-    const profile = useStoreData(profileStore, (store) => store.profile);
-    const profileName = useStoreData(profileStore, (store) => store.profile.userName);
-    const profileInitial = profile?.name?.[0]?.toUpperCase() ?? 'U';
-  
+    const profile = useStoreData(profileStore, (store) => store.profile);  
     const authUser = useStoreData(authStore, (store) => store.user);
     const isAuthenticated = useStoreData(authStore, (store) => store.isAuthenticated);
-    const avatarInitial = (authUser?.name ?? profileName ?? 'U').charAt(0).toUpperCase();
+    const avatarInitial = (authUser?.name ?? getUserFullName(profile) ?? 'U').charAt(0).toUpperCase();
 
     const chats = useStoreData(chatStore, (store) => store.chats);
     const isLoadingChats = useStoreData(chatStore, (store) => store.isLoadingChats);
@@ -297,7 +294,7 @@ export default function AppShell({
             {/* ==== МОБИЛЬНОЕ НИЖНЕЕ МЕНЮ ==== */}
             <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t border-white/10 bg-neutral-950/90 py-3 backdrop-blur md:hidden">
                 <Link
-                    href={routes.home}
+                    href={routes.discover}
                     className="flex flex-col items-center text-xs text-white/70"
                 >
                     <Home className="size-6" />

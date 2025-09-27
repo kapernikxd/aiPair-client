@@ -42,7 +42,7 @@ export default function CardRailTwoRows({
     <section className={`relative ${className}`}>
       {/* Заголовок */}
       {title && (
-        <h2 className="mb-3 text-lg font-semibold text-white flex items-center gap-2">
+        <h2 className="mb-3 text-lg font-semibold text-white flex items-center gap-2 px-3 md:px-0">
           {title}
           <span className="text-yellow-400">✨</span>
         </h2>
