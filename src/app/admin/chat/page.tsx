@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import AppShell from '@/components/AppShell';
@@ -11,6 +12,7 @@ import { Button } from '@/components/ui/Button';
 import type { MessageDTO } from '@/helpers/types';
 import { getUserAvatar, getUserFullName } from '@/helpers/utils/user';
 import { useRootStore, useStoreData } from '@/stores/StoreProvider';
+import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
 
 function formatPinnedTimestamp(value: string) {
   const date = new Date(value);
@@ -61,6 +63,7 @@ export default function ChatPage() {
   const searchParams = useSearchParams();
   const chatId = searchParams.get('chatId');
   const { chatStore, authStore } = useRootStore();
+  const { routes } = useAuthRoutes();
 
   const messages = useStoreData(chatStore, (store) => store.messages);
   const pinnedMessages = useStoreData(chatStore, (store) => store.pinnedMessages);
@@ -195,6 +198,16 @@ export default function ChatPage() {
     return conversationTitle;
   }, [conversationTitle, conversationUser]);
 
+  const conversationProfileHref = useMemo(() => {
+    if (conversationUser) {
+      const isAiBot = conversationUser.role === 'aiBot';
+      const baseRoute = isAiBot ? routes.aiAgentProfile : routes.userProfile;
+      return `${baseRoute}/${encodeURIComponent(conversationUser._id)}`;
+    }
+
+    return null;
+  }, [conversationUser, routes]);
+
   const senderNameMap = useMemo(() => {
     const map = new Map<string, string>();
     selectedChat?.users?.forEach((user) => {
@@ -228,21 +241,42 @@ export default function ChatPage() {
           <header className="rounded-3xl border border-white/10 bg-white/5 px-6 py-5 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur">
             <div className="flex flex-col gap-2">
               <span className="text-xs uppercase tracking-[0.28em] text-white/40">Conversation</span>
-              <div className="flex items-center gap-4">
-                <ChatAvatar
-                  name={conversationFullName}
-                  avatarUrl={conversationUser ? getUserAvatar(conversationUser) : undefined}
-                  avatarAlt={conversationFullName}
-                />
-                <div className="flex flex-col">
-                  <h1 className="text-2xl font-semibold text-white">{conversationFullName}</h1>
-                  {selectedChat?.users?.length ? (
-                    <p className="text-sm text-white/60">
-                      {selectedChat.users.length} participant{selectedChat.users.length === 1 ? '' : 's'}
-                    </p>
-                  ) : null}
+              {conversationProfileHref ? (
+                <Link
+                  href={conversationProfileHref}
+                  className="flex items-center gap-4 rounded-2xl transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                >
+                  <ChatAvatar
+                    name={conversationFullName}
+                    avatarUrl={conversationUser ? getUserAvatar(conversationUser) : undefined}
+                    avatarAlt={conversationFullName}
+                  />
+                  <div className="flex flex-col">
+                    <h1 className="text-2xl font-semibold text-white">{conversationFullName}</h1>
+                    {selectedChat?.users?.length ? (
+                      <p className="text-sm text-white/60">
+                        {selectedChat.users.length} participant{selectedChat.users.length === 1 ? '' : 's'}
+                      </p>
+                    ) : null}
+                  </div>
+                </Link>
+              ) : (
+                <div className="flex items-center gap-4">
+                  <ChatAvatar
+                    name={conversationFullName}
+                    avatarUrl={conversationUser ? getUserAvatar(conversationUser) : undefined}
+                    avatarAlt={conversationFullName}
+                  />
+                  <div className="flex flex-col">
+                    <h1 className="text-2xl font-semibold text-white">{conversationFullName}</h1>
+                    {selectedChat?.users?.length ? (
+                      <p className="text-sm text-white/60">
+                        {selectedChat.users.length} participant{selectedChat.users.length === 1 ? '' : 's'}
+                      </p>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </header>
 

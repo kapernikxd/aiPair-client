@@ -12,7 +12,7 @@ export interface ChatById {
 }
 
 export type ReadedMessageResponse = {
-  senderId: string,
-  chatId: string,
-  lastReadedMessageId: string,
-}
+  senderId: string;
+  chatId: string;
+  lastReadedMessageId: string;
+};
