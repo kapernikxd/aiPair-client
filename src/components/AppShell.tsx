@@ -31,11 +31,13 @@ export default function AppShell({
     sidebarCollapsed = 80,
 }: AppShellProps) {
     const { routes } = useAuthRoutes();
-    const { uiStore, profileStore } = useRootStore();
+    const { uiStore, profileStore, authStore } = useRootStore();
     const open = useStoreData(uiStore, (store) => store.isSidebarOpen);
     const mobileOpen = useStoreData(uiStore, (store) => store.isMobileSidebarOpen);
-    const profile = useStoreData(profileStore, (store) => store.profile);
-    const profileInitial = 'U';
+    const profileName = useStoreData(profileStore, (store) => store.profile.userName);
+    const authUser = useStoreData(authStore, (store) => store.user);
+    const isAuthenticated = useStoreData(authStore, (store) => store.isAuthenticated);
+    const avatarInitial = (authUser?.name ?? profileName ?? 'U').charAt(0).toUpperCase();
 
     useEffect(() => {
         uiStore.hydrateSidebarFromStorage();
@@ -115,9 +117,23 @@ export default function AppShell({
                             />
                         </label>
                     </div>
-                    <div className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-400 text-sm font-semibold">
-                        {profileInitial}
-                    </div>
+                    {isAuthenticated ? (
+                        <Link
+                            href={routes.myProfile}
+                            className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-400 text-sm font-semibold"
+                            aria-label="Перейти в профиль"
+                        >
+                            {avatarInitial}
+                        </Link>
+                    ) : (
+                        <Button
+                            onClick={() => uiStore.openAuthPopup()}
+                            variant="ghostRounded"
+                            className="h-10 px-3 text-xs font-semibold"
+                        >
+                            Авторизоваться
+                        </Button>
+                    )}
                 </div>
 
                 {mobileOpen && (
