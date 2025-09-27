@@ -6,9 +6,11 @@ import type { FormState, GalleryItem } from '@/helpers/types/agent-create';
 import { revokeGallery, revokeIfNeeded } from '@/helpers/utils/agent-create';
 import { highlights as defaultHighlights, openings as defaultOpenings } from '@/helpers/data/ai-agent';
 import { AiBotDetails, AiBotDTO } from '@/helpers/types/dtos/AiBotDto';
+import { AiBotMainPageBot } from '@/helpers/types';
 import { UserDTO } from '@/helpers/types';
 import { AvatarFile, ProfilesFilterParams } from '@/helpers/types/profile';
-import ProfileService, { AiBotUpdatePayload } from "@/services/profile/ProfileService";
+import ProfileService, { AiBotUpdatePayload } from '@/services/profile/ProfileService';
+import AiBotDetailsService from '@/services/ai-bot-details/AiBotDetailsService';
 
 export type AiAgentHeader = {
   name: string;
@@ -36,6 +38,7 @@ export class AiBotStore extends BaseStore {
   readonly maxGalleryItems = MAX_GALLERY_ITEMS;
 
   private profileService = ProfileService;
+  private aiBotDetailsService = AiBotDetailsService;
 
   createdBot: UserDTO | null = null;
   isSubmitting = false;
@@ -51,6 +54,10 @@ export class AiBotStore extends BaseStore {
   photosLoading = false;
   photosUpdating = false;
   isAiUserLoading = false;
+
+  mainPageBots: AiBotMainPageBot[] = [];
+  isLoadingMainPageBots = false;
+  mainPageBotsError: string | null = null;
 
   bots: UserDTO[] = [];
   isLoadingAiProfiles = false;
@@ -228,6 +235,37 @@ export class AiBotStore extends BaseStore {
       runInAction(() => {
         this.isLoadingAiProfiles = false;
       });
+    }
+  }
+
+  async fetchMainPageBots() {
+    if (this.isLoadingMainPageBots) {
+      return;
+    }
+
+    this.isLoadingMainPageBots = true;
+    this.mainPageBotsError = null;
+    this.notify();
+
+    try {
+      const { data } = await this.aiBotDetailsService.fetchAiBotsForMainPage();
+      runInAction(() => {
+        this.mainPageBots = data ?? [];
+      });
+      this.notify();
+      return this.mainPageBots;
+    } catch (error) {
+      console.error("Failed to load AI bots for admin main page", error);
+      runInAction(() => {
+        this.mainPageBots = [];
+        this.mainPageBotsError = "Не удалось загрузить список ботов. Попробуйте обновить страницу позже.";
+      });
+      this.notify();
+    } finally {
+      runInAction(() => {
+        this.isLoadingMainPageBots = false;
+      });
+      this.notify();
     }
   }
 

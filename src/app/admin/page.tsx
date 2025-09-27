@@ -1,75 +1,125 @@
 'use client';
 
-import React from "react";
-import CardRailTwoRows from "@/components/ui/CardRailTwoRows";
+import React, { useEffect, useMemo } from "react";
+
 import AppShell from "@/components/AppShell";
 import CardRailOneRow from "@/components/ui/CardRailOneRow";
+import CardRailTwoRows from "@/components/ui/CardRailTwoRows";
 import { Spacer } from "@/components/ui/Spacer";
+import { AiBotMainPageBot } from "@/helpers/types";
+import { BASE_URL } from "@/helpers/http";
+import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 
-// export const metadata = {
-//   title: 'AI Pair — Talk with an AI companion',
-// }
+const FALLBACK_IMAGE = "/img/noProfile.jpg";
 
-const data = [
-  { id: 0, cardWidth: "200", src: '/img/mizuhara.png', title: 'aiAgent α', views: 'Profile', hoverText: 'View the creator dossier.', href: '/profile/ai-agent' },
-  { id: 1, cardWidth: "200", src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/admin/chat' },
-  { id: 2, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/admin/chat' },
-  { id: 3, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/admin/chat' },
-  { id: 4, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/admin/chat' },
-  { id: 5, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/admin/chat' },
-  { id: 6, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/admin/chat' },
-  { id: 7, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/admin/chat' },
-  { id: 8, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/admin/chat' },
-  { id: 9, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/admin/chat' },
-  { id: 10, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/admin/chat' },
-  { id: 11, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/admin/chat' },
-  { id: 12, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/admin/chat' },
-  { id: 13, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/admin/chat' },
-  { id: 14, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/admin/chat' },
-  { id: 15, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/admin/chat' },
-  { id: 16, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/admin/chat' },
-  { id: 17, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/admin/chat' },
-  { id: 18, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/admin/chat' },
-  { id: 19, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/admin/chat' },
-  { id: 20, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/admin/chat' },
-  { id: 21, src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', href: '/admin/chat' },
-  { id: 22, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', href: '/admin/chat' },
-  // ...добавляй дальше сколько нужно
-];
+const buildImageUrl = (path?: string) => {
+  if (!path) {
+    return undefined;
+  }
 
-// Tailwind is assumed available in the preview. Primary brand color from your prefs: #6f2da8
-// Minimalistic, fast, single-file landing you can paste into a Next.js page or CRA component.
-// Sections: Nav, Hero, SocialProof, Features, Demo, Pricing, FAQ, Footer.
+  if (/^(https?:)?\/\//.test(path) || path.startsWith("data:")) {
+    return path;
+  }
+
+  if (path.startsWith("/")) {
+    return path;
+  }
+
+  const normalizedPath = path.startsWith("images/") ? path : `images/${path}`;
+  return `${BASE_URL}${normalizedPath}`;
+};
+
+const getCardItems = (bots: AiBotMainPageBot[]) =>
+  bots.map((bot) => {
+    const previewImage = bot.details?.photos?.[0] ?? bot.avatarFile;
+    const src = buildImageUrl(previewImage) ?? FALLBACK_IMAGE;
+    const avatarSrc = buildImageUrl(bot.avatarFile) ?? FALLBACK_IMAGE;
+    const fullName = [bot.name, bot.lastname].filter(Boolean).join(" ").trim();
+
+    return {
+      id: bot.id,
+      src,
+      avatarSrc,
+      title: fullName || bot.username || "AI Agent",
+      views: bot.profession || bot.username,
+      hoverText: bot.userBio || bot.details?.intro,
+      href: `/profile/ai-agent/${bot.id}`,
+    };
+  });
+
+const EMPTY_STATE_MESSAGE = "Пока что здесь нет ботов.";
 
 export default function Landing() {
+  const { aiBotStore } = useRootStore();
+  const bots = useStoreData(aiBotStore, (store) => store.mainPageBots);
+  const isLoading = useStoreData(aiBotStore, (store) => store.isLoadingMainPageBots);
+  const error = useStoreData(aiBotStore, (store) => store.mainPageBotsError);
+
+  useEffect(() => {
+    if (aiBotStore.mainPageBots.length === 0) {
+      void aiBotStore.fetchMainPageBots();
+    }
+  }, [aiBotStore]);
+
+  const groupedBots = useMemo(() => {
+    const result = new Map<string, AiBotMainPageBot[]>();
+
+    bots.forEach((bot) => {
+      const categories = bot.details?.categories?.length ? bot.details.categories : ["Без категории"];
+      categories.forEach((category) => {
+        const normalizedCategory = category.trim() || "Без категории";
+        const existing = result.get(normalizedCategory) ?? [];
+        existing.push(bot);
+        result.set(normalizedCategory, existing);
+      });
+    });
+
+    return Array.from(result.entries()).sort((a, b) => a[0].localeCompare(b[0], "ru"));
+  }, [bots]);
+
+  const hasBots = groupedBots.length > 0;
+
   return (
     <AppShell>
-      {/* любой контент справа */}
       <div className="flex h-full min-h-0 flex-col">
-        <div className="flex-1 p-2 md:p-9 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto p-2 md:p-9">
           <Spacer size={8} />
-          <CardRailOneRow
-            title="Teachers"
-            items={data}
-          />
-          <Spacer size={90} />
-          <CardRailOneRow
-            title="Romantic"
-            items={data}
-          />
-          <Spacer size={90} />
 
+          {isLoading && (
+            <div className="px-3 text-sm text-white/70 md:px-0">Загрузка ботов…</div>
+          )}
 
-          <CardRailOneRow
-            title="Story"
-            items={data}
-          />
-          <Spacer size={90} />
+          {error && (
+            <div className="px-3 text-sm text-red-400 md:px-0">{error}</div>
+          )}
 
-          <CardRailTwoRows title="For fun" items={data} className="mx-auto max-w-[1400px]" />
-          <Spacer size={40} />
+          {!isLoading && !error && !hasBots && (
+            <div className="px-3 text-sm text-white/70 md:px-0">{EMPTY_STATE_MESSAGE}</div>
+          )}
+
+          {!isLoading && !error &&
+            groupedBots.map(([category, categoryBots], index) => {
+              const cardItems = getCardItems(categoryBots);
+              const spacing = index === groupedBots.length - 1 ? 40 : 90;
+
+              if (cardItems.length > 8) {
+                return (
+                  <React.Fragment key={category}>
+                    <CardRailTwoRows title={category} items={cardItems} className="mx-auto max-w-[1400px]" />
+                    <Spacer size={spacing} />
+                  </React.Fragment>
+                );
+              }
+
+              return (
+                <React.Fragment key={category}>
+                  <CardRailOneRow title={category} items={cardItems} />
+                  <Spacer size={spacing} />
+                </React.Fragment>
+              );
+            })}
         </div>
       </div>
     </AppShell>
-  )
+  );
 }
