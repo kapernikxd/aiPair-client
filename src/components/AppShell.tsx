@@ -20,6 +20,7 @@ import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
 import ProfileSection from './ProfileSection';
 import { useRootStore, useStoreData } from '@/stores/StoreProvider';
 import { getUserAvatar, getUserFullName } from '@/helpers/utils/user';
+import { textRefactor } from '@/helpers/utils/common';
 
 type AppShellProps = {
     children: React.ReactNode;
@@ -37,8 +38,8 @@ export default function AppShell({
     const { uiStore, profileStore, authStore, chatStore } = useRootStore();
     const open = useStoreData(uiStore, (store) => store.isSidebarOpen);
     const mobileOpen = useStoreData(uiStore, (store) => store.isMobileSidebarOpen);
-  
-    const profile = useStoreData(profileStore, (store) => store.profile);  
+
+    const profile = useStoreData(profileStore, (store) => store.profile);
     const authUser = useStoreData(authStore, (store) => store.user);
     const isAuthenticated = useStoreData(authStore, (store) => store.isAuthenticated);
     const avatarInitial = (authUser?.name ?? getUserFullName(profile) ?? 'U').charAt(0).toUpperCase();
@@ -98,7 +99,7 @@ export default function AppShell({
                 ? participants.find((user) => user._id !== currentUserId)
                 : undefined;
             const chatName = opponent
-                ? getUserFullName(opponent)
+                ? textRefactor(getUserFullName(opponent), 25)
                 : chat.chatName ?? chat.bot?.name ?? 'Untitled chat';
             const avatarUrl = opponent ? getUserAvatar(opponent) : undefined;
 
@@ -137,13 +138,13 @@ export default function AppShell({
 
     return (
         // Внешний скролл отключен: скроллится только правый main
-        <div className="flex h-screen overflow-hidden bg-neutral-900 text-white">
+        <div className="flex h-screen min-h-0 overflow-hidden bg-neutral-900 text-white">
             {/* ==== ЛЕВЫЙ САЙДБАР: ДЕСКТОП ==== */}
             <motion.aside
                 aria-label="Sidebar"
                 animate={{ width: w }}
                 transition={{ type: 'tween', duration: 0.25 }}
-                className="relative z-20 hidden h-full md:flex flex-col border-r border-white/5 bg-neutral-950/70 backdrop-blur"
+                className="relative z-20 hidden h-full min-h-0 overflow-hidden md:flex flex-col border-r border-white/5 bg-neutral-950/70 backdrop-blur"
                 style={{ width: w }}
             >
                 {/* верх панели */}
@@ -158,33 +159,28 @@ export default function AppShell({
                     {open && <span className="text-lg font-semibold">talkie</span>}
                 </div>
 
-                {/* содержимое меню; при необходимости можно дать собственный вертикальный скролл */}
-                <nav className="mt-2 flex flex-1 flex-col px-2">
+                {/* содержимое меню со скроллом у списка чатов */}
+                <nav className="mt-2 flex flex-1 min-h-0 flex-col px-2">
                     <div className="space-y-1">
-                        <NavItem href={routes.discover} label="Discover" icon={<Home className="size-5" />} open={open} />
                         <NavItem
                             href={routes.createAgent}
-                            label="Create aiAgent"
+                            label="Create aiPair"
                             icon={<PlusCircle className="size-5" />}
                             open={open}
                         />
-                        <NavItem
-                            href={routes.aiAgentProfile}
-                            label="aiAgent α"
-                            icon={<MessageSquare className="size-5" />}
-                            open={open}
-                        />
-                        <NavItem href={routes.userProfile} label="Keyser Soze" icon={<UserRound className="size-5" />} open={open} />
+                        <div className="mt-4 border-t border-white/5 pt-3" />
+                        <NavItem href={routes.discover} label="Discover" icon={<Home className="size-5" />} open={open} />
                     </div>
+
                     <div className="mt-4 border-t border-white/5 pt-3" />
                     <SectionTitle open={open}>Chats</SectionTitle>
-                    <div className="flex-1 overflow-y-auto pr-1">
+
+                    <div className="flex-1 min-h-0 overflow-y-auto pr-1">
                         <div className="space-y-1">{renderChatNav(open)}</div>
                     </div>
                 </nav>
 
-                <div className="mt-4 border-t border-white/5 pt-3" />
-                {/* низ сайдбара — профиль */}
+                {/* низ сайдбара — профиль (вне скролла) */}
                 <div className="mt-auto px-3 pb-3">
                     <ProfileSection open={open} />
                 </div>
@@ -242,8 +238,9 @@ export default function AppShell({
                             animate={{ x: 0 }}
                             exit={{ x: -320 }}
                             transition={{ type: 'tween', duration: 0.2 }}
-                            className="fixed left-0 top-0 z-50 h-full w-[280px] border-r border-white/5 bg-neutral-950/90 p-3 backdrop-blur"
+                            className="fixed left-0 top-0 z-50 flex h-full w-[280px] min-h-0 flex-col overflow-hidden border-r border-white/5 bg-neutral-950/90 p-3 backdrop-blur"
                         >
+                            {/* заголовок мобильного меню */}
                             <div className="mb-2 flex items-center justify-between">
                                 <span className="text-lg font-semibold">Menu</span>
                                 <Button
@@ -254,24 +251,24 @@ export default function AppShell({
                                     <ChevronLeft />
                                 </Button>
                             </div>
-                            <nav className="space-y-1">
-                                <NavItem href={routes.discover} label="Discover" icon={<Home className="size-5" />} open />
-                                <NavItem
-                                    href={routes.createAgent}
-                                    label="Create aiAgent"
-                                    icon={<PlusCircle className="size-5" />}
-                                    open
-                                />
-                                <NavItem href={routes.aiAgentProfile} label="aiAgent α" icon={<MessageSquare className="size-5" />} open />
-                                <NavItem href={routes.userProfile} label="Keyser Soze" icon={<UserRound className="size-5" />} open />
-                                <NavItem href={routes.placeholder} label="Search" icon={<Search className="size-5" />} open />
-                                <NavItem href={routes.placeholder} label="Memory" icon={<Archive className="size-5" />} open />
-                                <NavItem href={routes.placeholder} label="Notification" icon={<Bell className="size-5" />} open />
+
+                            {/* прокручиваемая часть */}
+                            <div className="flex-1 min-h-0 flex flex-col">
+                                <nav className="space-y-1">
+                                    <NavItem href={routes.discover} label="Discover" icon={<Home className="size-5" />} open />
+                                    <div className="mt-4 border-t border-white/5 pt-3" />
+                                    <NavItem href={routes.createAgent} label="Create aiPair" icon={<PlusCircle className="size-5" />} open />
+                                </nav>
+
                                 <div className="mt-4 border-t border-white/5 pt-3" />
                                 <SectionTitle open>Chats</SectionTitle>
-                                {renderChatNav(true)}
-                            </nav>
 
+                                <div className="flex-1 min-h-0 overflow-y-auto pr-1">
+                                    <div className="space-y-1">{renderChatNav(true)}</div>
+                                </div>
+                            </div>
+
+                            {/* низ мобильного сайдбара — профиль */}
                             <div className="mt-4">
                                 <ProfileSection open />
                             </div>
@@ -281,7 +278,7 @@ export default function AppShell({
             </div>
 
             {/* ==== ПРАВЫЙ КОНТЕНТ (СКРОЛЛ ТУТ) ==== */}
-            <main className="flex-1 h-full overflow-hidden">
+            <main className="flex-1 h-full min-h-0 overflow-hidden">
                 {/* липкий топбар внутри правой колонки */}
                 <div className="sticky top-0 z-10 hidden md:flex items-center justify-between border-b border-white/10 bg-neutral-900/70 px-5 py-3 backdrop-blur">
                     <div className="text-sm text-white/70">For You</div>
@@ -330,7 +327,7 @@ function NavItem({
     return (
         <Link
             href={href}
-            className="group flex items-center gap-3 rounded-2xl px-3 py-2 hover:bg-white/10 transition"
+            className="group flex items-center gap-3 rounded-2xl px-3 py-2 transition hover:bg-white/10"
         >
             <span className="inline-flex size-9 items-center justify-center rounded-xl bg-white/10">
                 {icon}
