@@ -5,7 +5,7 @@ import { AiBotMainPageBot } from "@/helpers/types";
 
 class AiBotDetailsService {
   public async fetchAiBotsForMainPage(): Promise<AxiosResponse<AiBotMainPageBot[]>> {
-    return $api.get("/ai-bot-details/fetchAiBotsForMainPage");
+    return $api.get("/profile/ai-bots/fetchAiBotsForMainPage");
   }
 }
 
