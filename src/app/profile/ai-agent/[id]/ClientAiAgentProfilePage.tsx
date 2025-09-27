@@ -30,7 +30,7 @@ interface ClientAiAgentProfilePageProps {
 
 export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfilePageProps) {
   const { routes } = useAuthRoutes();
-  const { aiBotStore, authStore } = useRootStore();
+  const { aiBotStore, authStore, chatStore } = useRootStore();
   const router = useRouter();
   const { isMdUp } = useBreakpoint(); // md (≥768px) и выше
 
@@ -44,6 +44,7 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
   const [activeTab, setActiveTab] = useState<"info" | "gallery">("info");
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isFollowUpdating, setIsFollowUpdating] = useState(false);
+  const [isChatLoading, setIsChatLoading] = useState(false);
 
   useEffect(() => {
     if (!aiBotId) return;
@@ -113,6 +114,26 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
     }
   }, [aiBotStore, aiBotProfileId, disableFollowAction]);
 
+  const handleStartChat = useCallback(async () => {
+    if (!aiBotProfileId || isChatLoading) {
+      return;
+    }
+
+    setIsChatLoading(true);
+    try {
+      const response = await chatStore.messageById(aiBotProfileId);
+      const chatId = response?._id ?? response?.data?._id ?? response?.chat?._id;
+      if (chatId) {
+        const encodedId = encodeURIComponent(chatId);
+        router.push(`${routes.adminChat}?chatId=${encodedId}`);
+      }
+    } catch (error) {
+      console.error("Failed to start chat with AI agent:", error);
+    } finally {
+      setIsChatLoading(false);
+    }
+  }, [aiBotProfileId, chatStore, isChatLoading, router, routes.adminChat]);
+
   return (
     <AppShell>
       <div className="relative min-h-screen overflow-y-auto bg-neutral-950 text-white">
@@ -172,6 +193,8 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
                   isBusy={isFollowUpdating}
                   disableFollowAction={disableFollowAction}
                   onToggleFollow={handleToggleFollow}
+                  onStartChat={handleStartChat}
+                  isChatLoading={isChatLoading}
                 />
               </div>
 
