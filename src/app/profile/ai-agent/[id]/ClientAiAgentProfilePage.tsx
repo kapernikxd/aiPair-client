@@ -121,24 +121,25 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
         )}
 
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-4 pb-32 md:pb-20 pt-4 md:pt-14">
-          {canEdit && (
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  onClick={() => router.back()}
-                  variant="frostedIcon"
-                  aria-label="Go back"
-                >
-                  <ArrowLeft className="size-5" />
-                </Button>
-                <Button type="button" variant="frostedIcon" aria-label="Share agent">
-                  <Share2 className="size-5" />
-                </Button>
-                <Button type="button" variant="frostedIcon" aria-label="More options">
-                  <MoreHorizontal className="size-5" />
-                </Button>
-              </div>
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                onClick={() => router.back()}
+                variant="frostedIcon"
+                className="hidden md:inline-flex"
+                aria-label="Go back"
+              >
+                <ArrowLeft className="size-5" />
+              </Button>
+              <Button type="button" variant="frostedIcon" aria-label="Share agent">
+                <Share2 className="size-5" />
+              </Button>
+              <Button type="button" variant="frostedIcon" aria-label="More options">
+                <MoreHorizontal className="size-5" />
+              </Button>
+            </div>
+            {canEdit && (
               <div className="flex items-center gap-3">
                 <Button
                   type="button"
@@ -148,8 +149,8 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
                   Edit AI Agent
                 </Button>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {!aiBot ? (
             <div className="rounded-3xl border border-white/10 bg-neutral-900/70 p-8 text-center text-sm text-white/70">

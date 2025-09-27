@@ -1,4 +1,7 @@
+"use client";
+
 import { ArrowLeft, Check, MoreHorizontal, Share2, Sparkles } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/Button";
 
@@ -23,11 +26,18 @@ export default function HeaderBar({
       : "Subscribe";
   const ButtonIcon = isFollowing ? Check : Sparkles;
   const buttonVariant = isFollowing ? "frostedPill" : "subscribe";
+  const router = useRouter();
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-4">
       <div className="flex items-center gap-2">
-        <Button variant="frostedIcon">
+        <Button
+          type="button"
+          onClick={() => router.back()}
+          variant="frostedIcon"
+          className="hidden md:inline-flex"
+          aria-label="Go back"
+        >
           <ArrowLeft className="size-5" />
         </Button>
         <Button variant="frostedIcon">
