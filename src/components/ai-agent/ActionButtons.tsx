@@ -31,6 +31,8 @@ interface PrimaryCTAProps {
   isBusy?: boolean;
   disableFollowAction?: boolean;
   onToggleFollow?: () => void;
+  onStartChat?: () => void | Promise<void>;
+  isChatLoading?: boolean;
 }
 
 export function PrimaryCTAs({
@@ -39,6 +41,8 @@ export function PrimaryCTAs({
   isBusy,
   disableFollowAction,
   onToggleFollow,
+  onStartChat,
+  isChatLoading,
 }: PrimaryCTAProps) {
   const isActionDisabled = disableFollowAction || isBusy || !onToggleFollow;
   const buttonLabel = isBusy
@@ -48,6 +52,7 @@ export function PrimaryCTAs({
       : "Follow";
   const ButtonIcon = isFollowing ? Check : UserPlus;
   const buttonVariant = isFollowing ? "outline" : "primary";
+  const chatButtonLabel = isChatLoading ? "Opening chat..." : "Chat with aiAgent";
 
   return (
     <div className="flex flex-col gap-3 md:flex-row">
@@ -63,12 +68,25 @@ export function PrimaryCTAs({
           {buttonLabel}
         </Button>
       </div>
-      <Link
-        href={chatHref}
-        className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/15 px-4 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/5"
-      >
-        <MessageCircle className="size-4" /> Chat with aiAgent
-      </Link>
+      {onStartChat ? (
+        <Button
+          type="button"
+          variant="outline"
+          className="flex flex-1 items-center justify-center gap-2"
+          onClick={onStartChat}
+          disabled={isChatLoading}
+        >
+          <MessageCircle className="size-4" />
+          {chatButtonLabel}
+        </Button>
+      ) : (
+        <Link
+          href={chatHref}
+          className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/15 px-4 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/5"
+        >
+          <MessageCircle className="size-4" /> Chat with aiAgent
+        </Link>
+      )}
     </div>
   );
 }
