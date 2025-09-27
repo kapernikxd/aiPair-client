@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { ArrowRight, Mic, Sparkles, Shield, Globe2, PlayCircle, CheckCircle2, X } from "lucide-react";
 import LandingClient from '@/components/LandingClient';
 import DeviceMockup from '@/components/DeviceMockup';
@@ -10,13 +10,14 @@ import { Button } from "@/components/ui/Button";
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 import type { AuthRouteKey } from "@/helpers/hooks/useAuthRoutes";
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
+import { BASE_URL } from "@/helpers/http";
 import type { AuthProvider } from "@/stores/AuthStore";
 
 // export const metadata = {
 //   title: 'AI Pair — Talk with an AI companion',
 // }
 
-type CardItem = {
+type BaseCardItem = {
   id: number;
   cardWidth?: string;
   src: string;
@@ -26,7 +27,17 @@ type CardItem = {
   routeKey: AuthRouteKey;
 };
 
-const baseCardData: CardItem[] = [
+type LandingCardItem = {
+  id: number | string;
+  src: string;
+  avatarSrc?: string;
+  title: string;
+  views?: string;
+  hoverText?: string;
+  href?: string;
+};
+
+const baseCardData: BaseCardItem[] = [
   { id: 0, cardWidth: "200", src: '/img/mizuhara.png', title: 'aiAgent α', views: 'New', hoverText: 'Meet the undercover strategist.', routeKey: 'aiAgentProfile' },
   { id: 1, cardWidth: "200", src: '/img/mizuhara.png', title: 'Emily', views: '1.2K', hoverText: 'Your little sister...', routeKey: 'chatEmily' },
   { id: 2, src: '/img/mizuhara_chizuru_by_ppxd6049_dgcf97z-fullview.jpg', title: 'Tristan', views: '932', hoverText: 'Sirens — everyone has one...', routeKey: 'chatTristan' },
@@ -57,6 +68,25 @@ const baseCardData: CardItem[] = [
 // Minimalistic, fast, single-file landing you can paste into a Next.js page or CRA component.
 // Sections: Nav, Hero, SocialProof, Features, Demo, Pricing, FAQ, Footer.
 
+const FALLBACK_IMAGE = "/img/noProfile.jpg";
+
+const buildImageUrl = (path?: string) => {
+  if (!path) {
+    return undefined;
+  }
+
+  if (/^(https?:)?\/\//.test(path) || path.startsWith("data:")) {
+    return path;
+  }
+
+  if (path.startsWith("/")) {
+    return path;
+  }
+
+  const normalizedPath = path.startsWith("images/") ? path : `images/${path}`;
+  return `${BASE_URL}${normalizedPath}`;
+};
+
 const Pill = ({ children }: { children: React.ReactNode }) => (
   <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs text-white/80 backdrop-blur">
     {children}
@@ -83,12 +113,19 @@ const GradientBlob = ({ className = "" }: { className?: string }) => (
 
 export default function Landing() {
   const { routes } = useAuthRoutes();
-  const { uiStore, authStore, profileStore } = useRootStore();
+  const { uiStore, authStore, profileStore, aiBotStore } = useRootStore();
   const open = useStoreData(uiStore, (store) => store.isAuthPopupOpen);
   const showMobileBanner = useStoreData(uiStore, (store) => store.isMobileBannerVisible);
   const isAuthenticated = useStoreData(authStore, (store) => store.isAuthenticated);
   const authUser = useStoreData(authStore, (store) => store.user);
   const profileName = useStoreData(profileStore, (store) => store.profile.userName);
+  const mainPageBots = useStoreData(aiBotStore, (store) => store.mainPageBots);
+
+  useEffect(() => {
+    if (aiBotStore.mainPageBots.length === 0 && !aiBotStore.isLoadingMainPageBots) {
+      void aiBotStore.fetchMainPageBots();
+    }
+  }, [aiBotStore]);
 
   const handleAuth = (provider: AuthProvider) => {
     authStore.startAuth(provider);
@@ -100,14 +137,31 @@ export default function Landing() {
     });
     uiStore.closeAuthPopup();
   };
-  const cardItems = useMemo(
-    () =>
-      baseCardData.map(({ routeKey, ...rest }) => ({
-        ...rest,
-        href: routes[routeKey],
-      })),
-    [routes],
-  );
+  const cardItems: LandingCardItem[] = useMemo(() => {
+    if (mainPageBots.length > 0) {
+      return mainPageBots.map((bot) => {
+        const previewImage = bot.details?.photos?.[0] ?? bot.avatarFile;
+        const src = buildImageUrl(previewImage) ?? FALLBACK_IMAGE;
+        const avatarSrc = buildImageUrl(bot.avatarFile) ?? FALLBACK_IMAGE;
+        const fullName = [bot.name, bot.lastname].filter(Boolean).join(" ").trim();
+
+        return {
+          id: bot.id,
+          src,
+          avatarSrc,
+          title: fullName || bot.username || "AI Agent",
+          views: bot.profession || bot.username,
+          hoverText: bot.userBio || bot.details?.intro,
+          href: `${routes.aiAgentProfile}/${bot.id}`,
+        } satisfies LandingCardItem;
+      });
+    }
+
+    return baseCardData.map(({ routeKey, cardWidth: _cardWidth, ...rest }) => ({
+      ...rest,
+      href: routes[routeKey],
+    }));
+  }, [mainPageBots, routes]);
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
