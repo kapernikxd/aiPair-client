@@ -21,6 +21,7 @@ import { getUserFullName } from "@/helpers/utils/user";
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import type { Highlight } from "@/helpers/types/ai-agent";
 import SessionVibe from "@/components/ai-agent/SessionVibe";
+import { useBreakpoint } from "@/helpers/hooks/useBreakpoint";
 
 
 interface ClientAiAgentProfilePageProps {
@@ -31,6 +32,7 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
   const { routes } = useAuthRoutes();
   const { aiBotStore, authStore } = useRootStore();
   const router = useRouter();
+  const { isMdUp } = useBreakpoint(); // md (≥768px) и выше
 
   const aiBot = useStoreData(aiBotStore, (store) => store.selectAiBot);
   const isLoading = useStoreData(aiBotStore, (store) => store.isAiUserLoading);
@@ -123,15 +125,16 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
         <div className="mx-auto flex w-full max-w-4xl flex-col gap-10 px-4 pb-32 md:pb-20 pt-4 md:pt-14">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                onClick={() => router.back()}
-                variant="frostedIcon"
-                className="hidden md:inline-flex"
-                aria-label="Go back"
-              >
-                <ArrowLeft className="size-5" />
-              </Button>
+              {isMdUp && (
+                <Button
+                  type="button"
+                  onClick={() => router.back()}
+                  variant="frostedIcon"
+                  aria-label="Go back"
+                >
+                  <ArrowLeft className="size-5" />
+                </Button>
+              )}
               <Button type="button" variant="frostedIcon" aria-label="Share agent">
                 <Share2 className="size-5" />
               </Button>

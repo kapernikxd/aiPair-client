@@ -37,7 +37,7 @@ export default function ProfileSection({ open = true }: { open?: boolean }) {
 
         {open && (
           isAuthenticated ? (
-            <div className="mt-1 flex items-center gap-2">
+            <div className="mt-1 flex items-center gap-2" onClick={handleProfileClick}>
               <div className="text-left">
                 <span className="text-sm font-semibold text-white/90">{displayName}</span>
               </div>
