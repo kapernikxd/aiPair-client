@@ -18,6 +18,7 @@ import {
 import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
 import ProfileSection from './ProfileSection';
 import { useRootStore, useStoreData } from '@/stores/StoreProvider';
+import { getUserFullName } from '@/helpers/utils/user';
 
 type AppShellProps = {
     children: React.ReactNode;
@@ -31,20 +32,95 @@ export default function AppShell({
     sidebarCollapsed = 80,
 }: AppShellProps) {
     const { routes } = useAuthRoutes();
-    const { uiStore, profileStore } = useRootStore();
+    const { uiStore, profileStore, chatStore, authStore } = useRootStore();
     const open = useStoreData(uiStore, (store) => store.isSidebarOpen);
     const mobileOpen = useStoreData(uiStore, (store) => store.isMobileSidebarOpen);
     const profile = useStoreData(profileStore, (store) => store.profile);
-    const profileInitial = 'U';
+    const chats = useStoreData(chatStore, (store) => store.chats);
+    const isLoadingChats = useStoreData(chatStore, (store) => store.isLoadingChats);
+    const currentUserId = useStoreData(authStore, (store) => store.user?.id ?? '');
+    const profileInitial = profile?.name?.[0]?.toUpperCase() ?? 'U';
 
     useEffect(() => {
         uiStore.hydrateSidebarFromStorage();
     }, [uiStore]);
 
+    useEffect(() => {
+        if (!chatStore.chats.length && !chatStore.isLoadingChats) {
+            void chatStore.fetchChats({ page: 1 });
+        }
+    }, [chatStore]);
+
     const w = useMemo(
         () => (open ? sidebarWidth : sidebarCollapsed),
         [open, sidebarWidth, sidebarCollapsed],
     );
+
+    const adminChatRoute = routes.adminChat;
+
+    const recentChatLinks = useMemo(() => {
+        type ChatParticipant = { _id: string; name: string; lastname: string };
+
+        const sorted = [...chats]
+            .sort((a, b) => {
+                const dateA = a.latestMessage?.createdAt
+                    ? new Date(a.latestMessage.createdAt).getTime()
+                    : 0;
+                const dateB = b.latestMessage?.createdAt
+                    ? new Date(b.latestMessage.createdAt).getTime()
+                    : 0;
+                return dateB - dateA;
+            })
+            .slice(0, 10);
+
+        return sorted.map((chat) => {
+            const rawParticipants = (chat.users as unknown as Array<ChatParticipant | string>) ?? [];
+            const participants = rawParticipants.filter(
+                (user): user is ChatParticipant =>
+                    typeof user === 'object' &&
+                    user !== null &&
+                    '_id' in user &&
+                    'name' in user &&
+                    'lastname' in user,
+            );
+            const opponent = !chat.isGroupChat
+                ? participants.find((user) => user._id !== currentUserId)
+                : undefined;
+            const chatName = opponent
+                ? getUserFullName(opponent)
+                : chat.chatName ?? chat.bot?.name ?? 'Untitled chat';
+
+            return {
+                id: chat._id,
+                label: chatName,
+                href: `${adminChatRoute}?chatId=${chat._id}`,
+            };
+        });
+    }, [adminChatRoute, chats, currentUserId]);
+
+    const renderChatNav = (isOpen: boolean) => {
+        if (isLoadingChats && recentChatLinks.length === 0) {
+            return isOpen ? (
+                <div className="px-3 py-2 text-sm text-white/60">Loading chats…</div>
+            ) : null;
+        }
+
+        if (!isLoadingChats && recentChatLinks.length === 0) {
+            return isOpen ? (
+                <div className="px-3 py-2 text-sm text-white/60">No recent chats yet</div>
+            ) : null;
+        }
+
+        return recentChatLinks.map((chat) => (
+            <NavItem
+                key={chat.id}
+                href={chat.href}
+                label={chat.label}
+                icon={<MessageSquare className="size-5" />}
+                open={isOpen}
+            />
+        ));
+    };
 
     return (
         // Внешний скролл отключен: скроллится только правый main
@@ -82,9 +158,7 @@ export default function AppShell({
                     <NavItem href={routes.userProfile} label="Keyser Soze" icon={<UserRound className="size-5" />} open={open} />
                     <div className="mt-4 border-t border-white/5 pt-3" />
                     <SectionTitle open={open}>Chats</SectionTitle>
-                    <NavItem href={routes.adminChat} label="Sabine" icon={<MessageSquare className="size-5" />} open={open} />
-                    <NavItem href={routes.adminChat} label="Peta" icon={<MessageSquare className="size-5" />} open={open} />
-                    <NavItem href={routes.adminChat} label="Ginger" icon={<MessageSquare className="size-5" />} open={open} />
+                    {renderChatNav(open)}
                 </nav>
 
                 <div className="mt-4 border-t border-white/5 pt-3" />
@@ -159,9 +233,7 @@ export default function AppShell({
                                 <NavItem href={routes.placeholder} label="Notification" icon={<Bell className="size-5" />} open />
                                 <div className="mt-4 border-t border-white/5 pt-3" />
                                 <SectionTitle open>Chats</SectionTitle>
-                                <NavItem href={routes.adminChat} label="Sabine" icon={<MessageSquare className="size-5" />} open />
-                                <NavItem href={routes.adminChat} label="Peta" icon={<MessageSquare className="size-5" />} open />
-                                <NavItem href={routes.adminChat} label="Ginger" icon={<MessageSquare className="size-5" />} open />
+                                {renderChatNav(true)}
                             </nav>
 
                             <div className="mt-4">
