@@ -29,6 +29,7 @@ export class ChatStore extends BaseStore {
   hasMoreMessages = true;
   hasMoreChats = true;
   isLoadingChats = false;
+  isSendingMessage = false;
 
   isApiCheckedNewMessages = false;
 
@@ -291,6 +292,9 @@ export class ChatStore extends BaseStore {
     images?: any, //todo refactor type
   ) {
     try {
+      runInAction(() => {
+        this.isSendingMessage = true;
+      });
       const { data } = await this.chatService.sendMessage(
         message,
         chatId,
@@ -311,6 +315,11 @@ export class ChatStore extends BaseStore {
     } catch (err) {
       this.root.uiStore.showSnackbar("Failed", "error");
       console.error("Ошибка при отправке сообщения:", err);
+    } finally {
+      runInAction(() => {
+        this.isSendingMessage = false;
+      });
+      this.notify();
     }
   }
 
