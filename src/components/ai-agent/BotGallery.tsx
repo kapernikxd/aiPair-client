@@ -119,7 +119,7 @@ export default function BotGallery({ photos, isLoading }: BotGalleryProps) {
             }
           }}
         >
-          <div className="flex w-full max-w-4xl flex-col items-center gap-4">
+          <div className="flex w-full h-full max-w-4xl flex-col items-center gap-4">
             <button
               type="button"
               onClick={closeViewer}

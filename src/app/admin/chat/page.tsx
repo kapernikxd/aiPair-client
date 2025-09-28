@@ -354,7 +354,7 @@ export default function ChatPage() {
     <AppShell>
       <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
         <GradientOrbs />
-        <div className="relative z-10 mx-auto grid h-full w-full max-w-4xl flex-1 grid-rows-[auto,1fr,auto] gap-y-4 px-4 pb-16 pt-4 md:gap-y-6">
+        <div className="relative z-10 mx-auto grid h-full w-full max-w-4xl flex-1 grid-rows-[auto,1fr,auto] gap-y-2 px-1 pt-1 md:px-4 pb-16 md:pt-4 md:gap-y-6">
           <header className="rounded-3xl border border-white/10 bg-white/5 px-6 py-5 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur">
             <div className="flex flex-col gap-2">
               <span className="text-xs uppercase tracking-[0.28em] text-white/40">Conversation</span>
