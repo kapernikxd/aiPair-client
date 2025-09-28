@@ -34,6 +34,7 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
   const { aiBotStore, authStore, chatStore } = useRootStore();
   const router = useRouter();
   const { isMdUp } = useBreakpoint(); // md (≥768px) и выше
+  const discoverRoute = routes.discover;
 
   const aiBot = useStoreData(aiBotStore, (store) => store.selectAiBot);
   const isLoading = useStoreData(aiBotStore, (store) => store.isAiUserLoading);
@@ -138,6 +139,10 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
     }
   }, [aiBotProfileId, chatStore, isChatLoading, router, routes.adminChat]);
 
+  const handleAiAgentDeleted = useCallback(() => {
+    router.push(discoverRoute);
+  }, [router, discoverRoute]);
+
   return (
     <AppShell>
       <div className="relative min-h-screen overflow-y-auto bg-neutral-950 text-white">
@@ -163,7 +168,13 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
               <Button type="button" variant="frostedIcon" aria-label="Share agent">
                 <Share2 className="size-5" />
               </Button>
-              <MoreActionsMenu mode="aiAgent" reportTargetId={aiBotProfileId} />
+              <MoreActionsMenu
+                mode="aiAgent"
+                reportTargetId={aiBotProfileId}
+                aiAgentId={aiBotProfileId}
+                canDeleteAiAgent={isCreator}
+                onAiAgentDeleted={handleAiAgentDeleted}
+              />
             </div>
             {canEdit && (
               <div className="flex items-center gap-3">
