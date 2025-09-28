@@ -13,7 +13,8 @@ import {
     Search,
     MessageSquare,
     PlusCircle,
-    MessagesSquare
+    MessagesSquare,
+    Loader2,
 } from 'lucide-react';
 import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
 import ProfileSection from './ProfileSection';
@@ -25,7 +26,7 @@ import { Logo } from './ui/Logo';
 
 type AppShellProps = {
     children: React.ReactNode;
-    sidebarWidth?: number;     // ширина раскрытого меню (px)
+    sidebarWidth?: number; // ширина раскрытого меню (px)
     sidebarCollapsed?: number; // ширина свернутого меню (px)
 };
 
@@ -44,6 +45,10 @@ export default function AppShell({
     const profile = useStoreData(profileStore, (store) => store.profile);
     const authUser = useStoreData(authStore, (store) => store.user);
     const isAuthenticated = useStoreData(authStore, (store) => store.isAuthenticated);
+    const hasAttemptedAutoLogin = useStoreData(
+        authStore,
+        (store) => store.hasAttemptedAutoLogin,
+    );
     const avatarInitial = (authUser?.name ?? getUserFullName(profile) ?? 'U').charAt(0).toUpperCase();
 
     const chats = useStoreData(chatStore, (store) => store.chats);
@@ -55,10 +60,13 @@ export default function AppShell({
     }, [uiStore]);
 
     useEffect(() => {
+        if (!isAuthenticated) {
+            return;
+        }
         if (!chatStore.chats.length && !chatStore.isLoadingChats) {
             void chatStore.fetchChats({ page: 1 });
         }
-    }, [chatStore]);
+    }, [chatStore, isAuthenticated]);
 
     const w = useMemo(
         () => (open ? sidebarWidth : sidebarCollapsed),
@@ -138,9 +146,12 @@ export default function AppShell({
         ));
     };
 
+    const showLoadingOverlay = !hasAttemptedAutoLogin;
+    const showAuthOverlay = hasAttemptedAutoLogin && !isAuthenticated;
+
     return (
         // Внешний скролл отключен: скроллится только правый main
-        <div className="flex h-screen min-h-0 overflow-hidden bg-neutral-900 text-white">
+        <div className="relative flex h-screen min-h-0 overflow-hidden bg-neutral-900 text-white">
             {/* ==== ЛЕВЫЙ САЙДБАР: ДЕСКТОП ==== */}
             <motion.aside
                 aria-label="Sidebar"
@@ -290,7 +301,7 @@ export default function AppShell({
                     <div className="text-sm text-white/50">Right content header</div>
                 </div>
 
-                <div className="flex h-full min-h-0 flex-col pt-[67px] md:pt-0">{children}</div>
+                <div className="flex h-full min-h-0 flex-col pt-[67px] md:pt-0">{isAuthenticated ? children : null}</div>
             </main>
 
             {/* ==== МОБИЛЬНОЕ НИЖНЕЕ МЕНЮ ==== */}
@@ -314,6 +325,29 @@ export default function AppShell({
                     <MessageSquare className="size-6" />
                 </Link>
             </nav>
+
+            {(showLoadingOverlay || showAuthOverlay) && (
+                <div className="absolute inset-0 z-40 flex items-center justify-center bg-neutral-950/95 px-6 text-center">
+                    {showLoadingOverlay ? (
+                        <div className="flex flex-col items-center gap-3 text-white">
+                            <Loader2 className="size-6 animate-spin text-white" aria-hidden />
+                            <span className="text-sm text-white/70">Checking authentication…</span>
+                        </div>
+                    ) : (
+                        <div className="flex max-w-sm flex-col items-center gap-4 text-white">
+                            <div className="space-y-2">
+                                <h2 className="text-xl font-semibold text-white">Authentication required</h2>
+                                <p className="text-sm text-white/70">
+                                    Please sign in to access the aiPair admin experience.
+                                </p>
+                            </div>
+                            <Button onClick={() => uiStore.openAuthPopup()} variant="primary">
+                                Sign in
+                            </Button>
+                        </div>
+                    )}
+                </div>
+            )}
             <AuthPopupContainer />
         </div>
     );
@@ -345,11 +379,7 @@ function NavItem({
 
 function SectionTitle({ children, open }: { children: React.ReactNode; open: boolean }) {
     if (!open) return null;
-    return (
-        <div className="px-3 pb-1 text-xs uppercase tracking-wide text-white/50">
-            {children}
-        </div>
-    );
+    return <div className="px-3 pb-1 text-xs uppercase tracking-wide text-white/50">{children}</div>;
 }
 
 function ChatNavItem({

@@ -1,10 +1,11 @@
 "use client";
 
-import { ArrowLeft, Check, MoreHorizontal, Share2, Sparkles } from "lucide-react";
+import { ArrowLeft, Check, Share2, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/Button";
 import { useBreakpoint } from "@/helpers/hooks/useBreakpoint";
+import MoreActionsMenu from "@/components/MoreActionsMenu";
 
 interface HeaderBarProps {
   isFollowing?: boolean;
@@ -46,9 +47,7 @@ export default function HeaderBar({
         <Button variant="frostedIcon">
           <Share2 className="size-5" />
         </Button>
-        <Button variant="frostedIcon">
-          <MoreHorizontal className="size-5" />
-        </Button>
+        <MoreActionsMenu />
       </div>
       <Button
         variant={buttonVariant}

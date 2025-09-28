@@ -87,7 +87,7 @@ const GradientBlob = ({ className = "" }: { className?: string }) => (
 );
 
 export default function Landing() {
-  const { routes } = useAuthRoutes();
+  const { routes, goToAdmin } = useAuthRoutes();
   const { uiStore, authStore, profileStore, aiBotStore } = useRootStore();
   const open = useStoreData(uiStore, (store) => store.isAuthPopupOpen);
   const showMobileBanner = useStoreData(uiStore, (store) => store.isMobileBannerVisible);
@@ -104,13 +104,22 @@ export default function Landing() {
 
   const handleAuth = (provider: AuthProvider) => {
     authStore.startAuth(provider);
-    const normalized = profileName.toLowerCase().replace(/\s+/g, '.');
+    const rawProfileName = profileName ?? '';
+    const normalizedProfile = rawProfileName.trim().toLowerCase().replace(/\s+/g, '.');
+    const fallbackName = rawProfileName.trim() || 'User';
     authStore.completeAuth({
       id: `${provider}-${Date.now()}`,
-      name: profileName,
-      email: `${normalized || 'user'}@example.com`,
+      name: fallbackName,
+      email: `${normalizedProfile || 'user'}@example.com`,
     });
     uiStore.closeAuthPopup();
+  };
+  const handleAccountClick = () => {
+    if (isAuthenticated) {
+      goToAdmin();
+      return;
+    }
+    uiStore.openAuthPopup();
   };
   const cardItems: LandingCardItem[] = useMemo(() => {
     if (mainPageBots.length > 0) {
@@ -149,7 +158,7 @@ export default function Landing() {
           </div>
           <div className="flex items-center gap-3">
             <div className="hidden md:inline">
-              <Button onClick={() => uiStore.openAuthPopup()} variant="ghostRounded">
+              <Button onClick={handleAccountClick} variant="ghostRounded">
                 {isAuthenticated ? authUser?.name ?? profileName : 'Sign in'}
               </Button>
             </div>

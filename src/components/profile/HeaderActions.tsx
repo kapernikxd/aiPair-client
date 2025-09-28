@@ -1,9 +1,10 @@
 "use client";
 
-import { ArrowLeft, MoreHorizontal, Share2 } from "lucide-react";
+import { ArrowLeft, Share2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from '@/components/ui/Button';
 import { useBreakpoint } from "@/helpers/hooks/useBreakpoint";
+import MoreActionsMenu from "@/components/MoreActionsMenu";
 
 
 export default function HeaderActions({ onEdit }: { onEdit: () => void }) {
@@ -26,9 +27,7 @@ export default function HeaderActions({ onEdit }: { onEdit: () => void }) {
                 <Button variant="frostedIcon">
                     <Share2 className="size-5" />
                 </Button>
-                <Button variant="frostedIcon">
-                    <MoreHorizontal className="size-5" />
-                </Button>
+                <MoreActionsMenu />
             </div>
             <div className="flex items-center gap-3">
                 <Button onClick={onEdit} variant="solidWhitePill">
