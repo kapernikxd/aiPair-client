@@ -42,7 +42,7 @@ export default function MessageInput({
         onStopTyping?.();
         isTypingRef.current = false;
       }
-    }, 3000);
+    }, 2000);
   }, [onStopTyping]);
 
   const handleChange = useCallback(

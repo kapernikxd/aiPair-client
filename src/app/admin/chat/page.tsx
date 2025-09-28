@@ -7,7 +7,7 @@ import AppShell from '@/components/AppShell';
 import ChatAvatar from '@/components/chats/ChatAvatar';
 import MessageList from '@/components/chat/MessageList';
 import MessageInput from '@/components/chat/MessageInput';
-import TypingIndicator from '@/components/chat/TypingIndicator';
+import TypingIndicator, { buildTypingMessage } from '@/components/chat/TypingIndicator';
 import GradientOrbs from '@/components/ui/GradientOrbs';
 import { Button } from '@/components/ui/Button';
 import type { MessageDTO } from '@/helpers/types';
@@ -249,6 +249,14 @@ export default function ChatPage() {
     return map;
   }, [selectedChat]);
 
+  const activeTypingMessage = useMemo(() => {
+    const filteredUsers = typingUsers.filter((user) => user.userId && user.userId !== myId);
+    if (!filteredUsers.length) {
+      return null;
+    }
+    return buildTypingMessage(filteredUsers);
+  }, [myId, typingUsers]);
+
   const resolveSenderName = useCallback((message: MessageDTO) => {
     const id = message.sender?._id;
     if (!id) return 'Anonymous';
@@ -284,7 +292,9 @@ export default function ChatPage() {
                   />
                   <div className="flex flex-col">
                     <h1 className="text-2xl font-semibold text-white">{conversationFullName}</h1>
-                    {selectedChat?.users?.length ? (
+                    {activeTypingMessage ? (
+                      <p className="text-sm text-white/60">{activeTypingMessage}</p>
+                    ) : selectedChat?.users?.length ? (
                       <p className="text-sm text-white/60">
                         {selectedChat.users.length} participant{selectedChat.users.length === 1 ? '' : 's'}
                       </p>
@@ -300,7 +310,9 @@ export default function ChatPage() {
                   />
                   <div className="flex flex-col">
                     <h1 className="text-2xl font-semibold text-white">{conversationFullName}</h1>
-                    {selectedChat?.users?.length ? (
+                    {activeTypingMessage ? (
+                      <p className="text-sm text-white/60">{activeTypingMessage}</p>
+                    ) : selectedChat?.users?.length ? (
                       <p className="text-sm text-white/60">
                         {selectedChat.users.length} participant{selectedChat.users.length === 1 ? '' : 's'}
                       </p>
@@ -367,3 +379,4 @@ export default function ChatPage() {
     </AppShell>
   );
 }
+

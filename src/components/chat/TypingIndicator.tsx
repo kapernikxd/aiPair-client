@@ -12,7 +12,7 @@ type Props = {
   currentUserId?: string;
 };
 
-function buildTypingMessage(users: TypingUser[]): string {
+export function buildTypingMessage(users: TypingUser[]): string {
   const names = users
     .map((user) => user.userName?.trim())
     .filter((name): name is string => Boolean(name));
