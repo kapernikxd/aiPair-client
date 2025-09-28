@@ -183,25 +183,28 @@ export default function ChatPage() {
     }
   }, [chatId, chatStore, isLoadingMore, messages.length]);
 
+  const messageCount = messages.length;
+  const lastMessageId = messageCount ? messages[messageCount - 1]?._id : undefined;
+
   useEffect(() => {
     const container = scrollContainerRef.current;
-    if (!container || !messages.length) {
-      previousLastMessageIdRef.current = messages[messages.length - 1]?._id;
+
+    if (!container || !messageCount) {
+      previousLastMessageIdRef.current = lastMessageId;
       previousChatIdRef.current = chatId;
       return;
     }
 
-    const currentLastMessageId = messages[messages.length - 1]?._id;
     const chatHasChanged = chatId && chatId !== previousChatIdRef.current;
-    const hasNewLastMessage = currentLastMessageId && currentLastMessageId !== previousLastMessageIdRef.current;
+    const hasNewLastMessage = lastMessageId && lastMessageId !== previousLastMessageIdRef.current;
 
     if (chatHasChanged || hasNewLastMessage) {
       container.scrollTop = container.scrollHeight;
     }
 
-    previousLastMessageIdRef.current = currentLastMessageId;
+    previousLastMessageIdRef.current = lastMessageId;
     previousChatIdRef.current = chatId;
-  }, [chatId, messages]);
+  }, [chatId, lastMessageId, messageCount]);
 
   const conversationTitle = useMemo(() => {
     if (!selectedChat) return 'Chat';
