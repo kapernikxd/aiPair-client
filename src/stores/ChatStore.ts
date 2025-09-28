@@ -171,6 +171,7 @@ export class ChatStore extends BaseStore {
     if (this.isLoadingChats || (!this.hasMoreChats && options?.page && options.page > 1)) return [];
 
     this.isLoadingChats = true;
+    this.notify();
     try {
       const response = await this.chatService.fetchChats(options);
 
@@ -198,6 +199,7 @@ export class ChatStore extends BaseStore {
         }
         this.hasMoreChats = response.data.hasMore;
       });
+      this.notify();
       return response.data.chats.map((chat: any) => chat._id);
     } catch (err) {
       console.error("Ошибка при получении чатов:", err);
@@ -206,6 +208,7 @@ export class ChatStore extends BaseStore {
       runInAction(() => {
         this.isLoadingChats = false;
       });
+      this.notify();
     }
   }
 
