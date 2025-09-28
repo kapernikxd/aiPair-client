@@ -142,7 +142,7 @@ export default function ProfileCard({ profile, genderLabel, isCurrentUser = fals
                     </div>
                     <div>
                         <p className="text-xs uppercase tracking-wide text-white/40">Connections</p>
-                        <div className="mt-3 grid grid-cols-2 gap-3">
+                        <div className="mt-3 grid grid-cols-2 md:grid-cols-1 gap-3">
                             <button
                                 type="button"
                                 onClick={() => setActiveModal("followers")}
