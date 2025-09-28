@@ -77,16 +77,16 @@ export class AiBotStore extends BaseStore {
       case 0:
         return Boolean(
           this.form.firstName.trim() &&
-            this.form.lastName.trim() &&
-            (this.avatar !== null || this.avatarPreview !== null),
+          this.form.lastName.trim() &&
+          (this.avatar !== null || this.avatarPreview !== null),
         );
       case 1:
         return this.form.categories.length > 0 && this.form.usefulness.length > 0;
       case 2:
         return Boolean(
           this.form.prompt.trim() &&
-            this.form.description.trim() &&
-            this.form.intro.trim(),
+          this.form.description.trim() &&
+          this.form.intro.trim(),
         );
       default:
         return this.gallery.length > 0;
@@ -266,7 +266,7 @@ export class AiBotStore extends BaseStore {
         this.selectAiBot = null;
       });
       this.notify();
-      // UiStore.showSnackbar("Failed", "error");
+      this.root.uiStore.showSnackbar("Failed", "error");
     } finally {
       runInAction(() => {
         this.isAiUserLoading = false;
@@ -316,7 +316,7 @@ export class AiBotStore extends BaseStore {
         this.notify();
       });
     } catch (e) {
-      // uiStore.showSnackbar("Failed", "error");
+      this.root.uiStore.showSnackbar("Failed", "error");
     }
   }
 
@@ -328,7 +328,7 @@ export class AiBotStore extends BaseStore {
         this.notify();
       });
     } catch (e) {
-      // uiStore.showSnackbar("Failed", "error");
+      this.root.uiStore.showSnackbar("Failed", "error");
     }
   }
 
@@ -369,7 +369,7 @@ export class AiBotStore extends BaseStore {
       });
       this.notify();
     } catch (e) {
-      // this.root.uiStore.showSnackbar('Failed to update follow status', 'error');
+      this.root.uiStore.showSnackbar('Failed to update follow status', 'error');
     }
   }
 
@@ -380,10 +380,10 @@ export class AiBotStore extends BaseStore {
         this.myBots.push(data);
         this.notify();
       });
-      // uiStore.showSnackbar("Created", "success");
+      this.root.uiStore.showSnackbar("Created", "success");
       return data;
     } catch (error: unknown) {
-      // uiStore.showSnackbar("Failed", "error");
+      this.root.uiStore.showSnackbar("Failed", "error");
       throw error;
     }
   }
@@ -581,6 +581,7 @@ export class AiBotStore extends BaseStore {
         this.botDetails = null;
         this.botPhotos = [];
         this.notify();
+        this.root.uiStore.showSnackbar('AI agent deleted', 'success');
       });
     } catch (e) {
       throw e;
@@ -602,7 +603,7 @@ export class AiBotStore extends BaseStore {
       });
       this.notify();
     } catch (e) {
-      // uiStore.showSnackbar("Failed", "error");
+      this.root.uiStore.showSnackbar("Failed", "error");
     } finally {
       runInAction(() => {
         this.photosLoading = false;
@@ -620,9 +621,9 @@ export class AiBotStore extends BaseStore {
         this.botPhotos = data.photos ?? [];
       });
       this.notify();
-      // uiStore.showSnackbar("Saved", "success");
+      this.root.uiStore.showSnackbar("Saved", "success");
     } catch (e) {
-      // uiStore.showSnackbar("Upload failed", "error");
+      this.root.uiStore.showSnackbar("Upload failed", "error");
     } finally {
       runInAction(() => {
         this.photosUpdating = false;
@@ -641,9 +642,9 @@ export class AiBotStore extends BaseStore {
         this.botPhotos = data.photos ?? [];
       });
       this.notify();
-      // uiStore.showSnackbar("Deleted", "success");
+      this.root.uiStore.showSnackbar("Deleted", "success");
     } catch (e) {
-      // uiStore.showSnackbar("Delete failed", "error");
+      this.root.uiStore.showSnackbar("Delete failed", "error");
     } finally {
       runInAction(() => {
         this.photosUpdating = false;

@@ -32,7 +32,7 @@ type AppShellProps = {
 
 export default function AppShell({
     children,
-    sidebarWidth = 280,
+    sidebarWidth = 240,
     sidebarCollapsed = 80,
 }: AppShellProps) {
     const router = useRouter();
@@ -157,7 +157,7 @@ export default function AppShell({
                 aria-label="Sidebar"
                 animate={{ width: w }}
                 transition={{ type: 'tween', duration: 0.25 }}
-                className="relative z-20 hidden h-full min-h-0 overflow-hidden md:flex flex-col border-r border-white/5 bg-neutral-950/70 backdrop-blur"
+                className="relative z-20 hidden h-full min-h-0 overflow-hidden md:flex flex-col border-r border-white/5 bg-sidebar/70 backdrop-blur"
                 style={{ width: w }}
             >
                 {/* верх панели */}

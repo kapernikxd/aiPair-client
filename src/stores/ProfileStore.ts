@@ -234,6 +234,7 @@ export class ProfileStore extends BaseStore {
         Object.assign(this.myProfile, data.user);
       });
       this.notify();
+      this.root.uiStore.showSnackbar("Updated", "success");
     } catch (error) {
       console.error("Error updating profile", error);
     }
@@ -283,7 +284,7 @@ export class ProfileStore extends BaseStore {
       });
       this.notify();
     } catch (error) {
-      // uiStore.showSnackbar("Failed", "error");
+      this.root.uiStore.showSnackbar("Failed", "error");
     }
   }
 
@@ -416,6 +417,7 @@ export class ProfileStore extends BaseStore {
   async blockUser(data: { reason?: string; details?: string; targetId: string }) {
     try {
       await this.profileService.blockUser(data);
+      this.root.uiStore.showSnackbar("User blocked", "success");
       return true;
     } catch (error) {
       console.error("Failed to report user", error);
@@ -426,6 +428,7 @@ export class ProfileStore extends BaseStore {
   async reportAiBot(data: { reason?: string; details?: string; targetId: string }) {
     try {
       await this.profileService.reportAiBot(data);
+      this.root.uiStore.showSnackbar("Report sended", "success");
       return true;
     } catch (error) {
       console.error("Failed to report AI agent", error);
@@ -436,6 +439,7 @@ export class ProfileStore extends BaseStore {
   async deleteAccount() {
     try {
       await this.profileService.deleteAccount(this.myProfile._id);
+      this.root.uiStore.showSnackbar("Request sended", "success");
     } catch (error) {
       console.error(error);
     }

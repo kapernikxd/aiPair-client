@@ -238,7 +238,7 @@ export default function MoreActionsMenu({
               <Button
                 type="button"
                 variant="solidWhite"
-                className="bg-red-600 text-white hover:bg-red-500"
+                className="bg-red-600 text-black hover:bg-red-500"
                 onClick={handleConfirmDelete}
                 disabled={isDeleting}
               >
