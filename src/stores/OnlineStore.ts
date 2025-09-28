@@ -260,11 +260,17 @@ export class OnlineStore extends BaseStore {
 
   setTypingStatus(userId: string, userName: string, isTyping: boolean) {
     runInAction(() => {
+      const exists = this.typingUsers.some(u => u.userId === userId);
+
       if (isTyping) {
-        if (!this.typingUsers.some(u => u.userId === userId)) {
-          this.typingUsers.push({ userId, userName });
+        if (exists) {
+          this.typingUsers = this.typingUsers.map((user) =>
+            user.userId === userId ? { userId, userName } : user,
+          );
+        } else {
+          this.typingUsers = [...this.typingUsers, { userId, userName }];
         }
-      } else {
+      } else if (exists) {
         this.typingUsers = this.typingUsers.filter(u => u.userId !== userId);
       }
     });
