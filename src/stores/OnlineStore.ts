@@ -270,6 +270,12 @@ export class OnlineStore extends BaseStore {
     });
   }
 
+  clearTypingUsers() {
+    runInAction(() => {
+      this.typingUsers = [];
+    });
+  }
+
   getTypingUsers() { return this.typingUsers; }
 
   emitTyping(chatId: string) {
