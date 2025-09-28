@@ -39,10 +39,12 @@ export class UiStore extends BaseStore {
     this.snackBar.message = message;
     this.snackBar.type = type;
     this.snackBar.visible = true;
+    this.notify();
   }
 
   hideSnackbar() {
     this.snackBar.visible = false;
+    this.notify();
   }
 
   openAuthPopup() {
