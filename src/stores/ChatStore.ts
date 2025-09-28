@@ -83,6 +83,7 @@ export class ChatStore extends BaseStore {
       runInAction(() => {
         this.pinnedMessages = data.data || [];
       });
+      this.notify();
     } catch (e) {
       console.error("Error loading pinned messages:", e);
     }
@@ -92,6 +93,7 @@ export class ChatStore extends BaseStore {
     runInAction(() => {
       this.pinnedMessages = [];
     });
+    this.notify();
   }
 
   isMessagePinned(id: string) {
@@ -113,6 +115,7 @@ export class ChatStore extends BaseStore {
       runInAction(() => {
         this.pinnedMessages.push(message);
       });
+      this.notify();
     } catch (e) {
       console.error("Error pinning message:", e);
     }
@@ -124,6 +127,7 @@ export class ChatStore extends BaseStore {
       runInAction(() => {
         this.pinnedMessages = this.pinnedMessages.filter((m) => m._id !== messageId);
       });
+      this.notify();
     } catch (e) {
       console.error("Error unpinning message:", e);
     }
@@ -135,14 +139,17 @@ export class ChatStore extends BaseStore {
         .filter((pm) => this.messages.find((m) => m._id === pm._id))
         .map((pm) => this.messages.find((m) => m._id === pm._id) || pm);
     });
+    this.notify();
   }
 
   cleanMessages() {
     this.messages = [];
+    this.notify();
   }
 
   cleanOpponentId() {
     this.opponentId = undefined;
+    this.notify();
   }
 
   get isGroupChat() {
@@ -225,6 +232,7 @@ export class ChatStore extends BaseStore {
           this.opponentId = undefined
         }
       });
+      this.notify();
     } catch (err) {
       console.error("Ошибка при получении чата:", err);
     }
@@ -263,6 +271,7 @@ export class ChatStore extends BaseStore {
         this.hasMoreMessages = incomingMessages.length === 30; // ✅ Если меньше 30, значит, больше нет
         this.updatePinnedFromMessages();
       });
+      this.notify();
     } catch (err) {
       console.error("Ошибка при получении сообщений:", err);
     }
@@ -272,6 +281,7 @@ export class ChatStore extends BaseStore {
     runInAction(() => {
       this.messages = newMessages;
     });
+    this.notify();
   }
 
   async sendMessage(
