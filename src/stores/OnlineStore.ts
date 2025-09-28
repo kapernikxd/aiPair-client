@@ -268,12 +268,14 @@ export class OnlineStore extends BaseStore {
         this.typingUsers = this.typingUsers.filter(u => u.userId !== userId);
       }
     });
+    this.notify();
   }
 
   clearTypingUsers() {
     runInAction(() => {
       this.typingUsers = [];
     });
+    this.notify();
   }
 
   getTypingUsers() { return this.typingUsers; }
