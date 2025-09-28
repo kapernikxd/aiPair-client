@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import {
@@ -37,6 +37,9 @@ export default function AppShell({
 }: AppShellProps) {
     const router = useRouter();
     const { routes } = useAuthRoutes();
+
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
 
     const { uiStore, profileStore, authStore, chatStore } = useRootStore();
     const open = useStoreData(uiStore, (store) => store.isSidebarOpen);
@@ -122,6 +125,8 @@ export default function AppShell({
         });
     }, [adminChatRoute, chats, currentUserId]);
 
+    const activeChatId = searchParams.get('chatId');
+
     const renderChatNav = (isOpen: boolean) => {
         if (isLoadingChats && recentChatLinks.length === 0) {
             return isOpen ? (
@@ -142,6 +147,7 @@ export default function AppShell({
                 label={chat.label}
                 avatarUrl={chat.avatarUrl}
                 open={isOpen}
+                isActive={chat.id === activeChatId}
             />
         ));
     };
@@ -180,10 +186,23 @@ export default function AppShell({
                             label="Create aiPair"
                             icon={<PlusCircle className="size-5" />}
                             open={open}
+                            isActive={pathname === routes.createAgent}
                         />
                         <div className="mt-4 border-t border-white/5 pt-3" />
-                        <NavItem href={routes.discover} label="Discover" icon={<Home className="size-5" />} open={open} />
-                        <NavItem href={routes.adminChats} label="Chats" icon={<MessagesSquare className="size-5" />} open={open} />
+                        <NavItem
+                            href={routes.discover}
+                            label="Discover"
+                            icon={<Home className="size-5" />}
+                            open={open}
+                            isActive={pathname === routes.discover}
+                        />
+                        <NavItem
+                            href={routes.adminChats}
+                            label="Chats"
+                            icon={<MessagesSquare className="size-5" />}
+                            open={open}
+                            isActive={pathname === routes.adminChats || pathname === routes.adminChat}
+                        />
                     </div>
 
                     <div className="mt-4 border-t border-white/5 pt-3" />
@@ -269,9 +288,21 @@ export default function AppShell({
                             {/* прокручиваемая часть */}
                             <div className="flex-1 min-h-0 flex flex-col">
                                 <nav className="space-y-1">
-                                    <NavItem href={routes.discover} label="Discover" icon={<Home className="size-5" />} open />
+                                    <NavItem
+                                        href={routes.discover}
+                                        label="Discover"
+                                        icon={<Home className="size-5" />}
+                                        open
+                                        isActive={pathname === routes.discover}
+                                    />
                                     <div className="mt-4 border-t border-white/5 pt-3" />
-                                    <NavItem href={routes.createAgent} label="Create aiPair" icon={<PlusCircle className="size-5" />} open />
+                                    <NavItem
+                                        href={routes.createAgent}
+                                        label="Create aiPair"
+                                        icon={<PlusCircle className="size-5" />}
+                                        open
+                                        isActive={pathname === routes.createAgent}
+                                    />
                                 </nav>
 
                                 <div className="mt-4 border-t border-white/5 pt-3" />
@@ -308,19 +339,32 @@ export default function AppShell({
             <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t border-white/10 bg-neutral-950/90 py-3 backdrop-blur md:hidden">
                 <Link
                     href={routes.discover}
-                    className="flex flex-col items-center text-xs text-white/70"
+                    className={`flex flex-col items-center text-xs ${
+                        pathname === routes.discover ? 'text-white' : 'text-white/70'
+                    }`}
+                    aria-current={pathname === routes.discover ? 'page' : undefined}
                 >
                     <Home className="size-6" />
                 </Link>
                 <Link
                     href={routes.createAgent}
-                    className="flex flex-col items-center text-xs text-white/70"
+                    className={`flex flex-col items-center text-xs ${
+                        pathname === routes.createAgent ? 'text-white' : 'text-white/70'
+                    }`}
+                    aria-current={pathname === routes.createAgent ? 'page' : undefined}
                 >
                     <PlusCircle className="size-6" />
                 </Link>
                 <Link
                     href={routes.adminChats}
-                    className="flex flex-col items-center text-xs text-white/70"
+                    className={`flex flex-col items-center text-xs ${
+                        pathname === routes.adminChats || pathname === routes.adminChat
+                            ? 'text-white'
+                            : 'text-white/70'
+                    }`}
+                    aria-current={
+                        pathname === routes.adminChats || pathname === routes.adminChat ? 'page' : undefined
+                    }
                 >
                     <MessageSquare className="size-6" />
                 </Link>
@@ -358,18 +402,27 @@ function NavItem({
     label,
     icon,
     open,
+    isActive = false,
 }: {
     href: string;
     label: string;
     icon: React.ReactNode;
     open: boolean;
+    isActive?: boolean;
 }) {
     return (
         <Link
             href={href}
-            className="group flex items-center gap-3 rounded-2xl px-3 py-2 transition hover:bg-white/10"
+            className={`group flex items-center gap-3 rounded-2xl px-3 py-2 transition hover:bg-white/10 ${
+                isActive ? 'bg-white/15 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.12)]' : 'text-white/70'
+            }`}
+            aria-current={isActive ? 'page' : undefined}
         >
-            <span className="inline-flex size-9 items-center justify-center rounded-xl bg-white/10">
+            <span
+                className={`inline-flex size-9 items-center justify-center rounded-xl border border-white/10 transition ${
+                    isActive ? 'bg-white/20 text-white' : 'bg-white/10 text-white/80'
+                }`}
+            >
                 {icon}
             </span>
             {open && <span className="truncate text-[15px]">{label}</span>}
@@ -387,11 +440,13 @@ function ChatNavItem({
     label,
     avatarUrl,
     open,
+    isActive = false,
 }: {
     href: string;
     label: string;
     avatarUrl?: string;
     open: boolean;
+    isActive?: boolean;
 }) {
     const initials = label
         .split(' ')
@@ -404,9 +459,16 @@ function ChatNavItem({
     return (
         <Link
             href={href}
-            className="group flex items-center gap-3 rounded-2xl px-3 py-2 transition hover:bg-white/10"
+            className={`group flex items-center gap-3 rounded-2xl px-3 py-2 transition hover:bg-white/10 ${
+                isActive ? 'bg-white/15 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.12)]' : 'text-white/80'
+            }`}
+            aria-current={isActive ? 'page' : undefined}
         >
-            <div className="relative inline-flex size-9 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-white/10 text-sm font-semibold uppercase text-white">
+            <div
+                className={`relative inline-flex size-9 items-center justify-center overflow-hidden rounded-xl border text-sm font-semibold uppercase transition ${
+                    isActive ? 'border-white/30 bg-white/20 text-white' : 'border-white/10 bg-white/10 text-white'
+                }`}
+            >
                 {avatarUrl ? (
                     <Image src={avatarUrl} alt={label} fill sizes="36px" className="object-cover" />
                 ) : (
