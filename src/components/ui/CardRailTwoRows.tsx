@@ -12,6 +12,8 @@ type Item = {
   views?: number | string;
   hoverText?: string;
   href?: string;
+  onChatNow?: () => void;
+  isChatLoading?: boolean;
 };
 
 type Props = {
@@ -97,6 +99,8 @@ export default function CardRailTwoRows({
                 views={it.views}
                 hoverText={it.hoverText}
                 href={it.href}
+                onChatNow={it.onChatNow}
+                isChatLoading={it.isChatLoading}
               />
             </div>
           ))}

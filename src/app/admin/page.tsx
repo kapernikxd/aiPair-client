@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import AppShell from "@/components/AppShell";
 import CardRailOneRow from "@/components/ui/CardRailOneRow";
@@ -10,6 +10,7 @@ import { AiBotMainPageBot } from "@/helpers/types";
 import { BASE_URL } from "@/helpers/http";
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import { GetProfile, useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
+import { useRouter } from "next/navigation";
 
 const FALLBACK_IMAGE = "/img/noProfile.jpg";
 
@@ -30,7 +31,12 @@ const buildImageUrl = (path?: string) => {
   return `${BASE_URL}${normalizedPath}`;
 };
 
-const getCardItems = (bots: AiBotMainPageBot[], getAiProfile: GetProfile) =>
+const getCardItems = (
+  bots: AiBotMainPageBot[],
+  getAiProfile: GetProfile,
+  onChatNow?: (botId: string) => void,
+  chatLoadingBotId?: string | null,
+) =>
   bots.map((bot) => {
     const previewImage = bot.details?.photos?.[0] ?? bot.avatarFile;
     const src = buildImageUrl(previewImage) ?? FALLBACK_IMAGE;
@@ -45,18 +51,22 @@ const getCardItems = (bots: AiBotMainPageBot[], getAiProfile: GetProfile) =>
       views: bot.profession || bot.username,
       hoverText: bot.userBio || bot.details?.intro,
       href: getAiProfile(bot.id),
+      onChatNow: onChatNow ? () => onChatNow(bot.id) : undefined,
+      isChatLoading: chatLoadingBotId === bot.id,
     };
   });
 
 const EMPTY_STATE_MESSAGE = "Пока что здесь нет ботов.";
 
 export default function Landing() {
-  const { aiBotStore } = useRootStore();
-  const { getAiProfile } = useAuthRoutes();
+  const { aiBotStore, chatStore, uiStore } = useRootStore();
+  const { getAiProfile, routes } = useAuthRoutes();
+  const router = useRouter();
 
   const bots = useStoreData(aiBotStore, (store) => store.mainPageBots);
   const isLoading = useStoreData(aiBotStore, (store) => store.isLoadingMainPageBots);
   const error = useStoreData(aiBotStore, (store) => store.mainPageBotsError);
+  const [chatLoadingBotId, setChatLoadingBotId] = useState<string | null>(null);
 
   useEffect(() => {
     if (aiBotStore.mainPageBots.length === 0) {
@@ -82,6 +92,33 @@ export default function Landing() {
 
   const hasBots = groupedBots.length > 0;
 
+  const handleChatNow = useCallback(
+    async (botId: string) => {
+      if (!botId || chatLoadingBotId === botId) {
+        return;
+      }
+
+      setChatLoadingBotId(botId);
+
+      try {
+        const response = await chatStore.messageById(botId);
+        const chatId = response?._id ?? response?.data?._id ?? response?.chat?._id;
+
+        if (chatId) {
+          router.push(`${routes.adminChat}?chatId=${encodeURIComponent(chatId)}`);
+        } else {
+          uiStore.showSnackbar("Failed to open chat. Please try again.", "error");
+        }
+      } catch (error) {
+        console.error("Failed to open chat with AI bot:", error);
+        uiStore.showSnackbar("Failed to open chat. Please try again.", "error");
+      } finally {
+        setChatLoadingBotId((current) => (current === botId ? null : current));
+      }
+    },
+    [chatLoadingBotId, chatStore, router, routes.adminChat, uiStore],
+  );
+
   return (
     <AppShell>
       <div className="flex h-full min-h-0 flex-col">
@@ -102,7 +139,7 @@ export default function Landing() {
 
           {!isLoading && !error &&
             groupedBots.map(([category, categoryBots], index) => {
-              const cardItems = getCardItems(categoryBots, getAiProfile);
+              const cardItems = getCardItems(categoryBots, getAiProfile, handleChatNow, chatLoadingBotId);
               const spacing = index === groupedBots.length - 1 ? 40 : 90;
 
               if (cardItems.length > 8) {

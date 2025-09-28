@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { MessageSquare } from 'lucide-react';
+import { Loader2, MessageSquare } from 'lucide-react';
 
 export type HoverSwapCardProps = {
   src?: string;             // делаем опциональным — будет заглушка, если пусто
@@ -11,6 +11,8 @@ export type HoverSwapCardProps = {
   views?: number | string;
   hoverText?: string;
   href?: string;
+  onChatNow?: () => void;
+  isChatLoading?: boolean;
 };
 
 export default function HoverSwapCard({
@@ -20,7 +22,22 @@ export default function HoverSwapCard({
   views,
   hoverText,
   href,
+  onChatNow,
+  isChatLoading = false,
 }: HoverSwapCardProps) {
+  const handleChatClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (!onChatNow) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!isChatLoading) {
+      onChatNow();
+    }
+  };
+
   const CardInner = (
     <div className="group relative isolate w-full aspect-[11/14] overflow-hidden rounded-3xl bg-zinc-900 shadow-xl ring-1 ring-black/10 transition-all hover:ring-black/20 hover:z-10">
       {/* Изображение или заглушка */}
@@ -83,10 +100,19 @@ export default function HoverSwapCard({
           </div>
 
           <div className="w-full">
-            <div className="flex w-full items-center justify-center gap-2 rounded-full bg-white/95 py-3 text-sm font-semibold text-zinc-900 shadow [transition:background-color_200ms_ease] hover:bg-white">
-              <MessageSquare className="size-4" aria-hidden />
-              Chat Now
-            </div>
+            <button
+              type="button"
+              onClick={handleChatClick}
+              disabled={isChatLoading}
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-white/95 py-3 text-sm font-semibold text-zinc-900 shadow transition-colors duration-200 hover:bg-white disabled:cursor-not-allowed disabled:opacity-80"
+            >
+              {isChatLoading ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                <MessageSquare className="size-4" aria-hidden />
+              )}
+              <span>{isChatLoading ? 'Opening…' : 'Chat Now'}</span>
+            </button>
           </div>
         </div>
       </div>
