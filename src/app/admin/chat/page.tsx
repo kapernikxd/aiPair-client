@@ -7,6 +7,7 @@ import AppShell from '@/components/AppShell';
 import ChatAvatar from '@/components/chats/ChatAvatar';
 import MessageList from '@/components/chat/MessageList';
 import MessageInput from '@/components/chat/MessageInput';
+import TypingIndicator from '@/components/chat/TypingIndicator';
 import GradientOrbs from '@/components/ui/GradientOrbs';
 import { Button } from '@/components/ui/Button';
 import type { MessageDTO } from '@/helpers/types';
@@ -72,6 +73,7 @@ export default function ChatPage() {
   const isSendingMessage = useStoreData(chatStore, (store) => store.isSendingMessage);
   const myId = useStoreData(authStore, (store) => store.user?.id ?? '');
   const isSocketConnected = useStoreData(onlineStore, (store) => store.isConnected);
+  const typingUsers = useStoreData(onlineStore, (store) => store.typingUsers);
 
   const [isLoadingConversation, setIsLoadingConversation] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -138,10 +140,27 @@ export default function ChatPage() {
     };
   }, [chatId, chatStore, isSocketConnected]);
 
+  useEffect(() => {
+    onlineStore.clearTypingUsers();
+    return () => {
+      onlineStore.clearTypingUsers();
+    };
+  }, [chatId, onlineStore]);
+
   const handleSend = useCallback(async (text: string) => {
     if (!chatId || !text.trim()) return;
     await chatStore.sendMessage(text, chatId);
   }, [chatId, chatStore]);
+
+  const handleTyping = useCallback(() => {
+    if (!chatId) return;
+    onlineStore.emitTyping(chatId);
+  }, [chatId, onlineStore]);
+
+  const handleStopTyping = useCallback(() => {
+    if (!chatId) return;
+    onlineStore.emitStopTyping(chatId);
+  }, [chatId, onlineStore]);
 
   const handlePin = useCallback((message: MessageDTO) => {
     if (chatStore.isMessagePinned(message._id)) return;
@@ -323,6 +342,7 @@ export default function ChatPage() {
                         onUnpinMessage={handleUnpin}
                         resolveSenderName={resolveSenderName}
                       />
+                      <TypingIndicator typingUsers={typingUsers} currentUserId={myId} />
                       {!messages.length ? (
                         <p className="pt-6 text-center text-sm text-white/50">No messages yet. Say hello!</p>
                       ) : null}
@@ -338,6 +358,8 @@ export default function ChatPage() {
               onSend={handleSend}
               placeholder={chatId ? `Message ${conversationTitle}` : 'Select a chat to start messaging'}
               isSending={isSendingMessage}
+              onTyping={handleTyping}
+              onStopTyping={handleStopTyping}
             />
           </div>
         </div>

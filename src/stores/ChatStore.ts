@@ -375,6 +375,7 @@ export class ChatStore extends BaseStore {
     this.root.onlineStore.socket.off('editedMessage', this.handleEditedMessage);
     this.root.onlineStore.socket.off('server-message:read', this.handleMarkAsRead);
 
+    this.root.onlineStore.clearTypingUsers();
     this.root.onlineStore.socket.on("typing", this.root.onlineStore.handleTyping);
     this.root.onlineStore.socket.on("stop typing", this.root.onlineStore.handleStopTyping);
     this.root.onlineStore.socket.on('server-message:new', this.handleNewMessage);
@@ -388,6 +389,7 @@ export class ChatStore extends BaseStore {
     // if (!onlineStore.socket) return;
     this.root.onlineStore.socket.off("typing", this.root.onlineStore.handleTyping);
     this.root.onlineStore.socket.off("stop typing", this.root.onlineStore.handleStopTyping);
+    this.root.onlineStore.clearTypingUsers();
     this.root.onlineStore.socket.off('server-message:new', this.handleNewMessage);
     this.root.onlineStore.socket.off('editedMessage', this.handleEditedMessage);
     this.root.onlineStore.socket.off('server-message:read', this.handleMarkAsRead);
