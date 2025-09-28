@@ -88,6 +88,8 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
               isBusy={isUpdatingFollow}
               onToggleFollow={handleToggleFollow}
               disableFollowAction={!profileUserId}
+              isCurrentUser={isViewingOwnProfile}
+              profileId={profileUserId}
             />
             <ProfileCard
               profile={profile}

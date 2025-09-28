@@ -158,8 +158,12 @@ export class ProfileService {
     return $api.get(`/profile/${id}/following`, { params });
   }
 
-  public async blockUser(data: { reason?: string, details?: string, targetId: string }): Promise<AxiosResponse<boolean>> {
+  public async blockUser(data: { reason?: string; details?: string; targetId: string }): Promise<AxiosResponse<boolean>> {
     return $api.post(`/reports`, { targetType: 'user', ...data });
+  }
+
+  public async reportAiBot(data: { reason?: string; details?: string; targetId: string }): Promise<AxiosResponse<boolean>> {
+    return $api.post(`/reports`, { targetType: 'ai-bot', ...data });
   }
 
   public async deleteAccount(id: string): Promise<AxiosResponse<boolean>> {

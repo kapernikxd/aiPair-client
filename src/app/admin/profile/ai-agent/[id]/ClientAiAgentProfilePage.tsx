@@ -160,7 +160,7 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
               <Button type="button" variant="frostedIcon" aria-label="Share agent">
                 <Share2 className="size-5" />
               </Button>
-              <MoreActionsMenu />
+              <MoreActionsMenu mode="aiAgent" reportTargetId={aiBotProfileId} />
             </div>
             {canEdit && (
               <div className="flex items-center gap-3">
