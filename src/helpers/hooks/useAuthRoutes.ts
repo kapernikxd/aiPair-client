@@ -18,9 +18,9 @@ const ROUTES = {
   landingPricing: '#pricing',
   landingFaq: '#faq',
   landingCta: '#cta',
-  terms: '#',
-  privacy: '#',
-  contact: '#',
+  terms: '/terms',
+  privacy: '/privacy',
+  contact: '/contact',
   placeholder: '#',
 } as const;
 
