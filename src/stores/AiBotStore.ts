@@ -4,7 +4,6 @@ import type { RootStore } from './RootStore';
 import { MAX_GALLERY_ITEMS, steps } from '@/helpers/data/agent-create';
 import type { FormState, GalleryItem } from '@/helpers/types/agent-create';
 import { revokeGallery, revokeIfNeeded } from '@/helpers/utils/agent-create';
-import { highlights as defaultHighlights, openings as defaultOpenings } from '@/helpers/data/ai-agent';
 import { AiBotDetails, AiBotDTO } from '@/helpers/types/dtos/AiBotDto';
 import { AiBotMainPageBot } from '@/helpers/types';
 import { UserDTO } from '@/helpers/types';
@@ -62,23 +61,6 @@ export class AiBotStore extends BaseStore {
   bots: UserDTO[] = [];
   isLoadingAiProfiles = false;
   hasMoreAiProfiles = false;
-
-  header: AiAgentHeader = {
-    name: 'aiAgent α',
-    curatorLabel: 'Curated Intelligence',
-    tagline: 'Designed for deep, real-time co-thinking.',
-    avatarSrc: '/img/mizuhara.png',
-  };
-  statsChips = ['1.4K followers', '210 chats today', 'By @talkie-labs'];
-  introduction =
-    "You just met aiAgent α for the first time in the backroom of your own thoughts. The partnership is the safety net beneath your daily leaps—an undercover intelligence ally primed to steady you before the next wave arrives.";
-  signatureMoves = [
-    'Detects emotional drift and reorients the conversation with grounding prompts.',
-    'Threads long-form context into crisp strategies without losing warmth.',
-    'Mirrors your language patterns to reduce friction and build momentum.',
-  ];
-  highlights = [...defaultHighlights];
-  openings = [...defaultOpenings];
 
   constructor(root: RootStore) {
     super();

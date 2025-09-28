@@ -11,6 +11,7 @@ import AiAgentsTimeline from "@/components/profile/AiAgentsTimeline";
 import ProfileCard from "@/components/profile/ProfileCard";
 
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
+import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 
 interface UserProfilePageProps {
   profileId?: string;
@@ -18,6 +19,7 @@ interface UserProfilePageProps {
 
 export default function UserProfilePage({ profileId }: UserProfilePageProps) {
   const { profileStore, aiBotStore } = useRootStore();
+  const { goToMyProfile } = useAuthRoutes();
   const router = useRouter();
 
   const profile = useStoreData(profileStore, (store) => store.profile);
@@ -36,7 +38,7 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
     if (!profileId) return;
 
     if (myProfile?._id && myProfile._id === profileId) {
-      router.replace("/profile/my");
+      goToMyProfile()
     }
   }, [myProfile?._id, profileId, router]);
 

@@ -5,6 +5,7 @@ import { getUserAvatar } from '@/helpers/utils/user';
 import type { AiBotDTO } from '@/helpers/types/dtos/AiBotDto';
 import type { UserDTO } from '@/helpers/types';
 import React from 'react';
+import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
 
 type TimelineAgent = AiBotDTO | UserDTO;
 
@@ -54,6 +55,7 @@ export default function AiAgentsTimeline({
   isLoading = false,
 }: AiAgentsTimelineProps) {
   const hasItems = items.length > 0;
+  const { getAiProfile } = useAuthRoutes(); 
 
   return (
     <section className="rounded-3xl border border-white/10 bg-white/5 p-1 md:p-6 backdrop-blur">
@@ -79,7 +81,7 @@ export default function AiAgentsTimeline({
                 hoverText={getHoverDescription(aiAgent)}
                 href={
                   (aiAgent as any)._id
-                    ? `/profile/ai-agent/${encodeURIComponent((aiAgent as any)._id)}`
+                    ? getAiProfile(encodeURIComponent((aiAgent as any)._id))
                     : undefined
                 }
               />

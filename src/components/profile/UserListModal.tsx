@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import ModalShell from "./edit/overview/ModalShell";
 import { UserDTO } from "@/helpers/types";
 import { getUserAvatar, getUserFullName, getUsername } from "@/helpers/utils/user";
+import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 
 type UserListModalProps = {
   open: boolean;
@@ -26,6 +27,7 @@ export default function UserListModal({
   onClose,
   onLoadMore,
 }: UserListModalProps) {
+  const { getProfile } = useAuthRoutes();
   return (
     <ModalShell open={open} onBackdrop={onClose}>
       <div className="flex max-h-[70vh] flex-col">
@@ -61,7 +63,7 @@ export default function UserListModal({
               return (
                 <li key={user._id}>
                   <Link
-                    href={`/profile/user/${user._id}`}
+                    href={getProfile(user._id)}
                     onClick={onClose}
                     className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-white/20 hover:bg-white/10"
                   >

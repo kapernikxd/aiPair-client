@@ -9,6 +9,7 @@ import { Spacer } from "@/components/ui/Spacer";
 import { AiBotMainPageBot } from "@/helpers/types";
 import { BASE_URL } from "@/helpers/http";
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
+import { GetProfile, useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 
 const FALLBACK_IMAGE = "/img/noProfile.jpg";
 
@@ -29,7 +30,7 @@ const buildImageUrl = (path?: string) => {
   return `${BASE_URL}${normalizedPath}`;
 };
 
-const getCardItems = (bots: AiBotMainPageBot[]) =>
+const getCardItems = (bots: AiBotMainPageBot[], getAiProfile: GetProfile) =>
   bots.map((bot) => {
     const previewImage = bot.details?.photos?.[0] ?? bot.avatarFile;
     const src = buildImageUrl(previewImage) ?? FALLBACK_IMAGE;
@@ -43,7 +44,7 @@ const getCardItems = (bots: AiBotMainPageBot[]) =>
       title: fullName || bot.username || "AI Agent",
       views: bot.profession || bot.username,
       hoverText: bot.userBio || bot.details?.intro,
-      href: `/profile/ai-agent/${bot.id}`,
+      href: getAiProfile(bot.id),
     };
   });
 
@@ -51,6 +52,8 @@ const EMPTY_STATE_MESSAGE = "Пока что здесь нет ботов.";
 
 export default function Landing() {
   const { aiBotStore } = useRootStore();
+  const { getAiProfile } = useAuthRoutes();
+
   const bots = useStoreData(aiBotStore, (store) => store.mainPageBots);
   const isLoading = useStoreData(aiBotStore, (store) => store.isLoadingMainPageBots);
   const error = useStoreData(aiBotStore, (store) => store.mainPageBotsError);
@@ -99,7 +102,7 @@ export default function Landing() {
 
           {!isLoading && !error &&
             groupedBots.map(([category, categoryBots], index) => {
-              const cardItems = getCardItems(categoryBots);
+              const cardItems = getCardItems(categoryBots, getAiProfile);
               const spacing = index === groupedBots.length - 1 ? 40 : 90;
 
               if (cardItems.length > 8) {

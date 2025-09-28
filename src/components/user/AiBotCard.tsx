@@ -7,6 +7,7 @@ import { Users, UserPlus, Sparkles } from "lucide-react";
 
 import type { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
 import { getUserAvatar } from "@/helpers/utils/user";
+import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 
 
 type AiBotCardProps = {
@@ -18,10 +19,11 @@ const formatNumber = (value?: number) =>
 
 export default function AiBotCard({ bot }: AiBotCardProps) {
     const [isHovered, setIsHovered] = useState(false);
+    const { getAiProfile } = useAuthRoutes(); 
 
     const avatar = getUserAvatar(bot);
     const description = bot.userBio?.trim() || "Описание пока отсутствует.";
-    const botHref = `/profile/ai-agent/${encodeURIComponent(bot._id)}`;
+    const botHref = getAiProfile(encodeURIComponent(bot._id));
 
     const stats = [
         { label: "Подписчики", value: formatNumber(bot.followers), icon: Users },

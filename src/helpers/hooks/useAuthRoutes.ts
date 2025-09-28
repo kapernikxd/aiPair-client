@@ -6,15 +6,13 @@ import { useRouter } from 'next/navigation';
 const ROUTES = {
   home: '/',
   discover: '/admin',
-  createAgent: '/create',
-  aiAgentProfile: '/profile/ai-agent',
-  userProfile: '/profile/user',
-  myProfile: '/profile/my',
+  createAgent: '/admin/create',
+  aiAgentProfile: '/admin/profile/ai-agent',
+  userProfile: '/admin/profile/user',
+  myProfile: '/admin/profile/my',
   adminRoot: '/admin',
   adminChats: '/admin/chats',
   adminChat: '/admin/chat',
-  chatEmily: '/chat/emily',
-  chatTristan: '/chat/tristan',
   landingFeatures: '#features',
   landingDemo: '#demo',
   landingPricing: '#pricing',
@@ -29,6 +27,8 @@ const ROUTES = {
 export type AuthRoutes = typeof ROUTES;
 export type AuthRouteKey = keyof AuthRoutes;
 
+export type GetProfile = (id: string) => string;
+
 export function useAuthRoutes() {
   const router = useRouter();
 
@@ -39,6 +39,12 @@ export function useAuthRoutes() {
     [router],
   );
 
+  const getProfile = (userId: string) => `${ROUTES.userProfile}/${userId}`;
+  const getAiProfile = (aiId: string) => `${ROUTES.aiAgentProfile}/${aiId}`;
+
+  const goToMyProfile = () => router.push(`${ROUTES.myProfile}`);
+
+
   const goToAdmin = useCallback(() => {
     router.push(ROUTES.adminRoot);
   }, [router]);
@@ -46,6 +52,9 @@ export function useAuthRoutes() {
   return {
     routes: ROUTES,
     goTo,
+    getProfile,
+    goToMyProfile,
+    getAiProfile,
     goToAdmin,
   };
 }

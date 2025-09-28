@@ -3,12 +3,14 @@ import Image from "next/image";
 import { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
 import { getUserAvatar } from "@/helpers/utils/user";
 import { Clock3, Flame, Heart } from "lucide-react";
+import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 
 
 export default function AiAgentCard({ aiAgent }: { aiAgent: AiBotDTO }) {
+    const { getAiProfile } = useAuthRoutes(); 
 
     const userAvatar = getUserAvatar(aiAgent);
-    const aiAgentHref = `/profile/ai-agent/${encodeURIComponent(aiAgent._id)}`;
+    const aiAgentHref = getAiProfile(encodeURIComponent(aiAgent._id));
 
     const stats = [
             { label: "episodes", value: "02", icon: Clock3 },

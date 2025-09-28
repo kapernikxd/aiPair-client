@@ -17,10 +17,12 @@ import ActionBar from '@/components/ai-agent-create/ActionBar';
 
 import { FormState } from '@/helpers/types/agent-create';
 import { useRootStore, useStoreData } from '@/stores/StoreProvider';
+import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
 
 
 export default function CreateAiAgentPage() {
   const { aiBotStore } = useRootStore();
+  const { getAiProfile } = useAuthRoutes();
   const step = useStoreData(aiBotStore, (store) => store.step);
   const form = useStoreData(aiBotStore, (store) => store.form);
   const avatarPreview = useStoreData(aiBotStore, (store) => store.avatarPreview);
@@ -103,7 +105,7 @@ export default function CreateAiAgentPage() {
                 </div>
                 {createdBot && (
                   <Link
-                    href={`/profile/ai-agent/${createdBot._id}`}
+                    href={getAiProfile(createdBot._id)}
                     className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-100 underline hover:text-emerald-50"
                   >
                     View profile

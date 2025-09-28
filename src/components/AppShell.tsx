@@ -11,11 +11,9 @@ import {
     ChevronLeft,
     Home,
     Search,
-    Archive,
-    Bell,
     MessageSquare,
-    UserRound,
     PlusCircle,
+    MessagesSquare
 } from 'lucide-react';
 import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
 import ProfileSection from './ProfileSection';
@@ -23,6 +21,7 @@ import AuthPopupContainer from './AuthPopupContainer';
 import { useRootStore, useStoreData } from '@/stores/StoreProvider';
 import { getUserAvatar, getUserFullName } from '@/helpers/utils/user';
 import { textRefactor } from '@/helpers/utils/common';
+import { Logo } from './ui/Logo';
 
 type AppShellProps = {
     children: React.ReactNode;
@@ -159,7 +158,7 @@ export default function AppShell({
                     >
                         {open ? <ChevronLeft /> : <Menu />}
                     </Button>
-                    {open && <span className="text-lg font-semibold">talkie</span>}
+                    {open && <div className="px-3">MENU</div>}
                 </div>
 
                 {/* содержимое меню со скроллом у списка чатов */}
@@ -173,10 +172,11 @@ export default function AppShell({
                         />
                         <div className="mt-4 border-t border-white/5 pt-3" />
                         <NavItem href={routes.discover} label="Discover" icon={<Home className="size-5" />} open={open} />
+                        <NavItem href={routes.adminChats} label="Chats" icon={<MessagesSquare className="size-5" />} open={open} />
                     </div>
 
                     <div className="mt-4 border-t border-white/5 pt-3" />
-                    <SectionTitle open={open}>Chats</SectionTitle>
+                    <SectionTitle open={open}>Recent chats</SectionTitle>
 
                     <div className="flex-1 min-h-0 overflow-y-auto pr-1">
                         <div className="space-y-1">{renderChatNav(open)}</div>
@@ -284,7 +284,9 @@ export default function AppShell({
             <main className="flex-1 h-full min-h-0 overflow-hidden">
                 {/* липкий топбар внутри правой колонки */}
                 <div className="sticky top-0 z-10 hidden md:flex items-center justify-between border-b border-white/10 bg-neutral-900/70 px-5 py-3 backdrop-blur">
-                    <div className="text-sm text-white/70">For You</div>
+                    {/* <div className="text-sm text-white/70">For You</div> */}
+                    {/* <>&#8203;</> */}
+                    <Link href={routes.home}><Logo/></Link>
                     <div className="text-sm text-white/50">Right content header</div>
                 </div>
 
