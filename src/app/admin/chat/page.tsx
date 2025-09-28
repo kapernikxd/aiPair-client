@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import ChatAvatar from '@/components/chats/ChatAvatar';
@@ -78,6 +78,11 @@ export default function ChatPage() {
   const [isLoadingConversation, setIsLoadingConversation] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const messageListRef = useRef<HTMLDivElement | null>(null);
+  const scrollAnchorRef = useRef<HTMLDivElement | null>(null);
+  const scrollAnimationFrameRef = useRef<number | null>(null);
+  const maintainScrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const shouldMaintainScrollRef = useRef(false);
   const previousLastMessageIdRef = useRef<string | undefined>(undefined);
   const previousChatIdRef = useRef<string | null>(null);
 
@@ -186,7 +191,36 @@ export default function ChatPage() {
   const messageCount = messages.length;
   const lastMessageId = messageCount ? messages[messageCount - 1]?._id : undefined;
 
-  useEffect(() => {
+  const queueScrollToBottom = useCallback(() => {
+    const anchor = scrollAnchorRef.current;
+    const container = scrollContainerRef.current;
+
+    if (!anchor || !container) {
+      return;
+    }
+
+    shouldMaintainScrollRef.current = true;
+
+    if (maintainScrollTimeoutRef.current) {
+      clearTimeout(maintainScrollTimeoutRef.current);
+    }
+
+    maintainScrollTimeoutRef.current = setTimeout(() => {
+      shouldMaintainScrollRef.current = false;
+      maintainScrollTimeoutRef.current = null;
+    }, 1500);
+
+    if (scrollAnimationFrameRef.current !== null) {
+      cancelAnimationFrame(scrollAnimationFrameRef.current);
+    }
+
+    scrollAnimationFrameRef.current = requestAnimationFrame(() => {
+      anchor.scrollIntoView({ block: 'end', inline: 'nearest', behavior: 'auto' });
+      scrollAnimationFrameRef.current = null;
+    });
+  }, []);
+
+  useLayoutEffect(() => {
     const container = scrollContainerRef.current;
 
     if (!container || !messageCount) {
@@ -199,12 +233,42 @@ export default function ChatPage() {
     const hasNewLastMessage = lastMessageId && lastMessageId !== previousLastMessageIdRef.current;
 
     if (chatHasChanged || hasNewLastMessage) {
-      container.scrollTop = container.scrollHeight;
+      queueScrollToBottom();
     }
 
     previousLastMessageIdRef.current = lastMessageId;
     previousChatIdRef.current = chatId;
-  }, [chatId, lastMessageId, messageCount]);
+  }, [chatId, lastMessageId, messageCount, queueScrollToBottom]);
+
+  const messageListElement = messageListRef.current;
+
+  useEffect(() => {
+    if (!messageListElement) {
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      if (shouldMaintainScrollRef.current) {
+        queueScrollToBottom();
+      }
+    });
+
+    observer.observe(messageListElement);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [messageListElement, queueScrollToBottom]);
+
+  useEffect(() => () => {
+    if (scrollAnimationFrameRef.current !== null) {
+      cancelAnimationFrame(scrollAnimationFrameRef.current);
+    }
+    if (maintainScrollTimeoutRef.current) {
+      clearTimeout(maintainScrollTimeoutRef.current);
+    }
+    shouldMaintainScrollRef.current = false;
+  }, []);
 
   const conversationTitle = useMemo(() => {
     if (!selectedChat) return 'Chat';
@@ -330,7 +394,7 @@ export default function ChatPage() {
             {!chatId ? (
               renderEmptyState()
             ) : (
-              <div className="flex h-full flex-col gap-4 rounded-3xl border border-white/10 bg-white/5 p-4 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur">
+              <div className="flex h-full min-h-0 flex-col gap-4 rounded-3xl border border-white/10 bg-white/5 p-4 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur">
                 {isLoadingConversation ? (
                   <div className="flex flex-1 items-center justify-center text-sm text-white/60">Loading conversation…</div>
                 ) : (
@@ -356,11 +420,14 @@ export default function ChatPage() {
                         onPinMessage={handlePin}
                         onUnpinMessage={handleUnpin}
                         resolveSenderName={resolveSenderName}
-                      />
-                      <TypingIndicator typingUsers={typingUsers} currentUserId={myId} />
-                      {!messages.length ? (
-                        <p className="pt-6 text-center text-sm text-white/50">No messages yet. Say hello!</p>
-                      ) : null}
+                        containerRef={messageListRef}
+                        bottomSentinelRef={scrollAnchorRef}
+                      >
+                        <TypingIndicator typingUsers={typingUsers} currentUserId={myId} />
+                        {!messages.length ? (
+                          <p className="pt-6 text-center text-sm text-white/50">No messages yet. Say hello!</p>
+                        ) : null}
+                      </MessageList>
                     </div>
                   </>
                 )}
