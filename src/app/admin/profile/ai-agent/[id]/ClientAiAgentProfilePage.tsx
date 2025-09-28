@@ -30,7 +30,7 @@ interface ClientAiAgentProfilePageProps {
 }
 
 export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfilePageProps) {
-  const { routes } = useAuthRoutes();
+  const { routes, getProfile } = useAuthRoutes();
   const { aiBotStore, authStore, chatStore } = useRootStore();
   const router = useRouter();
   const { isMdUp } = useBreakpoint(); // md (≥768px) и выше
@@ -68,20 +68,23 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
 
     void aiBotStore.fetchMyAiBots();
   }, [isAuthenticated, myBots.length, aiBotStore]);
-
-
   const highlights = useMemo<Highlight[]>(() => {
     if (!aiBot) return [];
+
+    const creator = aiBot.createdBy;
+    const creatorName = creator ? getUserFullName(creator) : "";
+    const creatorHref = creator?._id ? getProfile(creator._id) : undefined;
+
     return [
       {
         title: "Creator Info",
         lines: [
-          { label: "Creator", value: getUserFullName(aiBot.createdBy) },
+          { label: "Creator", value: creatorName, href: creatorHref },
           { label: "Created", value: `${aiBot.createdAt}` },
         ],
       },
-    ]
-  }, [aiBot]);
+    ];
+  }, [aiBot, getProfile]);
 
   const chatHref = aiBot?.chatLink || routes.adminChat;
   const aiBotProfileId = aiBot?._id;

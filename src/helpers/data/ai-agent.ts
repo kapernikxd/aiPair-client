@@ -5,7 +5,11 @@ export const highlights: Highlight[] = [
     {
         title: "Creator Info",
         lines: [
-            { label: "Handle", value: "@aiAgent" },
+            {
+                label: "Handle",
+                value: "@aiAgent",
+                href: "https://example.com/@aiAgent",
+            },
             { label: "Role", value: "Adaptive companion" },
             { label: "Created", value: "02/15/2026 09:41" },
         ],
