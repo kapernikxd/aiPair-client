@@ -413,11 +413,23 @@ export class ProfileStore extends BaseStore {
     }
   }
 
-  async blockUser(data: { reason?: string, details?: string, targetId: string }) {
+  async blockUser(data: { reason?: string; details?: string; targetId: string }) {
     try {
       await this.profileService.blockUser(data);
+      return true;
     } catch (error) {
-      console.error(error);
+      console.error("Failed to report user", error);
+      throw error;
+    }
+  }
+
+  async reportAiBot(data: { reason?: string; details?: string; targetId: string }) {
+    try {
+      await this.profileService.reportAiBot(data);
+      return true;
+    } catch (error) {
+      console.error("Failed to report AI agent", error);
+      throw error;
     }
   }
 

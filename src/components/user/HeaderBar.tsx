@@ -12,6 +12,8 @@ interface HeaderBarProps {
   isBusy?: boolean;
   disableFollowAction?: boolean;
   onToggleFollow?: () => void;
+  isCurrentUser?: boolean;
+  profileId?: string;
 }
 
 export default function HeaderBar({
@@ -19,6 +21,8 @@ export default function HeaderBar({
   isBusy,
   disableFollowAction,
   onToggleFollow,
+  isCurrentUser = false,
+  profileId,
 }: HeaderBarProps) {
   const isActionDisabled = disableFollowAction || isBusy || !onToggleFollow;
   const buttonLabel = isBusy
@@ -47,7 +51,10 @@ export default function HeaderBar({
         <Button variant="frostedIcon">
           <Share2 className="size-5" />
         </Button>
-        <MoreActionsMenu />
+        <MoreActionsMenu
+          mode={isCurrentUser ? "self" : "user"}
+          reportTargetId={isCurrentUser ? undefined : profileId}
+        />
       </div>
       <Button
         variant={buttonVariant}

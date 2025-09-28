@@ -27,7 +27,7 @@ export default function HeaderActions({ onEdit }: { onEdit: () => void }) {
                 <Button variant="frostedIcon">
                     <Share2 className="size-5" />
                 </Button>
-                <MoreActionsMenu />
+                <MoreActionsMenu mode="self" />
             </div>
             <div className="flex items-center gap-3">
                 <Button onClick={onEdit} variant="solidWhitePill">
