@@ -104,7 +104,7 @@ export default function HoverSwapCard({
               type="button"
               onClick={handleChatClick}
               disabled={isChatLoading}
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-white/95 py-3 text-sm font-semibold text-zinc-900 shadow transition-colors duration-200 hover:bg-white disabled:cursor-not-allowed disabled:opacity-80"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-white/95 py-2 text-sm font-semibold text-zinc-900 shadow transition-colors duration-200 hover:bg-white disabled:cursor-not-allowed disabled:opacity-80"
             >
               {isChatLoading ? (
                 <Loader2 className="size-4 animate-spin" aria-hidden />
