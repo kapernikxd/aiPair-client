@@ -6,6 +6,15 @@ import { connectSocket } from '@/helpers/http/socket';
 import { BaseStore } from './BaseStore';
 import { RootStore } from './RootStore';
 
+type AppStateStatus = 'active' | 'inactive' | 'background';
+
+const getInitialAppState = (): AppStateStatus => {
+  if (typeof document === 'undefined') {
+    return 'active';
+  }
+  return document.visibilityState === 'hidden' ? 'background' : 'active';
+};
+
 export type OnlineUser = { userId: string; isOnline: boolean };
 
 export class OnlineStore extends BaseStore {
@@ -15,7 +24,7 @@ export class OnlineStore extends BaseStore {
   socket: any = null;
   isConnected = false;
   isConnecting = false;               // NEW
-  appState: AppStateStatus = AppState.currentState;
+  appState: AppStateStatus = getInitialAppState();
 
   typingUsers: { userId: string; userName: string }[] = [];
   isSubscribed = false;
@@ -44,13 +53,17 @@ export class OnlineStore extends BaseStore {
   }
 
   handleAppStateChange = async (nextAppState: AppStateStatus) => {
-    if (this.appState === 'active' && nextAppState.match(/inactive|background/)) {
+    const wasActive = this.appState === 'active';
+    const isBecomingInactive = nextAppState !== 'active';
+    if (wasActive && isBecomingInactive) {
       console.log('⛔ App is going to background or inactive');
       // Можно НЕ дисконнектить на iOS, но если хочешь — оставь:
       // this.disconnectSocket();
     }
 
-    if (this.appState.match(/inactive|background/) && nextAppState === 'active') {
+    const wasInactive = this.appState !== 'active';
+    const isNowActive = nextAppState === 'active';
+    if (wasInactive && isNowActive) {
       console.log('🚀 App is active');
       await this.connectSocket();        // дождёмся подключения
       this.flushPendingJoins();          // и восстановим комнаты

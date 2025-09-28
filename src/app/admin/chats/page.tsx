@@ -9,14 +9,28 @@ import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 
 export default function ChatsPage() {
   const { routes } = useAuthRoutes();
-  const { chatStore, authStore } = useRootStore();
+  const { chatStore, authStore, onlineStore } = useRootStore();
   const chats = useStoreData(chatStore, (store) => store.chats);
   const isLoadingChats = useStoreData(chatStore, (store) => store.isLoadingChats);
   const myId = useStoreData(authStore, (store) => store.user?.id ?? "");
+  const isSocketConnected = useStoreData(onlineStore, (store) => store.isConnected);
 
   useEffect(() => {
     void chatStore.fetchChats({ page: 1 });
   }, [chatStore]);
+
+  useEffect(() => {
+    if (!myId) return;
+    void onlineStore.connectSocket();
+  }, [myId, onlineStore]);
+
+  useEffect(() => {
+    if (!isSocketConnected) return;
+    chatStore.subscribeToChats();
+    return () => {
+      chatStore.unsubscribeFromChats();
+    };
+  }, [chatStore, isSocketConnected]);
 
   const chatHrefBuilder = (chatId: string) => `${routes.adminChat}?chatId=${chatId}`;
 

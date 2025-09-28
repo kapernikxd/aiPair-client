@@ -62,7 +62,7 @@ function PinnedMessagesSection({ messages, onUnpin }: { messages: MessageDTO[]; 
 export default function ChatPage() {
   const searchParams = useSearchParams();
   const chatId = searchParams.get('chatId');
-  const { chatStore, authStore } = useRootStore();
+  const { chatStore, authStore, onlineStore } = useRootStore();
   const { routes } = useAuthRoutes();
 
   const messages = useStoreData(chatStore, (store) => store.messages);
@@ -71,6 +71,7 @@ export default function ChatPage() {
   const selectedChat = useStoreData(chatStore, (store) => store.selectedChat);
   const isSendingMessage = useStoreData(chatStore, (store) => store.isSendingMessage);
   const myId = useStoreData(authStore, (store) => store.user?.id ?? '');
+  const isSocketConnected = useStoreData(onlineStore, (store) => store.isConnected);
 
   const [isLoadingConversation, setIsLoadingConversation] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -120,12 +121,22 @@ export default function ChatPage() {
   }, [chatId, chatStore, myId]);
 
   useEffect(() => {
+    if (!myId) return;
+    void onlineStore.connectSocket();
+  }, [myId, onlineStore]);
+
+  useEffect(() => {
     if (!chatId) return;
+    void onlineStore.ensureConnectedAndJoined([chatId]);
+  }, [chatId, onlineStore]);
+
+  useEffect(() => {
+    if (!chatId || !isSocketConnected) return;
     chatStore.subscribeToChat(chatId);
     return () => {
       chatStore.unsubscribeFromChat(chatId);
     };
-  }, [chatId, chatStore]);
+  }, [chatId, chatStore, isSocketConnected]);
 
   const handleSend = useCallback(async (text: string) => {
     if (!chatId || !text.trim()) return;

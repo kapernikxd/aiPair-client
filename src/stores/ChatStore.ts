@@ -183,8 +183,10 @@ export class ChatStore extends BaseStore {
     try {
       const response = await this.chatService.fetchChats(options);
 
+      const incomingChats = response.data.chats;
+      const chatIds = incomingChats.map((chat: ChatDTO) => chat._id);
+
       runInAction(() => {
-        const incomingChats = response.data.chats;
 
         if (options?.page && options.page > 1) {
           const chatMap = new Map(this.chats.map((chat) => [chat._id, chat]));
@@ -208,7 +210,10 @@ export class ChatStore extends BaseStore {
         this.hasMoreChats = response.data.hasMore;
       });
       this.notify();
-      return response.data.chats.map((chat: any) => chat._id);
+      if (chatIds.length) {
+        void this.root.onlineStore.ensureConnectedAndJoined(chatIds);
+      }
+      return chatIds;
     } catch (err) {
       console.error("Ошибка при получении чатов:", err);
       return []
@@ -234,6 +239,9 @@ export class ChatStore extends BaseStore {
         }
       });
       this.notify();
+      if (chatId) {
+        void this.root.onlineStore.ensureConnectedAndJoined([chatId]);
+      }
     } catch (err) {
       console.error("Ошибка при получении чата:", err);
     }
