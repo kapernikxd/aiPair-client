@@ -152,11 +152,6 @@ export default function ChatPage() {
     };
   }, [chatId, onlineStore]);
 
-  const handleSend = useCallback(async (text: string) => {
-    if (!chatId || !text.trim()) return;
-    await chatStore.sendMessage(text, chatId);
-  }, [chatId, chatStore]);
-
   const handleTyping = useCallback(() => {
     if (!chatId) return;
     onlineStore.emitTyping(chatId);
@@ -215,10 +210,19 @@ export default function ChatPage() {
     }
 
     scrollAnimationFrameRef.current = requestAnimationFrame(() => {
+      container.scrollTop = container.scrollHeight;
       anchor.scrollIntoView({ block: 'end', inline: 'nearest', behavior: 'auto' });
       scrollAnimationFrameRef.current = null;
     });
   }, []);
+
+  useEffect(() => {
+    if (!chatId || isLoadingConversation || !messageCount) {
+      return;
+    }
+
+    queueScrollToBottom();
+  }, [chatId, isLoadingConversation, messageCount, queueScrollToBottom]);
 
   useLayoutEffect(() => {
     const container = scrollContainerRef.current;
@@ -239,6 +243,13 @@ export default function ChatPage() {
     previousLastMessageIdRef.current = lastMessageId;
     previousChatIdRef.current = chatId;
   }, [chatId, lastMessageId, messageCount, queueScrollToBottom]);
+
+  const handleSend = useCallback(async (text: string) => {
+    if (!chatId || !text.trim()) return;
+
+    await chatStore.sendMessage(text, chatId);
+    queueScrollToBottom();
+  }, [chatId, chatStore, queueScrollToBottom]);
 
   const messageListElement = messageListRef.current;
 

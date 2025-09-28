@@ -319,7 +319,7 @@ export class ChatStore extends BaseStore {
       runInAction(() => {
         const exists = this.messages.some((message) => message._id === messageData._id);
         if (!exists) {
-          this.messages.push(messageData);
+          this.messages = [...this.messages, messageData];
         }
       });
       this.notify();
@@ -435,12 +435,19 @@ export class ChatStore extends BaseStore {
 
     if (this.selectedChat?._id !== incomingChatId) return;
 
+    let didAppendMessage = false;
+
     runInAction(() => {
       const exists = this.messages.some(m => m._id === incoming._id);
       if (!exists) {
-        this.messages.push(incoming);
+        this.messages = [...this.messages, incoming];
+        didAppendMessage = true;
       }
     });
+
+    if (didAppendMessage) {
+      this.notify();
+    }
   };
 
   private handleEditedMessage = (updatedMessage: any) => {
