@@ -4,16 +4,17 @@ import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useRootStore, useStoreData } from '@/stores/StoreProvider';
 
-const LANDING_PATH = '/';
-
 export default function AuthPromptManager() {
   const pathname = usePathname();
   const { authStore, uiStore } = useRootStore();
   const isAuthenticated = useStoreData(authStore, (store) => store.isAuthenticated);
+  const hasAttemptedAutoLogin = useStoreData(authStore, (store) => store.hasAttemptedAutoLogin);
   const isPopupOpen = useStoreData(uiStore, (store) => store.isAuthPopupOpen);
   const wasForcedRef = useRef(false);
 
-  const shouldForceAuthPopup = !isAuthenticated && pathname !== LANDING_PATH;
+  const isProtectedRoute = pathname?.startsWith('/admin') ?? false;
+  const shouldForceAuthPopup =
+    hasAttemptedAutoLogin && isProtectedRoute && !isAuthenticated;
 
   useEffect(() => {
     if (shouldForceAuthPopup) {
