@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowRight, Mic, Sparkles, Shield, Globe2, PlayCircle, CheckCircle2, X } from "lucide-react";
 import LandingClient from '@/components/LandingClient';
 import DeviceMockup from '@/components/DeviceMockup';
@@ -13,6 +13,7 @@ import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import { BASE_URL } from "@/helpers/http";
 import type { AuthProvider } from "@/stores/AuthStore";
 import { Logo } from "@/components/ui/Logo";
+import { useRouter } from "next/navigation";
 
 // export const metadata = {
 //   title: 'AI Pair — Talk with an AI companion',
@@ -36,6 +37,8 @@ type LandingCardItem = {
   views?: string;
   hoverText?: string;
   href?: string;
+  onChatNow?: () => void;
+  isChatLoading?: boolean;
 };
 
 
@@ -88,13 +91,15 @@ const GradientBlob = ({ className = "" }: { className?: string }) => (
 
 export default function Landing() {
   const { routes, goToAdmin } = useAuthRoutes();
-  const { uiStore, authStore, profileStore, aiBotStore } = useRootStore();
+  const { uiStore, authStore, profileStore, aiBotStore, chatStore } = useRootStore();
   const open = useStoreData(uiStore, (store) => store.isAuthPopupOpen);
   const showMobileBanner = useStoreData(uiStore, (store) => store.isMobileBannerVisible);
   const isAuthenticated = useStoreData(authStore, (store) => store.isAuthenticated);
   const authUser = useStoreData(authStore, (store) => store.user);
   const profileName = useStoreData(profileStore, (store) => store.profile.userName);
   const mainPageBots = useStoreData(aiBotStore, (store) => store.mainPageBots);
+  const router = useRouter();
+  const [chatLoadingBotId, setChatLoadingBotId] = useState<string | null>(null);
 
   useEffect(() => {
     if (aiBotStore.mainPageBots.length === 0 && !aiBotStore.isLoadingMainPageBots) {
@@ -121,6 +126,33 @@ export default function Landing() {
     }
     uiStore.openAuthPopup();
   };
+  const handleChatNow = useCallback(async (botId: string) => {
+    if (!botId) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      uiStore.openAuthPopup();
+      return;
+    }
+
+    setChatLoadingBotId(botId);
+
+    try {
+      const response = await chatStore.messageById(botId);
+      const chatId = response?._id ?? response?.data?._id ?? response?.chat?._id;
+      if (chatId) {
+        router.push(`${routes.adminChat}?chatId=${encodeURIComponent(chatId)}`);
+      } else {
+        uiStore.showSnackbar("Failed to open chat. Please try again.", "error");
+      }
+    } catch (error) {
+      console.error("Failed to open chat with AI bot:", error);
+      uiStore.showSnackbar("Failed to open chat. Please try again.", "error");
+    } finally {
+      setChatLoadingBotId(null);
+    }
+  }, [chatStore, isAuthenticated, router, routes.adminChat, uiStore]);
   const cardItems: LandingCardItem[] = useMemo(() => {
     if (mainPageBots.length > 0) {
       return mainPageBots.map((bot) => {
@@ -128,20 +160,23 @@ export default function Landing() {
         const src = buildImageUrl(previewImage) ?? FALLBACK_IMAGE;
         const avatarSrc = buildImageUrl(bot.avatarFile) ?? FALLBACK_IMAGE;
         const fullName = [bot.name, bot.lastname].filter(Boolean).join(" ").trim();
+        const botId = bot.id;
 
         return {
-          id: bot.id,
+          id: botId,
           src,
           avatarSrc,
           title: fullName || bot.username || "AI Agent",
           views: bot.profession || bot.username,
           hoverText: bot.userBio || bot.details?.intro,
-          href: `${routes.aiAgentProfile}/${bot.id}`,
+          href: `${routes.aiAgentProfile}/${botId}`,
+          onChatNow: () => handleChatNow(botId),
+          isChatLoading: chatLoadingBotId === botId,
         } satisfies LandingCardItem;
       });
     }
     return []
-  }, [mainPageBots, routes]);
+  }, [chatLoadingBotId, handleChatNow, mainPageBots, routes]);
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
