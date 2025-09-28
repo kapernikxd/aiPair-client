@@ -317,7 +317,10 @@ export class ChatStore extends BaseStore {
       } as MessageDTO;
 
       runInAction(() => {
-        this.messages.push(messageData);
+        const exists = this.messages.some((message) => message._id === messageData._id);
+        if (!exists) {
+          this.messages.push(messageData);
+        }
       });
       this.notify();
     } catch (err) {
