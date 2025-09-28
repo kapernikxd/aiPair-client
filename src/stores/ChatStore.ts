@@ -243,7 +243,7 @@ export class ChatStore extends BaseStore {
     if (this.isApiCheckedNewMessages) return;
     try {
       const { data } = await this.chatService.hasUnreadMessages();
-      // onlineStore.setUnreadStatus(data);
+      this.root.onlineStore.setUnreadStatus(data);
     } catch (err) {
       console.error("Ошибка при получени непрочитанных:", err);
     } finally {
@@ -326,7 +326,7 @@ export class ChatStore extends BaseStore {
   async editMessage(messageId: string, content: string) {
     try {
       const { data } = await this.chatService.editMessage(messageId, content);
-      // onlineStore.emitEditedMessage(data.data)
+      this.root.onlineStore.emitEditedMessage(data.data)
 
       runInAction(() => {
         const index = this.messages.findIndex((msg) => msg._id === messageId);
@@ -341,48 +341,48 @@ export class ChatStore extends BaseStore {
   }
 
   subscribeToChats() {
-    // if (!onlineStore.socket) return;
+    if (!this.root.onlineStore.socket) return;
     console.log("📲 Подписываюсь на список чатов...");
     // важно: снять старый хендлер перед повторной подпиской
-    // onlineStore.socket.off('newMessageFromChats', this.handleNewMessageFromChats);
-    // onlineStore.socket.on('newMessageFromChats', this.handleNewMessageFromChats);
+    this.root.onlineStore.socket.off('newMessageFromChats', this.handleNewMessageFromChats);
+    this.root.onlineStore.socket.on('newMessageFromChats', this.handleNewMessageFromChats);
   }
 
   unsubscribeFromChats() {
-    // if (!onlineStore.socket) return;
+    if (!this.root.onlineStore.socket) return;
     console.log("🚪 Отписываюсь от списка чатов...");
-    // onlineStore.socket.off('newMessageFromChats', this.handleNewMessageFromChats);
+    this.root.onlineStore.socket.off('newMessageFromChats', this.handleNewMessageFromChats);
   }
 
   subscribeToChat(chatId: string) {
-    // if (!onlineStore.socket) return;
+    if (!this.root.onlineStore.socket) return;
 
     // если уже подписаны на этот же чат — ничего не делаем
     if (this.currentChatSubscribedId === chatId) return;
 
     // перед подпиской снимаем ВСЕ связанные хендлеры (на случай переезда между чатами)
-    // onlineStore.socket.off("typing", onlineStore.handleTyping);
-    // onlineStore.socket.off("stop typing", onlineStore.handleStopTyping);
-    // onlineStore.socket.off('server-message:new', this.handleNewMessage);
-    // onlineStore.socket.off('editedMessage', this.handleEditedMessage);
-    // onlineStore.socket.off('server-message:read', this.handleMarkAsRead);
+    this.root.onlineStore.socket.off("typing", this.root.onlineStore.handleTyping);
+    this.root.onlineStore.socket.off("stop typing", this.root.onlineStore.handleStopTyping);
+    this.root.onlineStore.socket.off('server-message:new', this.handleNewMessage);
+    this.root.onlineStore.socket.off('editedMessage', this.handleEditedMessage);
+    this.root.onlineStore.socket.off('server-message:read', this.handleMarkAsRead);
 
-    // onlineStore.socket.on("typing", onlineStore.handleTyping);
-    // onlineStore.socket.on("stop typing", onlineStore.handleStopTyping);
-    // onlineStore.socket.on('server-message:new', this.handleNewMessage);
-    // onlineStore.socket.on('editedMessage', this.handleEditedMessage);
-    // onlineStore.socket.on('server-message:read', this.handleMarkAsRead);
+    this.root.onlineStore.socket.on("typing", this.root.onlineStore.handleTyping);
+    this.root.onlineStore.socket.on("stop typing", this.root.onlineStore.handleStopTyping);
+    this.root.onlineStore.socket.on('server-message:new', this.handleNewMessage);
+    this.root.onlineStore.socket.on('editedMessage', this.handleEditedMessage);
+    this.root.onlineStore.socket.on('server-message:read', this.handleMarkAsRead);
 
     this.currentChatSubscribedId = chatId;
   }
 
   unsubscribeFromChat(_chatId?: string) {
     // if (!onlineStore.socket) return;
-    // onlineStore.socket.off("typing", onlineStore.handleTyping);
-    // onlineStore.socket.off("stop typing", onlineStore.handleStopTyping);
-    // onlineStore.socket.off('server-message:new', this.handleNewMessage);
-    // onlineStore.socket.off('editedMessage', this.handleEditedMessage);
-    // onlineStore.socket.off('server-message:read', this.handleMarkAsRead);
+    this.root.onlineStore.socket.off("typing", this.root.onlineStore.handleTyping);
+    this.root.onlineStore.socket.off("stop typing", this.root.onlineStore.handleStopTyping);
+    this.root.onlineStore.socket.off('server-message:new', this.handleNewMessage);
+    this.root.onlineStore.socket.off('editedMessage', this.handleEditedMessage);
+    this.root.onlineStore.socket.off('server-message:read', this.handleMarkAsRead);
     this.currentChatSubscribedId = null;
   }
 
@@ -453,7 +453,7 @@ export class ChatStore extends BaseStore {
   async markChatAsRead({ chatId, messageId }: { chatId: string, messageId: string }) {
     try {
       await this.chatService.markChatAsRead(chatId, messageId);
-      // onlineStore.emitWasReaded({ chatId, messageId })
+      this.root.onlineStore.emitWasReaded({ chatId, messageId })
 
       runInAction(() => {
         this.chats = [...this.chats.map(chat =>
