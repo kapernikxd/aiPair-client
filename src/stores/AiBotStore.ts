@@ -569,12 +569,21 @@ export class AiBotStore extends BaseStore {
     try {
       await this.profileService.deleteAiBot(id);
       runInAction(() => {
-        this.myBots = this.myBots.filter(b => b._id !== id);
+        this.myBots = this.myBots.filter((bot) => bot._id !== id);
+        this.userAiBots = this.userAiBots.filter((bot) => bot._id !== id);
+        this.bots = this.bots.filter((bot) => bot._id !== id);
+        if (this.selectAiBot?._id === id) {
+          this.selectAiBot = null;
+        }
+        if (this.createdBot?._id === id) {
+          this.createdBot = null;
+        }
+        this.botDetails = null;
+        this.botPhotos = [];
         this.notify();
       });
-      // uiStore.showSnackbar("Deleted", "success");
     } catch (e) {
-      // uiStore.showSnackbar("Failed", "error");
+      throw e;
     }
   }
 
