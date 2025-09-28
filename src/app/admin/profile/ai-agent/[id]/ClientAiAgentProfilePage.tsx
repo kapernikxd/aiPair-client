@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, MoreHorizontal, Share2 } from "lucide-react";
+import { ArrowLeft, Share2 } from "lucide-react";
 
 import AppShell from "@/components/AppShell";
 import GradientBackdrop from "@/components/ai-agent/GradientBackdrop";
@@ -15,6 +15,7 @@ import HighlightsSidebar from "@/components/ai-agent/HighlightsSidebar";
 import BotGallery from "@/components/ai-agent/BotGallery";
 import { Button } from "@/components/ui/Button";
 import EditAiAgentDialog from "@/components/ai-agent/edit/EditAiAgentDialog";
+import MoreActionsMenu from "@/components/MoreActionsMenu";
 
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 import { getUserFullName } from "@/helpers/utils/user";
@@ -159,9 +160,7 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
               <Button type="button" variant="frostedIcon" aria-label="Share agent">
                 <Share2 className="size-5" />
               </Button>
-              <Button type="button" variant="frostedIcon" aria-label="More options">
-                <MoreHorizontal className="size-5" />
-              </Button>
+              <MoreActionsMenu />
             </div>
             {canEdit && (
               <div className="flex items-center gap-3">

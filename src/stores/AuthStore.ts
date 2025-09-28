@@ -34,6 +34,7 @@ export class AuthStore extends BaseStore {
   accessToken: string | null = null;
 
   lastProvider: AuthProvider | null = null;
+  hasAttemptedAutoLogin = false;
 
   constructor(root?: RootStore) {
     super();
@@ -332,10 +333,11 @@ export class AuthStore extends BaseStore {
   }
 
   async refreshAccessToken() {
+    let didRefresh = false;
     try {
       const refreshToken = await storageHelper.getRefreshToken();
       if (!refreshToken) {
-        throw new Error();
+        return false;
       }
       const { data } = await AuthService.refreshAccessTokenRequest(refreshToken);
       const normalizedUser = this.normalizeUser(data.user);
@@ -346,8 +348,6 @@ export class AuthStore extends BaseStore {
         this.lastProvider = this.lastProvider ?? 'demo';
       });
 
-      this.notify();
-
       // Persist обновленные токены для последующих запросов
       await storageHelper.setAccessToken(data.accessToken);
       await storageHelper.setRefreshToken(data.refreshToken);
@@ -355,12 +355,24 @@ export class AuthStore extends BaseStore {
       // Обновляем заголовок авторизации для axios
       $api.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
 
-      return data;
+      didRefresh = true;
     } catch (e: any) {
       await storageHelper.removeRefreshToken();
       await storageHelper.removeAccessToken();
-      console.log(e)
+      runInAction(() => {
+        this.user = null;
+        this.isAuth = false;
+        this.accessToken = null;
+        this.lastProvider = null;
+      });
+      console.log(e);
+    } finally {
+      runInAction(() => {
+        this.hasAttemptedAutoLogin = true;
+      });
+      this.notify();
     }
+    return didRefresh;
   }
 }
 

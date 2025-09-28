@@ -13,7 +13,7 @@ import {
     Search,
     MessageSquare,
     PlusCircle,
-    MessagesSquare
+    MessagesSquare,
 } from 'lucide-react';
 import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
 import ProfileSection from './ProfileSection';
@@ -25,7 +25,7 @@ import { Logo } from './ui/Logo';
 
 type AppShellProps = {
     children: React.ReactNode;
-    sidebarWidth?: number;     // ширина раскрытого меню (px)
+    sidebarWidth?: number; // ширина раскрытого меню (px)
     sidebarCollapsed?: number; // ширина свернутого меню (px)
 };
 
@@ -44,7 +44,13 @@ export default function AppShell({
     const profile = useStoreData(profileStore, (store) => store.profile);
     const authUser = useStoreData(authStore, (store) => store.user);
     const isAuthenticated = useStoreData(authStore, (store) => store.isAuthenticated);
-    const avatarInitial = (authUser?.name ?? getUserFullName(profile) ?? 'U').charAt(0).toUpperCase();
+    const hasAttemptedAutoLogin = useStoreData(
+        authStore,
+        (store) => store.hasAttemptedAutoLogin,
+    );
+    const avatarInitial = (authUser?.name ?? getUserFullName(profile) ?? 'U')
+        .charAt(0)
+        .toUpperCase();
 
     const chats = useStoreData(chatStore, (store) => store.chats);
     const isLoadingChats = useStoreData(chatStore, (store) => store.isLoadingChats);
@@ -55,10 +61,13 @@ export default function AppShell({
     }, [uiStore]);
 
     useEffect(() => {
+        if (!isAuthenticated) {
+            return;
+        }
         if (!chatStore.chats.length && !chatStore.isLoadingChats) {
             void chatStore.fetchChats({ page: 1 });
         }
-    }, [chatStore]);
+    }, [chatStore, isAuthenticated]);
 
     const w = useMemo(
         () => (open ? sidebarWidth : sidebarCollapsed),
@@ -138,79 +147,96 @@ export default function AppShell({
         ));
     };
 
-    return (
-        // Внешний скролл отключен: скроллится только правый main
-        <div className="flex h-screen min-h-0 overflow-hidden bg-neutral-900 text-white">
-            {/* ==== ЛЕВЫЙ САЙДБАР: ДЕСКТОП ==== */}
-            <motion.aside
-                aria-label="Sidebar"
-                animate={{ width: w }}
-                transition={{ type: 'tween', duration: 0.25 }}
-                className="relative z-20 hidden h-full min-h-0 overflow-hidden md:flex flex-col border-r border-white/5 bg-neutral-950/70 backdrop-blur"
-                style={{ width: w }}
-            >
-                {/* верх панели */}
-                <div className="flex items-center gap-2 px-3 py-3">
-                    <Button
-                        onClick={() => uiStore.toggleSidebar()}
-                        variant="sidebarIcon"
-                        aria-label={open ? 'Collapse' : 'Expand'}
-                    >
-                        {open ? <ChevronLeft /> : <Menu />}
-                    </Button>
-                    {open && <div className="px-3">MENU</div>}
-                </div>
+    let content: React.ReactNode;
 
-                {/* содержимое меню со скроллом у списка чатов */}
-                <nav className="mt-2 flex flex-1 min-h-0 flex-col px-2">
-                    <div className="space-y-1">
-                        <NavItem
-                            href={routes.createAgent}
-                            label="Create aiPair"
-                            icon={<PlusCircle className="size-5" />}
-                            open={open}
-                        />
-                        <div className="mt-4 border-t border-white/5 pt-3" />
-                        <NavItem href={routes.discover} label="Discover" icon={<Home className="size-5" />} open={open} />
-                        <NavItem href={routes.adminChats} label="Chats" icon={<MessagesSquare className="size-5" />} open={open} />
+    if (!hasAttemptedAutoLogin) {
+        content = (
+            <div className="flex h-screen items-center justify-center bg-neutral-900 text-white">
+                <span className="text-sm text-white/70">Checking authentication…</span>
+            </div>
+        );
+    } else if (!isAuthenticated) {
+        content = (
+            <div className="flex h-screen flex-col items-center justify-center gap-4 bg-neutral-900 px-6 text-center text-white">
+                <div className="max-w-sm space-y-2">
+                    <h2 className="text-xl font-semibold text-white">Authentication required</h2>
+                    <p className="text-sm text-white/70">
+                        Please sign in to access the aiPair admin experience.
+                    </p>
+                </div>
+                <Button onClick={() => uiStore.openAuthPopup()} variant="primary">
+                    Sign in
+                </Button>
+            </div>
+        );
+    } else {
+        content = (
+            <div className="flex h-screen min-h-0 overflow-hidden bg-neutral-900 text-white">
+                {/* ==== ЛЕВЫЙ САЙДБАР: ДЕСКТОП ==== */}
+                <motion.aside
+                    aria-label="Sidebar"
+                    animate={{ width: w }}
+                    transition={{ type: 'tween', duration: 0.25 }}
+                    className="relative z-20 hidden h-full min-h-0 overflow-hidden md:flex flex-col border-r border-white/5 bg-neutral-950/70 backdrop-blur"
+                    style={{ width: w }}
+                >
+                    <div className="flex items-center gap-2 px-3 py-3">
+                        <Button
+                            onClick={() => uiStore.toggleSidebar()}
+                            variant="sidebarIcon"
+                            aria-label={open ? 'Collapse' : 'Expand'}
+                        >
+                            {open ? <ChevronLeft /> : <Menu />}
+                        </Button>
+                        {open && <div className="px-3">MENU</div>}
                     </div>
 
-                    <div className="mt-4 border-t border-white/5 pt-3" />
-                    <SectionTitle open={open}>Recent chats</SectionTitle>
-
-                    <div className="flex-1 min-h-0 overflow-y-auto pr-1">
-                        <div className="space-y-1">{renderChatNav(open)}</div>
-                    </div>
-                </nav>
-
-                {/* низ сайдбара — профиль (вне скролла) */}
-                <div className="mt-auto px-3 pb-3">
-                    <ProfileSection open={open} />
-                </div>
-            </motion.aside>
-
-            {/* ==== МОБИЛЬНЫЙ САЙДБАР ==== */}
-            <div className="md:hidden">
-                {/* верхняя панель с кнопкой открытия */}
-                <div className="fixed top-0 left-0 right-0 z-40 flex items-center gap-3 border-b border-white/10 bg-neutral-900/90 px-3 py-3 backdrop-blur">
-                    <Button
-                        onClick={() => router.back()}
-                        variant="sidebarIcon"
-                        aria-label="Go back"
-                    >
-                        <ChevronLeft />
-                    </Button>
-                    <div className="flex-1">
-                        <label className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2">
-                            <Search className="size-4 text-white/70" aria-hidden />
-                            <input
-                                type="search"
-                                placeholder="Search"
-                                className="w-full bg-transparent text-sm text-white placeholder:text-white/60 focus:outline-none"
+                    <nav className="mt-2 flex flex-1 min-h-0 flex-col px-2">
+                        <div className="space-y-1">
+                            <NavItem
+                                href={routes.createAgent}
+                                label="Create aiPair"
+                                icon={<PlusCircle className="size-5" />}
+                                open={open}
                             />
-                        </label>
+                            <div className="mt-4 border-t border-white/5 pt-3" />
+                            <NavItem href={routes.discover} label="Discover" icon={<Home className="size-5" />} open={open} />
+                            <NavItem href={routes.adminChats} label="Chats" icon={<MessagesSquare className="size-5" />} open={open} />
+                        </div>
+
+                        <div className="mt-4 border-t border-white/5 pt-3" />
+                        <SectionTitle open={open}>Recent chats</SectionTitle>
+
+                        <div className="flex-1 min-h-0 overflow-y-auto pr-1">
+                            <div className="space-y-1">{renderChatNav(open)}</div>
+                        </div>
+                    </nav>
+
+                    <div className="mt-auto px-3 pb-3">
+                        <ProfileSection open={open} />
                     </div>
-                    {isAuthenticated ? (
+                </motion.aside>
+
+                {/* ==== МОБИЛЬНЫЙ САЙДБАР ==== */}
+                <div className="md:hidden">
+                    <div className="fixed top-0 left-0 right-0 z-40 flex items-center gap-3 border-b border-white/10 bg-neutral-900/90 px-3 py-3 backdrop-blur">
+                        <Button
+                            onClick={() => router.back()}
+                            variant="sidebarIcon"
+                            aria-label="Go back"
+                        >
+                            <ChevronLeft />
+                        </Button>
+                        <div className="flex-1">
+                            <label className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2">
+                                <Search className="size-4 text-white/70" aria-hidden />
+                                <input
+                                    type="search"
+                                    placeholder="Search"
+                                    className="w-full bg-transparent text-sm text-white placeholder:text-white/60 focus:outline-none"
+                                />
+                            </label>
+                        </div>
                         <Link
                             href={routes.myProfile}
                             className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-400 text-sm font-semibold"
@@ -218,104 +244,98 @@ export default function AppShell({
                         >
                             {avatarInitial}
                         </Link>
-                    ) : (
-                        <Button
-                            onClick={() => uiStore.openAuthPopup()}
-                            variant="ghostRounded"
-                            className="h-10 px-3 text-xs font-semibold"
-                        >
-                            Авторизоваться
-                        </Button>
+                    </div>
+
+                    {mobileOpen && (
+                        <div className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm">
+                            <div className="absolute left-0 top-0 bottom-0 w-72 border-r border-white/10 bg-neutral-950/95 p-4">
+                                <div className="flex items-center justify-between">
+                                    <Logo />
+                                    <Button
+                                        onClick={() => uiStore.closeMobileSidebar()}
+                                        variant="sidebarIcon"
+                                        aria-label="Закрыть меню"
+                                    >
+                                        <ChevronLeft />
+                                    </Button>
+                                </div>
+                                <nav className="mt-6 space-y-3">
+                                    <Link href={routes.discover} className="block rounded-xl px-4 py-2 text-white/80 transition hover:bg-white/10">
+                                        Discover
+                                    </Link>
+                                    <Link href={routes.adminChats} className="block rounded-xl px-4 py-2 text-white/80 transition hover:bg-white/10">
+                                        Chats
+                                    </Link>
+                                    <Link href={routes.createAgent} className="block rounded-xl px-4 py-2 text-white/80 transition hover:bg-white/10">
+                                        Create aiPair
+                                    </Link>
+                                </nav>
+                            </div>
+                        </div>
                     )}
                 </div>
 
-                {mobileOpen && (
-                    <>
-                        <div
-                            className="fixed inset-0 z-30 bg-black/50"
-                            onClick={() => uiStore.closeMobileSidebar()}
-                            aria-hidden
-                        />
-                        <motion.aside
-                            initial={{ x: -320 }}
-                            animate={{ x: 0 }}
-                            exit={{ x: -320 }}
-                            transition={{ type: 'tween', duration: 0.2 }}
-                            className="fixed left-0 top-0 z-50 flex h-full w-[280px] min-h-0 flex-col overflow-hidden border-r border-white/5 bg-neutral-950/90 p-3 backdrop-blur"
-                        >
-                            {/* заголовок мобильного меню */}
-                            <div className="mb-2 flex items-center justify-between">
-                                <span className="text-lg font-semibold">Menu</span>
-                                <Button
-                                    onClick={() => uiStore.closeMobileSidebar()}
-                                    variant="sidebarIcon"
-                                    aria-label="Close menu"
-                                >
-                                    <ChevronLeft />
-                                </Button>
+                {/* ==== ОСНОВНОЙ КОНТЕНТ ==== */}
+                <main className="relative flex min-h-0 flex-1 flex-col">
+                    <header className="hidden items-center justify-between border-b border-white/10 bg-neutral-900/80 px-6 py-4 backdrop-blur md:flex">
+                        <div className="flex items-center gap-3">
+                            <Button
+                                onClick={() => uiStore.toggleSidebar()}
+                                variant="sidebarIcon"
+                                aria-label={open ? 'Collapse sidebar' : 'Expand sidebar'}
+                            >
+                                {open ? <ChevronLeft /> : <Menu />}
+                            </Button>
+                            <div className="hidden items-center gap-2 rounded-full bg-white/10 px-4 py-2 lg:flex">
+                                <Search className="size-4 text-white/70" aria-hidden />
+                                <input
+                                    type="search"
+                                    placeholder="Search"
+                                    className="w-48 bg-transparent text-sm text-white placeholder:text-white/60 focus:outline-none"
+                                />
                             </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <Button onClick={() => uiStore.openAuthPopup()} variant="ghostPill">
+                                Invite teammate
+                            </Button>
+                            <Link
+                                href={routes.myProfile}
+                                className="inline-flex size-10 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-400 text-sm font-semibold"
+                                aria-label="Перейти в профиль"
+                            >
+                                {avatarInitial}
+                            </Link>
+                        </div>
+                    </header>
 
-                            {/* прокручиваемая часть */}
-                            <div className="flex-1 min-h-0 flex flex-col">
-                                <nav className="space-y-1">
-                                    <NavItem href={routes.discover} label="Discover" icon={<Home className="size-5" />} open />
-                                    <div className="mt-4 border-t border-white/5 pt-3" />
-                                    <NavItem href={routes.createAgent} label="Create aiPair" icon={<PlusCircle className="size-5" />} open />
-                                </nav>
+                    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+                        <div className="flex-1 min-h-0 overflow-y-auto bg-gradient-to-br from-neutral-950 via-neutral-950 to-neutral-900">
+                            {children}
+                        </div>
 
-                                <div className="mt-4 border-t border-white/5 pt-3" />
-                                <SectionTitle open>Chats</SectionTitle>
-
-                                <div className="flex-1 min-h-0 overflow-y-auto pr-1">
-                                    <div className="space-y-1">{renderChatNav(true)}</div>
-                                </div>
-                            </div>
-
-                            {/* низ мобильного сайдбара — профиль */}
-                            <div className="mt-4">
-                                <ProfileSection open />
-                            </div>
-                        </motion.aside>
-                    </>
-                )}
+                        <nav className="mt-auto grid grid-cols-3 items-center gap-4 border-t border-white/10 bg-neutral-950/90 px-6 py-3 text-xs text-white/60 md:hidden">
+                            <Link href={routes.discover} className="flex flex-col items-center text-xs text-white/70">
+                                <Home className="size-6" />
+                            </Link>
+                            <Link href={routes.createAgent} className="flex flex-col items-center text-xs text-white/70">
+                                <PlusCircle className="size-6" />
+                            </Link>
+                            <Link href={routes.adminChats} className="flex flex-col items-center text-xs text-white/70">
+                                <MessageSquare className="size-6" />
+                            </Link>
+                        </nav>
+                    </div>
+                </main>
             </div>
+        );
+    }
 
-            {/* ==== ПРАВЫЙ КОНТЕНТ (СКРОЛЛ ТУТ) ==== */}
-            <main className="flex-1 h-full min-h-0 overflow-hidden">
-                {/* липкий топбар внутри правой колонки */}
-                <div className="sticky top-0 z-10 hidden md:flex items-center justify-between border-b border-white/10 bg-neutral-900/70 px-5 py-3 backdrop-blur">
-                    {/* <div className="text-sm text-white/70">For You</div> */}
-                    {/* <>&#8203;</> */}
-                    <Link href={routes.home}><Logo/></Link>
-                    <div className="text-sm text-white/50">Right content header</div>
-                </div>
-
-                <div className="flex h-full min-h-0 flex-col pt-[67px] md:pt-0">{children}</div>
-            </main>
-
-            {/* ==== МОБИЛЬНОЕ НИЖНЕЕ МЕНЮ ==== */}
-            <nav className="fixed inset-x-0 bottom-0 z-30 flex justify-around border-t border-white/10 bg-neutral-950/90 py-3 backdrop-blur md:hidden">
-                <Link
-                    href={routes.discover}
-                    className="flex flex-col items-center text-xs text-white/70"
-                >
-                    <Home className="size-6" />
-                </Link>
-                <Link
-                    href={routes.createAgent}
-                    className="flex flex-col items-center text-xs text-white/70"
-                >
-                    <PlusCircle className="size-6" />
-                </Link>
-                <Link
-                    href={routes.adminChats}
-                    className="flex flex-col items-center text-xs text-white/70"
-                >
-                    <MessageSquare className="size-6" />
-                </Link>
-            </nav>
+    return (
+        <>
+            {content}
             <AuthPopupContainer />
-        </div>
+        </>
     );
 }
 
@@ -345,11 +365,7 @@ function NavItem({
 
 function SectionTitle({ children, open }: { children: React.ReactNode; open: boolean }) {
     if (!open) return null;
-    return (
-        <div className="px-3 pb-1 text-xs uppercase tracking-wide text-white/50">
-            {children}
-        </div>
-    );
+    return <div className="px-3 pb-1 text-xs uppercase tracking-wide text-white/50">{children}</div>;
 }
 
 function ChatNavItem({
