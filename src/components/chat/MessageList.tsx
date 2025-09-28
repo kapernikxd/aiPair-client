@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode, Ref } from 'react';
 import type { MessageDTO } from '@/helpers/types';
 import MessageBubble from './MessageBubble';
 
@@ -10,6 +11,9 @@ type MessageListProps = {
   onPinMessage: (message: MessageDTO) => void;
   onUnpinMessage: (messageId: string) => void;
   resolveSenderName: (message: MessageDTO) => string;
+  children?: ReactNode;
+  containerRef?: Ref<HTMLDivElement>;
+  bottomSentinelRef?: Ref<HTMLDivElement>;
 };
 
 export default function MessageList({
@@ -19,9 +23,12 @@ export default function MessageList({
   onPinMessage,
   onUnpinMessage,
   resolveSenderName,
+  children,
+  containerRef,
+  bottomSentinelRef,
 }: MessageListProps) {
   return (
-    <div className="space-y-4">
+    <div ref={containerRef} className="space-y-4">
       {messages.map((message) => (
         <MessageBubble
           key={message._id}
@@ -33,6 +40,8 @@ export default function MessageList({
           onUnpin={onUnpinMessage}
         />
       ))}
+      {children}
+      <div ref={bottomSentinelRef} aria-hidden className="h-px w-full" />
     </div>
   );
 }
