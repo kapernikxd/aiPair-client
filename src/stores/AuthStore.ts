@@ -109,6 +109,8 @@ export class AuthStore extends BaseStore {
 
       $api.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
 
+      void this.root?.onlineStore.connectSocket();
+
       return data;
     } catch (e: any) {
       throw e;
@@ -133,6 +135,8 @@ export class AuthStore extends BaseStore {
       await storageHelper.setAccessToken(data.accessToken);
 
       $api.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
+
+      void this.root?.onlineStore.connectSocket();
 
       return data;
     } catch (e: any) {
@@ -160,6 +164,8 @@ export class AuthStore extends BaseStore {
 
       $api.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
 
+      void this.root?.onlineStore.connectSocket();
+
       return data;
     } catch (e: any) {
       // Преобразуем ошибки в формат react-hook-form
@@ -180,17 +186,21 @@ export class AuthStore extends BaseStore {
   }
 
   async logout() {
-    await AuthService.logout();
+    try {
+      await AuthService.logout();
+    } finally {
+      this.root?.onlineStore.disconnectSocket();
 
-    runInAction(() => {
-      this.user = null;
-      this.isAuth = false;
-      this.accessToken = null;
-      this.lastProvider = null;
-    });
-    this.notify();
-    await storageHelper.removeRefreshToken();
-    await storageHelper.removeAccessToken();
+      runInAction(() => {
+        this.user = null;
+        this.isAuth = false;
+        this.accessToken = null;
+        this.lastProvider = null;
+      });
+      this.notify();
+      await storageHelper.removeRefreshToken();
+      await storageHelper.removeAccessToken();
+    }
 
   }
 
@@ -213,6 +223,8 @@ export class AuthStore extends BaseStore {
       await storageHelper.setRefreshToken(data.refreshToken);
 
       $api.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
+
+      void this.root?.onlineStore.connectSocket();
 
     } catch (e: any) {
       // Преобразуем ошибки в формат react-hook-form
@@ -355,10 +367,13 @@ export class AuthStore extends BaseStore {
       // Обновляем заголовок авторизации для axios
       $api.defaults.headers.common['Authorization'] = `Bearer ${data.accessToken}`;
 
+      void this.root?.onlineStore.connectSocket();
+
       didRefresh = true;
     } catch (e: any) {
       await storageHelper.removeRefreshToken();
       await storageHelper.removeAccessToken();
+      this.root?.onlineStore.disconnectSocket();
       runInAction(() => {
         this.user = null;
         this.isAuth = false;
