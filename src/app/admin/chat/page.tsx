@@ -69,6 +69,7 @@ export default function ChatPage() {
   const pinnedMessages = useStoreData(chatStore, (store) => store.pinnedMessages);
   const hasMoreMessages = useStoreData(chatStore, (store) => store.hasMoreMessages);
   const selectedChat = useStoreData(chatStore, (store) => store.selectedChat);
+  const isSendingMessage = useStoreData(chatStore, (store) => store.isSendingMessage);
   const myId = useStoreData(authStore, (store) => store.user?.id ?? '');
 
   const [isLoadingConversation, setIsLoadingConversation] = useState(false);
@@ -325,6 +326,7 @@ export default function ChatPage() {
             <MessageInput
               onSend={handleSend}
               placeholder={chatId ? `Message ${conversationTitle}` : 'Select a chat to start messaging'}
+              isSending={isSendingMessage}
             />
           </div>
         </div>
