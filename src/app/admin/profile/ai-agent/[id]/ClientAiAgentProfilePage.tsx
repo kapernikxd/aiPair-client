@@ -70,18 +70,25 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
   }, [isAuthenticated, myBots.length, aiBotStore]);
 
 
+  const userProfileRoute = routes.userProfile;
+
   const highlights = useMemo<Highlight[]>(() => {
     if (!aiBot) return [];
+
+    const creator = aiBot.createdBy;
+    const creatorName = creator ? getUserFullName(creator) : "";
+    const creatorHref = creator?._id ? `${userProfileRoute}/${creator._id}` : undefined;
+
     return [
       {
         title: "Creator Info",
         lines: [
-          { label: "Creator", value: getUserFullName(aiBot.createdBy) },
+          { label: "Creator", value: creatorName, href: creatorHref },
           { label: "Created", value: `${aiBot.createdAt}` },
         ],
       },
-    ]
-  }, [aiBot]);
+    ];
+  }, [aiBot, userProfileRoute]);
 
   const chatHref = aiBot?.chatLink || routes.adminChat;
   const aiBotProfileId = aiBot?._id;

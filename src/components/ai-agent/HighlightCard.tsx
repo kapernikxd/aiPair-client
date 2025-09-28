@@ -9,7 +9,18 @@ export default function HighlightCard({ item }: { item: Highlight }) {
                 {item.lines.map((line) => (
                     <div key={line.label} className="flex items-start justify-between gap-4">
                         <dt className="text-white/50">{line.label}</dt>
-                        <dd className="text-right text-white">{line.value}</dd>
+                        <dd className="text-right text-white">
+                            {line.href ? (
+                                <a
+                                    href={line.href}
+                                    className="text-white underline decoration-white/40 underline-offset-2 transition hover:decoration-white"
+                                >
+                                    {line.value}
+                                </a>
+                            ) : (
+                                line.value
+                            )}
+                        </dd>
                     </div>
                 ))}
             </dl>
