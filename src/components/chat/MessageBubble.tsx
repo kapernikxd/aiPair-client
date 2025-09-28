@@ -29,20 +29,17 @@ export default function MessageBubble({ message, isOwn, isPinned, senderName, on
     <article className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
       <div
         className={
-          'group relative max-w-[82%] rounded-3xl border border-white/10 px-5 py-4 shadow-2xl backdrop-blur transition ' +
+          'group relative max-w-[82%] rounded-3xl border border-white/10 px-4 py-1 shadow-2xl backdrop-blur transition ' +
           (isOwn
             ? 'bg-gradient-to-br from-amber-300/90 to-orange-500/90 text-neutral-900'
             : 'bg-white/5 text-white')
         }
       >
-        <div className="flex items-start justify-between gap-4">
+        {/* <div className="flex items-start justify-between gap-4">
           <div className="flex flex-1 flex-col">
             <span className={`text-xs font-semibold uppercase tracking-wide ${isOwn ? 'text-neutral-900' : 'text-white/70'}`}>
               {displayName}
             </span>
-            {timestamp ? (
-              <span className={`text-[11px] ${isOwn ? 'text-neutral-900/80' : 'text-white/60'}`}>{timestamp}</span>
-            ) : null}
           </div>
           <button
             type="button"
@@ -59,7 +56,7 @@ export default function MessageBubble({ message, isOwn, isPinned, senderName, on
           >
             {isPinned ? 'Unpin' : 'Pin'}
           </button>
-        </div>
+        </div> */}
 
         <div className="mt-3 space-y-2 text-sm leading-relaxed">
           {content.split('\n').map((line, index) => (
@@ -68,12 +65,14 @@ export default function MessageBubble({ message, isOwn, isPinned, senderName, on
             </p>
           ))}
         </div>
+        {timestamp ? (
+          <span className={`text-[11px] flex ${isOwn ? 'text-neutral-900/80 justify-end' : 'text-white/60'}`}>{timestamp}</span>
+        ) : null}
 
         {isPinned ? (
           <div
-            className={`mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide ${
-              isOwn ? 'bg-neutral-900/10 text-neutral-900' : 'bg-white/10 text-white/80'
-            }`}
+            className={`mt-3 inline-flex items-center gap-2 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide ${isOwn ? 'bg-neutral-900/10 text-neutral-900' : 'bg-white/10 text-white/80'
+              }`}
           >
             Pinned
           </div>

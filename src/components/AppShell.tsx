@@ -413,15 +413,13 @@ function NavItem({
     return (
         <Link
             href={href}
-            className={`group flex items-center gap-3 rounded-2xl px-3 py-2 transition hover:bg-white/10 ${
+            className={`group flex items-center gap-1 rounded-2xl px-3 py-2 transition hover:bg-white/10 ${
                 isActive ? 'bg-white/15 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.12)]' : 'text-white/70'
             }`}
             aria-current={isActive ? 'page' : undefined}
         >
             <span
-                className={`inline-flex size-9 items-center justify-center rounded-xl border border-white/10 transition ${
-                    isActive ? 'bg-white/20 text-white' : 'bg-white/10 text-white/80'
-                }`}
+                className={`inline-flex size-9 items-center justify-center transition`}
             >
                 {icon}
             </span>

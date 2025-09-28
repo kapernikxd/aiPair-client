@@ -41,11 +41,11 @@ export default function ProfileSection({ open = true }: { open?: boolean }) {
               <div className="text-left">
                 <span className="text-sm font-semibold text-white/90">{displayName}</span>
               </div>
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <Button variant="subscribe">
                   <Crown className="size-4" />
                 </Button>
-              </div>
+              </div> */}
             </div>
           ) : (
             <Button
