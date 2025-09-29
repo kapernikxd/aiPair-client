@@ -8,7 +8,7 @@ import { BaseStore } from './BaseStore';
 const StoreContext = createContext<RootStore | null>(null);
 
 export function StoreProvider({ children }: { children: ReactNode }) {
-  const storeRef = useRef<RootStore>();
+  const storeRef = useRef<RootStore>(null);
   if (!storeRef.current) {
     storeRef.current = new RootStore();
   }

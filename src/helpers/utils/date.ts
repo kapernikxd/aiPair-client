@@ -12,7 +12,7 @@ dayjs.extend(localizedFormat);
 dayjs.extend(updateLocale);
 
 // "2025-05-31T15:00:00" → "2 hours ago"
-export const getTimeAgo = (time: string) =>
+export const getTimeAgo = (time?: string) =>
   time ? dayjs(time).fromNow() : null;
 
 // "2025-05-31T17:00:00" → "2025-05-31 17:00:00"
@@ -31,7 +31,7 @@ export const getDateTime = (date: string) =>
 //  * - "2022-08-15" → "August 2022"
 //  * - "2025-01-01" → "January 2025"
 //  */
-export const getMonthYear = (date: string | Date) => {
+export const getMonthYear = (date?: string | Date) => {
   return dayjs(date).format("MMMM YYYY");
 };
 

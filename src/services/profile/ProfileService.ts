@@ -5,6 +5,7 @@ import $api from "@/helpers/http";
 import { ProfilesFilterParams, UpdateProfileProps } from "@/helpers/types/profile";
 import { AiBotDetails, AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
 import { getQueriedUrl } from "@/helpers/queryStringHelper";
+import { StringifiableRecord } from "query-string";
 
 
 export interface UsersFilterParams {
@@ -53,7 +54,7 @@ export class ProfileService {
    * @returns Ответ со списком профилей.
    */
   public async getProfiles(params: ProfilesFilterParams): Promise<AxiosResponse<{ profiles: ProfileDTO[], hasMore: boolean }>> {
-    return $api.get(getQueriedUrl({ url: "/profile/", query: params }));
+    return $api.get(getQueriedUrl({ url: "/profile/", query: params as StringifiableRecord }));
   }
 
   /**
@@ -175,7 +176,7 @@ export class ProfileService {
    */
 
   public async getAllAiBots(params: ProfilesFilterParams = {}): Promise<AxiosResponse<{ profiles: ProfileDTO[], hasMore: boolean }>> {
-    return $api.get(getQueriedUrl({ url: "/profile/ai-bots/all", query: params }));
+    return $api.get(getQueriedUrl({ url: "/profile/ai-bots/all", query: params as StringifiableRecord }));
   }
 
   public async getAiBotById(botId: string): Promise<AxiosResponse<AiBotDTO>> {

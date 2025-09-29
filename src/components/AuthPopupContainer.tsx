@@ -8,7 +8,7 @@ import type { AuthProvider } from '@/stores/AuthStore';
 export default function AuthPopupContainer() {
   const { uiStore, authStore, profileStore } = useRootStore();
   const isOpen = useStoreData(uiStore, (store) => store.isAuthPopupOpen);
-  const profileName = useStoreData(profileStore, (store) => store.profile.userName || '');
+  const profileName = useStoreData(profileStore, (store) => store.profile.username || '');
 
   const handleProviderAuth = useCallback(
     (provider: AuthProvider) => {

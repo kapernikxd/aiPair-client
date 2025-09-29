@@ -389,7 +389,7 @@ export class ChatStore extends BaseStore {
   }
 
   unsubscribeFromChat() {
-    // if (!onlineStore.socket) return;
+    if (!this.root.onlineStore.socket) return;
     this.root.onlineStore.socket.off("typing", this.root.onlineStore.handleTyping);
     this.root.onlineStore.socket.off("stop typing", this.root.onlineStore.handleStopTyping);
     this.root.onlineStore.clearTypingUsers();
@@ -505,12 +505,12 @@ export class ChatStore extends BaseStore {
 }
 
 type ChatListItem = ChatDTO & {
-  unread?: number | null;
+  unread?: number | null | boolean;
   post?: { title?: string | null } | null;
   latestMessage?: MessageDTO | null;
 };
 
-type MessageLike = MessageDTO & {
+type MessageLike = Omit<MessageDTO, "chat"> & {
   chat?: { _id?: string } | string;
 };
 
@@ -520,5 +520,5 @@ const extractMessage = (payload: IncomingMessagePayload): MessageLike | undefine
   if ('latestMessage' in payload) {
     return payload.latestMessage;
   }
-  return payload;
+  return payload as MessageLike;
 };

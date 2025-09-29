@@ -8,7 +8,7 @@ import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
 export default function ProfileSection({ open = true }: { open?: boolean }) {
   const { profileStore, authStore, uiStore } = useRootStore();
   const { goTo } = useAuthRoutes();
-  const profileName = useStoreData(profileStore, (store) => store.profile.userName);
+  const profileName = useStoreData(profileStore, (store) => store.profile.username);
   const isAuthenticated = useStoreData(authStore, (store) => store.isAuthenticated);
   const authUser = useStoreData(authStore, (store) => store.user);
   const displayName = authUser?.name ?? profileName ?? '';

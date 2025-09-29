@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import AppShell from '@/components/AppShell';
 import ChatAvatar from '@/components/chats/ChatAvatar';
@@ -61,6 +61,25 @@ function PinnedMessagesSection({ messages, onUnpin }: { messages: MessageDTO[]; 
 }
 
 export default function ChatPage() {
+  return (
+    <Suspense fallback={<ChatPageFallback />}>
+      <ChatPageContent />
+    </Suspense>
+  );
+}
+
+function ChatPageFallback() {
+  return (
+    <AppShell>
+      <div className="flex h-full min-h-0 flex-col items-center justify-center gap-4 p-6 text-sm text-white/60">
+        <GradientOrbs />
+        <p>Loading chat…</p>
+      </div>
+    </AppShell>
+  );
+}
+
+function ChatPageContent() {
   const searchParams = useSearchParams();
   const chatId = searchParams.get('chatId');
   const { chatStore, authStore, onlineStore } = useRootStore();
@@ -141,7 +160,7 @@ export default function ChatPage() {
     if (!chatId || !isSocketConnected) return;
     chatStore.subscribeToChat(chatId);
     return () => {
-      chatStore.unsubscribeFromChat(chatId);
+      chatStore.unsubscribeFromChat();
     };
   }, [chatId, chatStore, isSocketConnected]);
 
@@ -284,7 +303,7 @@ export default function ChatPage() {
   const conversationTitle = useMemo(() => {
     if (!selectedChat) return 'Chat';
     if (selectedChat.isGroupChat) {
-      return selectedChat.chatName || selectedChat.post?.title || 'Group chat';
+      return selectedChat.chatName || 'Group chat';
     }
     const opponent = selectedChat.users?.find((user) => user._id !== myId);
     const name = [opponent?.name, opponent?.lastname].filter(Boolean).join(' ').trim();

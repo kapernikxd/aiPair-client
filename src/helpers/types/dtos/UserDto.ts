@@ -7,7 +7,7 @@ export interface UserDTO {
   email?: string;
   isActivated: boolean;
   activationLink?: string;
-  gender?: 'MALE' | 'FEMALE',
+  gender?: string;
   phone?: string;
   userBio?: string;
   aiPrompt?: string;
