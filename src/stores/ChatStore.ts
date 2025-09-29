@@ -510,7 +510,7 @@ type ChatListItem = ChatDTO & {
   latestMessage?: MessageDTO | null;
 };
 
-type MessageLike = MessageDTO & {
+type MessageLike = Omit<MessageDTO, "chat"> & {
   chat?: { _id?: string } | string;
 };
 
