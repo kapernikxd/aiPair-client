@@ -10,7 +10,9 @@ export interface MessageDTO {
   _id: MessageId;
   sender: Sender;
   content: string;
-  chat: ChatId;
+  chat?: {
+    _id?: string
+  } | string;
   readBy: UserId[];
   createdAt: string;
   replyTo?: MessageDTO;

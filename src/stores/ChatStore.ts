@@ -520,5 +520,5 @@ const extractMessage = (payload: IncomingMessagePayload): MessageLike | undefine
   if ('latestMessage' in payload) {
     return payload.latestMessage;
   }
-  return payload;
+  return payload as MessageLike;
 };
