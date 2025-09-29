@@ -1,4 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
+import { isAxiosError } from 'axios';
 import AuthService from "@/services/auth/AuthService";
 import { LoginParams, RegistrationParams, ParamsVerificateEmail, NewPasswordParams } from "@/helpers/types/auth";
 import $api from '@/helpers/http';
@@ -90,7 +91,7 @@ export class AuthStore extends BaseStore {
     this.notify();
   }
 
-  async loginByGoogle(credential: string, expoPushToken?: string) {
+  async loginByGoogle(credential: string) {
     try {
       const { data } = await AuthService.loginByGoogle(credential);
 
@@ -112,12 +113,12 @@ export class AuthStore extends BaseStore {
       void this.root?.onlineStore.connectSocket();
 
       return data;
-    } catch (e: any) {
-      throw e;
+    } catch (error: unknown) {
+      throw error;
     }
   }
 
-  async loginByApple(identityToken: string, expoPushToken?: string) {
+  async loginByApple(identityToken: string) {
     try {
       const { data } = await AuthService.loginByApple(identityToken);
 
@@ -139,12 +140,12 @@ export class AuthStore extends BaseStore {
       void this.root?.onlineStore.connectSocket();
 
       return data;
-    } catch (e: any) {
-      throw e;
+    } catch (error: unknown) {
+      throw error;
     }
   }
 
-  async login(props: LoginParams, expoPushToken?: string) {
+  async login(props: LoginParams) {
     try {
       this.setLoading(true);
       const { data } = await AuthService.login(props);
@@ -167,19 +168,12 @@ export class AuthStore extends BaseStore {
       void this.root?.onlineStore.connectSocket();
 
       return data;
-    } catch (e: any) {
-      // Преобразуем ошибки в формат react-hook-form
-      if (e.response?.data?.errors) {
-        const formattedErrors = e.response.data.errors.reduce(
-          (acc: Record<string, string>, error: { field: string; message: string }) => {
-            acc[error.field] = error.message;
-            return acc;
-          },
-          {}
-        );
-        throw formattedErrors; // Бросаем обработанные ошибки
+    } catch (error: unknown) {
+      const formErrors = this.extractFormErrors(error);
+      if (formErrors) {
+        throw formErrors;
       }
-      throw e;
+      throw error;
     } finally {
       this.setLoading(false);
     }
@@ -204,7 +198,7 @@ export class AuthStore extends BaseStore {
 
   }
 
-  async registration(props: RegistrationParams, expoPushToken?: string) {
+  async registration(props: RegistrationParams) {
     try {
       this.setLoading(true);
       const { data } = await AuthService.registration(props);
@@ -226,19 +220,12 @@ export class AuthStore extends BaseStore {
 
       void this.root?.onlineStore.connectSocket();
 
-    } catch (e: any) {
-      // Преобразуем ошибки в формат react-hook-form
-      if (e.response?.data?.errors) {
-        const formattedErrors = e.response.data.errors.reduce(
-          (acc: Record<string, string>, error: { field: string; message: string }) => {
-            acc[error.field] = error.message;
-            return acc;
-          },
-          {}
-        );
-        throw formattedErrors; // Бросаем обработанные ошибки
+    } catch (error: unknown) {
+      const formErrors = this.extractFormErrors(error);
+      if (formErrors) {
+        throw formErrors;
       }
-      throw e;
+      throw error;
     } finally {
       this.setLoading(false);
     }
@@ -259,19 +246,12 @@ export class AuthStore extends BaseStore {
 
       return data;
 
-    } catch (e: any) {
-      // Преобразуем ошибки в формат react-hook-form
-      if (e.response?.data?.errors) {
-        const formattedErrors = e.response.data.errors.reduce(
-          (acc: Record<string, string>, error: { field: string; message: string }) => {
-            acc[error.field] = error.message;
-            return acc;
-          },
-          {}
-        );
-        throw formattedErrors; // Бросаем обработанные ошибки
+    } catch (error: unknown) {
+      const formErrors = this.extractFormErrors(error);
+      if (formErrors) {
+        throw formErrors;
       }
-      throw e;
+      throw error;
     } finally {
       this.setLoading(false);
     }
@@ -282,19 +262,12 @@ export class AuthStore extends BaseStore {
       const { data } = await AuthService.activateEmail(email);
       return data;
 
-    } catch (e: any) {
-      // Преобразуем ошибки в формат react-hook-form
-      if (e.response?.data?.errors) {
-        const formattedErrors = e.response.data.errors.reduce(
-          (acc: Record<string, string>, error: { field: string; message: string }) => {
-            acc[error.field] = error.message;
-            return acc;
-          },
-          {}
-        );
-        throw formattedErrors; // Бросаем обработанные ошибки
+    } catch (error: unknown) {
+      const formErrors = this.extractFormErrors(error);
+      if (formErrors) {
+        throw formErrors;
       }
-      throw e;
+      throw error;
     }
   }
 
@@ -305,19 +278,12 @@ export class AuthStore extends BaseStore {
       const { data } = await AuthService.resetPassword(props);
       return data;
 
-    } catch (e: any) {
-      // Преобразуем ошибки в формат react-hook-form
-      if (e.response?.data?.errors) {
-        const formattedErrors = e.response.data.errors.reduce(
-          (acc: Record<string, string>, error: { field: string; message: string }) => {
-            acc[error.field] = error.message;
-            return acc;
-          },
-          {}
-        );
-        throw formattedErrors; // Бросаем обработанные ошибки
+    } catch (error: unknown) {
+      const formErrors = this.extractFormErrors(error);
+      if (formErrors) {
+        throw formErrors;
       }
-      throw e;
+      throw error;
     } finally {
       this.setLoading(false);
     }
@@ -328,19 +294,12 @@ export class AuthStore extends BaseStore {
       const { data } = await AuthService.newPassword(props);
       return data;
 
-    } catch (e: any) {
-      // Преобразуем ошибки в формат react-hook-form
-      if (e.response?.data?.errors) {
-        const formattedErrors = e.response.data.errors.reduce(
-          (acc: Record<string, string>, error: { field: string; message: string }) => {
-            acc[error.field] = error.message;
-            return acc;
-          },
-          {}
-        );
-        throw formattedErrors; // Бросаем обработанные ошибки
+    } catch (error: unknown) {
+      const formErrors = this.extractFormErrors(error);
+      if (formErrors) {
+        throw formErrors;
       }
-      throw e;
+      throw error;
     }
   }
 
@@ -370,7 +329,7 @@ export class AuthStore extends BaseStore {
       void this.root?.onlineStore.connectSocket();
 
       didRefresh = true;
-    } catch (e: any) {
+    } catch (error: unknown) {
       await storageHelper.removeRefreshToken();
       await storageHelper.removeAccessToken();
       this.root?.onlineStore.disconnectSocket();
@@ -380,7 +339,7 @@ export class AuthStore extends BaseStore {
         this.accessToken = null;
         this.lastProvider = null;
       });
-      console.log(e);
+      console.log(error);
     } finally {
       runInAction(() => {
         this.hasAttemptedAutoLogin = true;
@@ -389,6 +348,29 @@ export class AuthStore extends BaseStore {
     }
     return didRefresh;
   }
+
+  private extractFormErrors(error: unknown): Record<string, string> | null {
+    if (isAxiosError<FormErrorResponse>(error)) {
+      const errors = error.response?.data?.errors;
+      if (Array.isArray(errors)) {
+        return errors.reduce<Record<string, string>>((acc, item) => {
+          acc[item.field] = item.message;
+          return acc;
+        }, {});
+      }
+    }
+
+    return null;
+  }
 }
 
 export default AuthStore;
+
+type FieldError = {
+  field: string;
+  message: string;
+};
+
+type FormErrorResponse = {
+  errors?: FieldError[];
+};

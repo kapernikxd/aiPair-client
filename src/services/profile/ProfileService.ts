@@ -1,4 +1,4 @@
-import { AxiosResponse } from "axios";
+import type { AxiosResponse } from "axios";
 import { AuthProfileResponse, AuthResponse, ChangePasswordProps } from "../auth/AuthResponse";
 import { MyProfileDTO, ProfileDTO, UserDTO } from "@/helpers/types";
 import $api from "@/helpers/http";
@@ -44,7 +44,7 @@ export class ProfileService {
    * Получить профиль текущего пользователя.
    * @returns Ответ с данными профиля.
    */
-  public async getMyProfile(): Promise<AxiosResponse<MyProfileDTO, any>> {
+  public async getMyProfile(): Promise<AxiosResponse<MyProfileDTO>> {
     return $api.get("/profile/my");
   }
 
@@ -61,7 +61,7 @@ export class ProfileService {
    * @param id Идентификатор профиля.
    * @returns Ответ с данными профиля.
    */
-  public async getProfileById(id: string): Promise<AxiosResponse<ProfileDTO, any>> {
+  public async getProfileById(id: string): Promise<AxiosResponse<ProfileDTO>> {
     return $api.get(`/profile/${id}`);
   }
 
@@ -120,7 +120,7 @@ export class ProfileService {
    * @param id Идентификатор профиля.
    * @returns Ответ с информацией о количестве подписчиков и статусе подписки.
    */
-  public async followProfileById(id: string): Promise<AxiosResponse<{ followers: number; isFollowing: boolean }, any>> {
+  public async followProfileById(id: string): Promise<AxiosResponse<{ followers: number; isFollowing: boolean }>> {
     return $api.put(`/profile/${id}/follow`);
   }
 
@@ -128,7 +128,7 @@ export class ProfileService {
    * Получить список подписчиков текущего пользователя.
    * @returns Ответ со списком подписчиков.
    */
-  public async getMyFollowers(params?: UsersFilterParams): Promise<AxiosResponse<UsersResponse, any>> {
+  public async getMyFollowers(params?: UsersFilterParams): Promise<AxiosResponse<UsersResponse>> {
     return $api.get(`/profile/my/followers`, { params });
   }
 
@@ -137,7 +137,7 @@ export class ProfileService {
    * @param id Идентификатор профиля.
    * @returns Ответ со списком подписчиков.
    */
-  public async getFollowersById(id: string, params?: UsersFilterParams): Promise<AxiosResponse<UsersResponse, any>> {
+  public async getFollowersById(id: string, params?: UsersFilterParams): Promise<AxiosResponse<UsersResponse>> {
     return $api.get(`/profile/${id}/followers`, { params });
   }
 
@@ -145,7 +145,7 @@ export class ProfileService {
    * Получить список подписок текущего пользователя.
    * @returns Ответ со списком подписок.
    */
-  public async getMyFollowing(params?: UsersFilterParams): Promise<AxiosResponse<UsersResponse, any>> {
+  public async getMyFollowing(params?: UsersFilterParams): Promise<AxiosResponse<UsersResponse>> {
     return $api.get(`/profile/my/following`, { params });
   }
 
@@ -154,7 +154,7 @@ export class ProfileService {
    * @param id Идентификатор профиля.
    * @returns Ответ со списком подписок.
    */
-  public async getFollowingById(id: string, params?: UsersFilterParams): Promise<AxiosResponse<UsersResponse, any>> {
+  public async getFollowingById(id: string, params?: UsersFilterParams): Promise<AxiosResponse<UsersResponse>> {
     return $api.get(`/profile/${id}/following`, { params });
   }
 
@@ -166,7 +166,7 @@ export class ProfileService {
     return $api.post(`/reports`, { targetType: 'ai-bot', ...data });
   }
 
-  public async deleteAccount(id: string): Promise<AxiosResponse<boolean>> {
+  public async deleteAccount(): Promise<AxiosResponse<boolean>> {
     return $api.delete(`/profile`);
   }
 
@@ -178,11 +178,11 @@ export class ProfileService {
     return $api.get(getQueriedUrl({ url: "/profile/ai-bots/all", query: params }));
   }
 
-  public async getAiBotById(botId: string): Promise<AxiosResponse<AiBotDTO, any>> {
+  public async getAiBotById(botId: string): Promise<AxiosResponse<AiBotDTO>> {
     return $api.get(`/profile/ai-bots/${botId}`);
   }
 
-  public async getAiBotsByCreator(creatorId: string): Promise<AxiosResponse<AiBotDTO[], any>> {
+  public async getAiBotsByCreator(creatorId: string): Promise<AxiosResponse<AiBotDTO[]>> {
     return $api.get(`/profile/ai-bots/created-by/${creatorId}`);
   }
 
@@ -190,28 +190,28 @@ export class ProfileService {
   /**
    * Получить список созданных AI-ботов текущего пользователя.
    */
-  public async getMyAiBots(): Promise<AxiosResponse<UserDTO[], any>> {
+  public async getMyAiBots(): Promise<AxiosResponse<UserDTO[]>> {
     return $api.get(`/profile/ai-bots/my`);
   }
 
   /**
    * Получить список AI-ботов, на которых подписан текущий пользователь.
    */
-  public async getSubscribedAiBots(): Promise<AxiosResponse<UserDTO[], any>> {
+  public async getSubscribedAiBots(): Promise<AxiosResponse<UserDTO[]>> {
     return $api.get(`/profile/ai-bots/subscribed`);
   }
 
   /**
    * Подписаться или отписаться от AI-бота по его идентификатору.
    */
-  public async followAiBotById(id: string): Promise<AxiosResponse<{ followers: number; isFollowing: boolean }, any>> {
+  public async followAiBotById(id: string): Promise<AxiosResponse<{ followers: number; isFollowing: boolean }>> {
     return $api.put(`/profile/${id}/follow`);
   }
 
   /**
    * Создать нового AI-бота. Для передачи аватара необходимо использовать FormData.
    */
-  public async createAiBot(formData: FormData): Promise<AxiosResponse<UserDTO, any>> {
+  public async createAiBot(formData: FormData): Promise<AxiosResponse<UserDTO>> {
     return $api.post(`/profile/ai-bots`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
@@ -220,14 +220,14 @@ export class ProfileService {
   /**
    * Обновить данные AI-бота (без загрузки аватара).
    */
-  public async updateAiBot(id: string, data: AiBotUpdatePayload): Promise<AxiosResponse<UserDTO, any>> {
+  public async updateAiBot(id: string, data: AiBotUpdatePayload): Promise<AxiosResponse<UserDTO>> {
     return $api.patch(`/profile/ai-bots/${id}`, data);
   }
 
   /**
    * Загрузить аватар для AI-бота.
    */
-  public async uploadAiBotAvatar(id: string, formData: FormData): Promise<AxiosResponse<UserDTO, any>> {
+  public async uploadAiBotAvatar(id: string, formData: FormData): Promise<AxiosResponse<UserDTO>> {
     return $api.post(`/profile/ai-bots/${id}/avatar`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
@@ -236,14 +236,14 @@ export class ProfileService {
   /**
    * Получить фотографии для AI-бота.
    */
-  public async getAiBotDetails(id: string): Promise<AxiosResponse<AiBotPhotoResponse, any>> {
+  public async getAiBotDetails(id: string): Promise<AxiosResponse<AiBotPhotoResponse>> {
     return $api.get(`/profile/ai-bots/${id}/details`);
   }
 
   /**
    * Загрузить новые фотографии для AI-бота.
    */
-  public async addAiBotPhotos(id: string, formData: FormData): Promise<AxiosResponse<AiBotPhotoResponse, any>> {
+  public async addAiBotPhotos(id: string, formData: FormData): Promise<AxiosResponse<AiBotPhotoResponse>> {
     return $api.post(`/profile/ai-bots/${id}/photos`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
@@ -252,7 +252,7 @@ export class ProfileService {
   /**
    * Удалить фотографии AI-бота по ссылкам.
    */
-  public async deleteAiBotPhotos(id: string, photoUrls: string[]): Promise<AxiosResponse<AiBotPhotoResponse, any>> {
+  public async deleteAiBotPhotos(id: string, photoUrls: string[]): Promise<AxiosResponse<AiBotPhotoResponse>> {
     return $api.delete(`/profile/ai-bots/${id}/photos`, {
       data: { photoUrls },
     });
@@ -261,9 +261,11 @@ export class ProfileService {
   /**
    * Удалить AI-бота по идентификатору.
    */
-  public async deleteAiBot(id: string): Promise<AxiosResponse<void, any>> {
+  public async deleteAiBot(id: string): Promise<AxiosResponse<void>> {
     return $api.delete(`/profile/ai-bots/${id}`);
   }
 }
 
-export default new ProfileService();
+const profileService = new ProfileService();
+
+export default profileService;

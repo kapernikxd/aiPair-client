@@ -35,7 +35,7 @@ export default function MessageBubble({ message, isOwn, isPinned, senderName, on
             : 'bg-white/5 text-white')
         }
       >
-        {/* <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start justify-between gap-4">
           <div className="flex flex-1 flex-col">
             <span className={`text-xs font-semibold uppercase tracking-wide ${isOwn ? 'text-neutral-900' : 'text-white/70'}`}>
               {displayName}
@@ -56,7 +56,7 @@ export default function MessageBubble({ message, isOwn, isPinned, senderName, on
           >
             {isPinned ? 'Unpin' : 'Pin'}
           </button>
-        </div> */}
+        </div>
 
         <div className="mt-3 space-y-2 text-sm leading-relaxed">
           {content.split('\n').map((line, index) => (

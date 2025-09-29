@@ -1,4 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
+import { isAxiosError } from 'axios';
 import { BaseStore } from './BaseStore';
 import type { RootStore } from './RootStore';
 import { MAX_GALLERY_ITEMS, steps } from '@/helpers/data/agent-create';
@@ -261,12 +262,13 @@ export class AiBotStore extends BaseStore {
       });
       this.notify();
       return data;
-    } catch (e) {
+    } catch (error) {
       runInAction(() => {
         this.selectAiBot = null;
       });
       this.notify();
       this.root.uiStore.showSnackbar("Failed", "error");
+      console.error("Failed to load AI bot", error);
     } finally {
       runInAction(() => {
         this.isAiUserLoading = false;
@@ -285,11 +287,12 @@ export class AiBotStore extends BaseStore {
       });
       this.notify();
       return data;
-    } catch (e) {
+    } catch (error) {
       runInAction(() => {
         this.userAiBots = [];
       });
       this.notify();
+      console.error("Failed to load user AI bots", error);
     } finally {
       runInAction(() => {
         this.isAiUserLoading = false;
@@ -315,8 +318,9 @@ export class AiBotStore extends BaseStore {
         this.myBots = data;
         this.notify();
       });
-    } catch (e) {
+    } catch (error) {
       this.root.uiStore.showSnackbar("Failed", "error");
+      console.error("Failed to load my AI bots", error);
     }
   }
 
@@ -327,8 +331,9 @@ export class AiBotStore extends BaseStore {
         this.subscribedBots = data;
         this.notify();
       });
-    } catch (e) {
+    } catch (error) {
       this.root.uiStore.showSnackbar("Failed", "error");
+      console.error("Failed to load subscribed AI bots", error);
     }
   }
 
@@ -368,8 +373,9 @@ export class AiBotStore extends BaseStore {
         }
       });
       this.notify();
-    } catch (e) {
+    } catch (error) {
       this.root.uiStore.showSnackbar('Failed to update follow status', 'error');
+      console.error('Failed to update follow status', error);
     }
   }
 
@@ -474,20 +480,18 @@ export class AiBotStore extends BaseStore {
       return error;
     }
 
-    if (error && typeof error === 'object') {
-      const maybeResponse = (error as any).response;
-      const responseMessage = maybeResponse?.data?.message;
-      if (typeof responseMessage === 'string') {
-        return responseMessage;
+    if (isAxiosError<{ message?: string | string[] }>(error)) {
+      const { message } = error.response?.data ?? {};
+      if (typeof message === 'string') {
+        return message;
       }
+      if (Array.isArray(message) && message.length) {
+        return String(message[0]);
+      }
+    }
 
-      if (Array.isArray(responseMessage) && responseMessage.length) {
-        return String(responseMessage[0]);
-      }
-
-      if ('message' in error && typeof (error as any).message === 'string') {
-        return (error as any).message;
-      }
+    if (error instanceof Error && error.message) {
+      return error.message;
     }
 
     return 'Failed to create AI agent';
@@ -504,7 +508,16 @@ export class AiBotStore extends BaseStore {
 
       if (avatar) {
         const formData = new FormData();
-        formData.append("avatar", avatar as any);
+        if (avatar instanceof File) {
+          formData.append("avatar", avatar);
+        } else {
+          const file = {
+            uri: avatar.uri,
+            name: avatar.name,
+            type: avatar.type,
+          } as unknown as Blob;
+          formData.append("avatar", file);
+        }
         const res = await this.profileService.uploadAiBotAvatar(id, formData);
         updated = res.data;
       }
@@ -559,9 +572,10 @@ export class AiBotStore extends BaseStore {
       }
 
       return updated as AiBotDTO | undefined;
-    } catch (e) {
+    } catch (error) {
       this.root.uiStore.showSnackbar('Failed to update AI agent', 'error');
-      throw e;
+      console.error('Failed to update AI agent', error);
+      throw error;
     }
   }
 
@@ -583,8 +597,8 @@ export class AiBotStore extends BaseStore {
         this.notify();
         this.root.uiStore.showSnackbar('AI agent deleted', 'success');
       });
-    } catch (e) {
-      throw e;
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -602,8 +616,9 @@ export class AiBotStore extends BaseStore {
         this.botDetails = data;
       });
       this.notify();
-    } catch (e) {
+    } catch (error) {
       this.root.uiStore.showSnackbar("Failed", "error");
+      console.error('Failed to fetch AI bot details', error);
     } finally {
       runInAction(() => {
         this.photosLoading = false;
@@ -622,8 +637,9 @@ export class AiBotStore extends BaseStore {
       });
       this.notify();
       this.root.uiStore.showSnackbar("Saved", "success");
-    } catch (e) {
+    } catch (error) {
       this.root.uiStore.showSnackbar("Upload failed", "error");
+      console.error('Failed to upload AI bot photos', error);
     } finally {
       runInAction(() => {
         this.photosUpdating = false;
@@ -643,8 +659,9 @@ export class AiBotStore extends BaseStore {
       });
       this.notify();
       this.root.uiStore.showSnackbar("Deleted", "success");
-    } catch (e) {
+    } catch (error) {
       this.root.uiStore.showSnackbar("Delete failed", "error");
+      console.error('Failed to delete AI bot photos', error);
     } finally {
       runInAction(() => {
         this.photosUpdating = false;

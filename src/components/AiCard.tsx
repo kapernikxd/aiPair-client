@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Loader2, MessageSquare } from 'lucide-react';
 
 export type HoverSwapCardProps = {
@@ -42,11 +43,14 @@ export default function HoverSwapCard({
     <div className="group relative isolate w-full aspect-[11/14] overflow-hidden rounded-3xl bg-zinc-900 shadow-xl ring-1 ring-black/10 transition-all hover:ring-black/20 hover:z-10">
       {/* Изображение или заглушка */}
       {src ? (
-        <img
+        <Image
           src={src}
           alt={title}
+          fill
+          unoptimized
           className="absolute inset-0 size-full object-cover"
           draggable={false}
+          sizes="(max-width: 768px) 50vw, 33vw"
         />
       ) : (
         <div className="absolute inset-0 bg-zinc-800" />
@@ -87,9 +91,12 @@ export default function HoverSwapCard({
         <div className="px-5 pb-5">
           <div className="mb-3 flex items-center gap-3">
             {avatarSrc && (
-              <img
+              <Image
                 src={avatarSrc}
-                alt="avatar"
+                alt={`${title} avatar`}
+                width={32}
+                height={32}
+                unoptimized
                 className="size-8 rounded-full object-cover ring-2 ring-white/20"
                 draggable={false}
               />

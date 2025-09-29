@@ -1,5 +1,6 @@
 // src/stores/OnlineStore.ts
 import { makeAutoObservable, runInAction } from 'mobx';
+import type { Socket } from 'socket.io-client';
 import { UnreadStatus } from '@/services/chat/ChatService';
 import { MessageDTO } from '@/helpers/types';
 import { connectSocket } from '@/helpers/http/socket';
@@ -21,7 +22,7 @@ export class OnlineStore extends BaseStore {
   private root: RootStore;
 
   onlineUsers: OnlineUser[] = [];
-  socket: any = null;
+  socket: Socket | null = null;
   isConnected = false;
   isConnecting = false;               // NEW
   appState: AppStateStatus = getInitialAppState();
@@ -119,7 +120,7 @@ export class OnlineStore extends BaseStore {
       this.afterConnect(userId);
     });
 
-    this.socket.on('disconnect', (_reason: any) => {
+    this.socket.on('disconnect', () => {
       runInAction(() => {
         this.isConnected = false;
         this.onlineUsers = [];

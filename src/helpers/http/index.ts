@@ -54,14 +54,14 @@ $api.interceptors.response.use(
           }
         );
 
-        const { accessToken: newAccessToken, refreshToken: newRefreshToken, user } = response.data;
+        const { accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data;
 
         await storageHelper.setAccessToken(newAccessToken);
         await storageHelper.setRefreshToken(newRefreshToken);
 
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return $api.request(originalRequest);
-      } catch (e) {
+      } catch (error) {
         await storageHelper.removeAccessToken();
         await storageHelper.removeRefreshToken();
 
@@ -69,7 +69,7 @@ $api.interceptors.response.use(
         // AuthStore.user = null;
         // AuthStore.accessToken = null;
 
-        console.log("НЕ АВТОРИЗОВАН");
+        console.log("НЕ АВТОРИЗОВАН", error);
       }
     }
 

@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 import AppShell from "@/components/AppShell";
 
@@ -20,11 +19,11 @@ interface UserProfilePageProps {
 export default function UserProfilePage({ profileId }: UserProfilePageProps) {
   const { profileStore, aiBotStore } = useRootStore();
   const { goToMyProfile } = useAuthRoutes();
-  const router = useRouter();
 
   const profile = useStoreData(profileStore, (store) => store.profile);
   const genderLabels = useStoreData(profileStore, (store) => store.genderLabels);
   const myProfile = useStoreData(profileStore, (store) => store.myProfile);
+  const myProfileId = myProfile?._id ?? null;
   const isLoadingProfile = useStoreData(profileStore, (store) => store.isLoadingProfile);
   const isFollowing = profile?.isFollowing;
   const profileUserId = profile?._id;
@@ -37,15 +36,15 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
   useEffect(() => {
     if (!profileId) return;
 
-    if (myProfile?._id && myProfile._id === profileId) {
-      goToMyProfile()
+    if (myProfileId && myProfileId === profileId) {
+      goToMyProfile();
     }
-  }, [myProfile?._id, profileId, router]);
+  }, [goToMyProfile, myProfileId, profileId]);
 
   useEffect(() => {
     if (!profileId) return;
 
-    if (myProfile?._id && myProfile._id === profileId) {
+    if (myProfileId && myProfileId === profileId) {
       return;
     }
 
@@ -57,7 +56,7 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
       aiBotStore.clearSelectedAiBot();
       aiBotStore.clearUserAiBots();
     };
-  }, [profileId, profileStore, aiBotStore, myProfile?._id]);
+  }, [profileId, profileStore, aiBotStore, myProfileId]);
 
   const handleToggleFollow = useCallback(async () => {
     if (!profileUserId) return;
@@ -74,7 +73,7 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
   const genderLabel = profile?.gender
     ? genderLabels[profile.gender] ?? profile.gender
     : "Not specified";
-  const isViewingOwnProfile = Boolean(profileUserId && myProfile?._id === profileUserId);
+  const isViewingOwnProfile = Boolean(profileUserId && myProfileId === profileUserId);
 
   return (
     <AppShell>

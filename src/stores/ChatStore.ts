@@ -3,7 +3,7 @@ import { BaseStore } from './BaseStore';
 import type { RootStore } from './RootStore';
 import { ChatDTO, MessageDTO } from '@/helpers/types';
 import { ChatById, ReadedMessageResponse } from '@/services/chat/ChatResponse';
-import ChatService, { FetchChatsOptions } from '@/services/chat/ChatService';
+import ChatService, { FetchChatsOptions, MessageByIdResponse, UploadImage } from '@/services/chat/ChatService';
 
 import { chatThreads } from '@/helpers/data/chats';
 import { initialMessages } from '@/helpers/data/chat';
@@ -18,7 +18,7 @@ export class ChatStore extends BaseStore {
 
   private root: RootStore;
 
-  chats: ChatDTO[] = [];
+  chats: ChatListItem[] = [];
   selectedChat: ChatById | null = null;
   messages: MessageDTO[] = [];
   pinnedMessages: MessageDTO[] = [];
@@ -158,15 +158,15 @@ export class ChatStore extends BaseStore {
   }
 
   get privateChats() {
-    return this.chats.filter((chat: any) => !chat.isGroupChat && !chat.isBotChat);
+    return this.chats.filter((chat) => !chat.isGroupChat && !chat.isBotChat);
   }
 
   get groupChats() {
-    return this.chats.filter((chat: any) => chat.isGroupChat && chat?.post?.title);
+    return this.chats.filter((chat) => chat.isGroupChat && Boolean(chat.post?.title));
   }
 
   get botChats() {
-    return this.chats.filter((chat: any) => chat.isBotChat);
+    return this.chats.filter((chat) => chat.isBotChat);
   }
 
   // 📌 Обновление чатов
@@ -183,23 +183,23 @@ export class ChatStore extends BaseStore {
     try {
       const response = await this.chatService.fetchChats(options);
 
-      const incomingChats = response.data.chats;
-      const chatIds = incomingChats.map((chat: ChatDTO) => chat._id);
+      const incomingChats = response.data.chats as ChatListItem[];
+      const chatIds = incomingChats.map((chat) => chat._id);
 
       runInAction(() => {
 
         if (options?.page && options.page > 1) {
           const chatMap = new Map(this.chats.map((chat) => [chat._id, chat]));
 
-          incomingChats.forEach((chat: ChatDTO) => {
+          incomingChats.forEach((chat) => {
             chatMap.set(chat._id, chat);
           });
 
           this.chats = Array.from(chatMap.values());
         } else {
-          const chatMap = new Map<string, ChatDTO>();
+          const chatMap = new Map<string, ChatListItem>();
 
-          incomingChats.forEach((chat: ChatDTO) => {
+          incomingChats.forEach((chat) => {
             if (!chatMap.has(chat._id)) {
               chatMap.set(chat._id, chat);
             }
@@ -264,12 +264,12 @@ export class ChatStore extends BaseStore {
   async fetchChatMessages(chatId: string, skip: number = 0) {
     try {
       const response = await this.chatService.fetchChatMessages(chatId, skip);
-      const incomingMessages = response.data.messages;
+      const incomingMessages: MessageDTO[] = response.data.messages;
 
       runInAction(() => {
         const currentIds = new Set(this.messages.map((msg) => msg._id));
 
-        const uniqueMessages = incomingMessages.filter((msg: any) => !currentIds.has(msg._id));
+        const uniqueMessages = incomingMessages.filter((msg) => !currentIds.has(msg._id));
 
         if (skip === 0) {
           this.messages = incomingMessages;
@@ -297,7 +297,7 @@ export class ChatStore extends BaseStore {
     message: string,
     chatId: string,
     replyToMessageId?: string,
-    images?: any, //todo refactor type
+    images?: UploadImage[],
   ) {
     try {
       runInAction(() => {
@@ -310,11 +310,11 @@ export class ChatStore extends BaseStore {
         images
       );
 
-      const messageData = {
+      const messageData: MessageDTO = {
         ...data.data,
         readBy: data.data.readBy ?? [],
         isEdited: data.data.isEdited ?? false,
-      } as MessageDTO;
+      };
 
       runInAction(() => {
         const exists = this.messages.some((message) => message._id === messageData._id);
@@ -388,7 +388,7 @@ export class ChatStore extends BaseStore {
     this.currentChatSubscribedId = chatId;
   }
 
-  unsubscribeFromChat(_chatId?: string) {
+  unsubscribeFromChat() {
     // if (!onlineStore.socket) return;
     this.root.onlineStore.socket.off("typing", this.root.onlineStore.handleTyping);
     this.root.onlineStore.socket.off("stop typing", this.root.onlineStore.handleStopTyping);
@@ -399,7 +399,7 @@ export class ChatStore extends BaseStore {
     this.currentChatSubscribedId = null;
   }
 
-  private handleNewMessageFromChats = (updatedChat: any) => {
+  private handleNewMessageFromChats = (updatedChat: ChatListItem) => {
     const isMyUnread = false
     // const isMyUnread = updatedChat?.unread?.userToId === AuthStore.getMyId();
 
@@ -420,9 +420,8 @@ export class ChatStore extends BaseStore {
     });
   };
 
-  private handleNewMessage = (payload: any) => {
-    // сервер может прислать либо объект latestMessage, либо готовое сообщение
-    const incoming = payload?.latestMessage ?? payload;
+  private handleNewMessage = (payload: IncomingMessagePayload) => {
+    const incoming = extractMessage(payload);
     if (!incoming) return;
 
     // const myId = authStore.getMyId?.();
@@ -450,7 +449,7 @@ export class ChatStore extends BaseStore {
     }
   };
 
-  private handleEditedMessage = (updatedMessage: any) => {
+  private handleEditedMessage = (updatedMessage: MessageDTO) => {
     runInAction(() => {
       const index = this.messages.findIndex(m => m._id === updatedMessage._id);
       if (index !== -1) {
@@ -488,7 +487,7 @@ export class ChatStore extends BaseStore {
     }
   }
 
-  async messageById(id: string) {
+  async messageById(id: string): Promise<MessageByIdResponse> {
     return await this.chatService.messageByIdRequest(id);
   }
 
@@ -504,3 +503,22 @@ export class ChatStore extends BaseStore {
   }
 
 }
+
+type ChatListItem = ChatDTO & {
+  unread?: number | null;
+  post?: { title?: string | null } | null;
+  latestMessage?: MessageDTO | null;
+};
+
+type MessageLike = MessageDTO & {
+  chat?: { _id?: string } | string;
+};
+
+type IncomingMessagePayload = MessageLike | { latestMessage?: MessageLike };
+
+const extractMessage = (payload: IncomingMessagePayload): MessageLike | undefined => {
+  if ('latestMessage' in payload) {
+    return payload.latestMessage;
+  }
+  return payload;
+};

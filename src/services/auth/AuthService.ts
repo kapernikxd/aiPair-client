@@ -1,5 +1,5 @@
 
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse, isAxiosError } from "axios";
 import {
   AuthRejection,
   AuthResponseExtend,
@@ -49,7 +49,7 @@ export default class AuthService {
   static async resetPassword({
     verificationCode,
     email,
-  }: any): Promise<AxiosResponse> {
+  }: ResetPasswordParams): Promise<AxiosResponse> {
     return $api.post<AuthResponseExtend>("/auth/resetPassword", {
       verificationCode,
       email,
@@ -76,8 +76,15 @@ export default class AuthService {
         refreshToken,
       });
       return response;
-    } catch (error: any) {
-      console.error('Error during refresh request:', error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        const responseMessage = error.response?.data ?? error.message;
+        console.error('Error during refresh request:', responseMessage);
+      } else if (error instanceof Error) {
+        console.error('Error during refresh request:', error.message);
+      } else {
+        console.error('Error during refresh request:', error);
+      }
       throw error;
     }
   }
@@ -86,3 +93,8 @@ export default class AuthService {
     return $api.post("/push/mobile", { pushToken });
   }
 }
+
+type ResetPasswordParams = {
+  verificationCode: string;
+  email: string;
+};
