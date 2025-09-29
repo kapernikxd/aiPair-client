@@ -14,6 +14,7 @@ import { BASE_URL } from "@/helpers/http";
 import type { AuthProvider } from "@/stores/AuthStore";
 import { Logo } from "@/components/ui/Logo";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 // export const metadata = {
 //   title: 'AI Pair — Talk with an AI companion',
@@ -291,7 +292,12 @@ export default function Landing() {
           <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-neutral-900 p-2">
             <div className="aspect-video w-full rounded-xl bg-neutral-800">
               <div className="flex h-full items-center justify-center text-white/40">
-                <PlayCircle className="mr-2 h-6 w-6" /> Demo video placeholder
+                {/* <PlayCircle className="mr-2 h-6 w-6" /> Demo video placeholder */}
+                <img
+                  src="/img/video.gif"
+                  alt="Demo walkthrough"
+                  className="h-full w-full object-cover rounded-2xl"
+                />
               </div>
             </div>
           </div>
