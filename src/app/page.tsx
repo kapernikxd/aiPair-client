@@ -80,7 +80,7 @@ export default function Landing() {
   const showMobileBanner = useStoreData(uiStore, (store) => store.isMobileBannerVisible);
   const isAuthenticated = useStoreData(authStore, (store) => store.isAuthenticated);
   const authUser = useStoreData(authStore, (store) => store.user);
-  const profileName = useStoreData(profileStore, (store) => store.profile.userName);
+  const profileName = useStoreData(profileStore, (store) => store.profile.username);
   const mainPageBots = useStoreData(aiBotStore, (store) => store.mainPageBots);
   const router = useRouter();
   const [chatLoadingBotId, setChatLoadingBotId] = useState<string | null>(null);
@@ -124,7 +124,7 @@ export default function Landing() {
 
     try {
       const response = await chatStore.messageById(botId);
-      const chatId = response?._id ?? response?.data?._id ?? response?.chat?._id;
+      const chatId = response?._id ?? response?.data?._id;
       if (chatId) {
         router.push(`${routes.adminChat}?chatId=${encodeURIComponent(chatId)}`);
       } else {

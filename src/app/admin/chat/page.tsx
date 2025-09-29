@@ -141,7 +141,7 @@ export default function ChatPage() {
     if (!chatId || !isSocketConnected) return;
     chatStore.subscribeToChat(chatId);
     return () => {
-      chatStore.unsubscribeFromChat(chatId);
+      chatStore.unsubscribeFromChat();
     };
   }, [chatId, chatStore, isSocketConnected]);
 
@@ -284,7 +284,7 @@ export default function ChatPage() {
   const conversationTitle = useMemo(() => {
     if (!selectedChat) return 'Chat';
     if (selectedChat.isGroupChat) {
-      return selectedChat.chatName || selectedChat.post?.title || 'Group chat';
+      return selectedChat.chatName || 'Group chat';
     }
     const opponent = selectedChat.users?.find((user) => user._id !== myId);
     const name = [opponent?.name, opponent?.lastname].filter(Boolean).join(' ').trim();

@@ -102,7 +102,7 @@ export default function Landing() {
 
       try {
         const response = await chatStore.messageById(botId);
-        const chatId = response?._id ?? response?.data?._id ?? response?.chat?._id;
+        const chatId = response?._id ?? response?.data?._id;
 
         if (chatId) {
           router.push(`${routes.adminChat}?chatId=${encodeURIComponent(chatId)}`);

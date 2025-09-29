@@ -87,7 +87,7 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
     ];
   }, [aiBot, getProfile]);
 
-  const chatHref = aiBot?.chatLink || routes.adminChat;
+  const chatHref = routes.adminChat;
   const aiBotProfileId = aiBot?._id;
   const isFollowing = botDetails?.isFollowing ?? aiBot?.isFollowing ?? false;
   const disableFollowAction = !isAuthenticated || !aiBotProfileId;
@@ -127,7 +127,7 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
     setIsChatLoading(true);
     try {
       const response = await chatStore.messageById(aiBotProfileId);
-      const chatId = response?._id ?? response?.data?._id ?? response?.chat?._id;
+      const chatId = response?._id ?? response?.data?._id;
       if (chatId) {
         const encodedId = encodeURIComponent(chatId);
         router.push(`${routes.adminChat}?chatId=${encodedId}`);

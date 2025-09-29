@@ -389,7 +389,7 @@ export class ChatStore extends BaseStore {
   }
 
   unsubscribeFromChat() {
-    // if (!onlineStore.socket) return;
+    if (!this.root.onlineStore.socket) return;
     this.root.onlineStore.socket.off("typing", this.root.onlineStore.handleTyping);
     this.root.onlineStore.socket.off("stop typing", this.root.onlineStore.handleStopTyping);
     this.root.onlineStore.clearTypingUsers();
