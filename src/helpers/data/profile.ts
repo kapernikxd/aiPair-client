@@ -1,5 +1,3 @@
-import { Clock3, Flame, Heart } from "lucide-react";
-
 export const genderOptions = [
   { value: "MALE", label: "Male" },
   { value: "FEMALE", label: "Female" },
