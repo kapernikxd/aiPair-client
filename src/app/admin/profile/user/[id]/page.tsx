@@ -1,13 +1,16 @@
 import ClientUserProfilePage from "./ClientUserProfilePage";
 
 type PageParams = {
-  params: {
+  params: Promise<{
     id: string | string[];
-  };
+  }>;
 };
 
-export default function Page({ params }: PageParams) {
-  const profileId = Array.isArray(params.id) ? params.id[0] : params.id;
+export default async function Page({ params }: PageParams) {
+  const resolvedParams = await params;
+  const profileId = Array.isArray(resolvedParams.id)
+    ? resolvedParams.id[0]
+    : resolvedParams.id;
 
   return <ClientUserProfilePage profileId={profileId} />;
 }
