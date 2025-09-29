@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios";
 import { ChatById, ReadedMessageResponse } from "./ChatResponse";
 import $api from "@/helpers/http";
-import { ChatDTO } from "@/helpers/types";
+import { ChatDTO, MessageDTO } from "@/helpers/types";
 
 export interface FetchChatsOptions {
   typeChat?: 'private' | 'group' | 'bot';
@@ -27,16 +27,17 @@ export default class ChatService {
     options?: FetchChatsOptions
   ): Promise<AxiosResponse<FetchChatsResponse>> {
     const { typeChat, ...params } = options || {};
-    if(typeChat === 'bot'){
-      return this.fetchBotChats(params)
+    if (typeChat === 'bot') {
+      return this.fetchBotChats(params);
     }
-    return $api.get("/chat/all", { params: options });
+    const queryParams = typeChat ? { ...params, typeChat } : params;
+    return $api.get("/chat/all", { params: queryParams });
   }
 
   async fetchBotChats(
-    options?: FetchChatsOptions
+    options?: Omit<FetchChatsOptions, 'typeChat'>
   ): Promise<AxiosResponse<FetchChatsResponse>> {
-    const { typeChat, ...params } = options || {};
+    const params = options || {};
     return $api.get("/chat/bot/all", { params });
   }
 
@@ -44,7 +45,7 @@ export default class ChatService {
     return $api.get(`/chat/${id}`);
   }
 
-  async markChatAsRead(chatId: string, messageId: string): Promise<AxiosResponse<any>> {
+  async markChatAsRead(chatId: string, messageId: string): Promise<AxiosResponse<ReadedMessageResponse>> {
     return $api.post(`/chat/${chatId}/read`, { messageId });
   }
 
@@ -52,11 +53,11 @@ export default class ChatService {
     return $api.get(`/chat/has-unread`);
   }
 
-  async fetchChatMessages(id: string, skip: number): Promise<AxiosResponse<any>> {
+  async fetchChatMessages(id: string, skip: number): Promise<AxiosResponse<{ messages: MessageDTO[] }>> {
     return $api.get(`/messages/${id}/messages?skip=${skip}`);
   }
 
-  async markAllMessagesAsRead(chatId: string): Promise<AxiosResponse<any>> {
+  async markAllMessagesAsRead(chatId: string): Promise<AxiosResponse<void>> {
     return $api.put(`/messages/${chatId}/messages/markAsRead`);
   }
 
@@ -64,19 +65,20 @@ export default class ChatService {
     message: string,
     chatId: string,
     replyToMessageId?: string,
-    images?: any[] //todo refactor
-  ): Promise<AxiosResponse<any>> {
+    images?: UploadImage[]
+  ): Promise<AxiosResponse<{ data: MessageDTO }>> {
     const formData = new FormData();
     formData.append('content', message);
     formData.append('chatId', chatId);
     if (replyToMessageId) formData.append('replyTo', replyToMessageId);
 
     images?.forEach((img, index) => {
-      formData.append('images', {
+      const file: FormDataImage = {
         uri: img.uri,
-        name: img.fileName || `image_${index}.jpg`,
-        type: img.mimeType || 'image/jpeg',
-      } as any);
+        name: img.fileName ?? `image_${index}.jpg`,
+        type: img.mimeType ?? 'image/jpeg',
+      };
+      formData.append('images', file as unknown as Blob);
     });
 
     return $api.post(`/messages`, formData, {
@@ -84,12 +86,12 @@ export default class ChatService {
     });
   }
 
-  async editMessage(messageId: string, content: string): Promise<AxiosResponse<any>> {
+  async editMessage(messageId: string, content: string): Promise<AxiosResponse<{ data: MessageDTO }>> {
     return $api.patch(`/messages/${messageId}`, { content });
   }
 
-  async messageByIdRequest(userId: string): Promise<AxiosResponse<any>> {
-    return $api.get(`/messages/${userId}`).then((res) => res.data);
+  async messageByIdRequest(userId: string): Promise<MessageByIdResponse> {
+    return $api.get(`/messages/${userId}`).then((res) => res.data as MessageByIdResponse);
   }
 
   async fetchLastReadedMessageRequest({ userId, chatId }: { userId: string, chatId: string }): Promise<AxiosResponse<ReadedMessageResponse>> {
@@ -102,15 +104,33 @@ export default class ChatService {
     return $api.post(`/reports`, { targetType: 'message', targetId: messageId });
   }
 
-  async fetchPinnedMessages(chatId: string): Promise<AxiosResponse<any>> {
+  async fetchPinnedMessages(chatId: string): Promise<AxiosResponse<{ data: MessageDTO[] }>> {
     return $api.get(`/messages/${chatId}/pins`);
   }
 
-  async pinMessage(messageId: string): Promise<AxiosResponse<any>> {
+  async pinMessage(messageId: string): Promise<AxiosResponse<void>> {
     return $api.post(`/messages/${messageId}/pin`);
   }
 
-  async unpinMessage(messageId: string): Promise<AxiosResponse<any>> {
+  async unpinMessage(messageId: string): Promise<AxiosResponse<void>> {
     return $api.delete(`/messages/${messageId}/pin`);
   }
 }
+
+export type UploadImage = {
+  uri: string;
+  fileName?: string;
+  mimeType?: string;
+};
+
+type FormDataImage = {
+  uri: string;
+  name: string;
+  type: string;
+};
+
+export type MessageByIdResponse = {
+  _id?: string;
+  chat?: { _id?: string } | string;
+  data?: { _id?: string; chat?: { _id?: string } | string };
+} & Partial<MessageDTO>;

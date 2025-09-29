@@ -1,8 +1,9 @@
 import queryString from "query-string";
+import type { StringifiableRecord } from "query-string";
 
 type QueriedUrl = {
   url: string;
-  query: any;
+  query: StringifiableRecord;
 };
 
 export function getQueriedUrl({ url, query }: QueriedUrl) {

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Crown } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useRootStore, useStoreData } from '@/stores/StoreProvider';
 import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';

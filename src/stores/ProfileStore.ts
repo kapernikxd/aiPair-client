@@ -1,4 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx';
+import { isAxiosError } from 'axios';
 import { BaseStore } from './BaseStore';
 import type { RootStore } from './RootStore';
 import type { ProfilesFilterParams, AiAgentCard, UpdateProfileProps } from '@/helpers/types/profile';
@@ -10,13 +11,11 @@ import {
   badges as profileBadges,
   talkies as profileTalkies,
   milestones,
-  initialProfile,
   genderLabels,
   genderOptions as defaultGenderOptions,
   relationshipOptions as defaultRelationshipOptions,
 } from '@/helpers/data/profile';
 import { badges as userBadges, talkies as userTalkies } from '@/helpers/data/user';
-import type { EditableProfile } from '@/helpers/types/profile';
 
 
 export type PublicProfile = {
@@ -248,17 +247,10 @@ export class ProfileStore extends BaseStore {
     try {
       const { data } = await this.profileService.changePassword(props);
       return data;
-    } catch (error: any) {
-      // Преобразуем ошибки в формат, подходящий для react-hook-form
-      if (error.response?.data?.errors) {
-        const formattedErrors = error.response.data.errors.reduce(
-          (acc: Record<string, string>, errorItem: { field: string; message: string }) => {
-            acc[errorItem.field] = errorItem.message;
-            return acc;
-          },
-          {}
-        );
-        throw formattedErrors;
+    } catch (error: unknown) {
+      const formErrors = this.extractFormErrors(error);
+      if (formErrors) {
+        throw formErrors;
       }
       throw error;
     }
@@ -285,6 +277,7 @@ export class ProfileStore extends BaseStore {
       this.notify();
     } catch (error) {
       this.root.uiStore.showSnackbar("Failed", "error");
+      console.error("Failed to toggle follow status", error);
     }
   }
 
@@ -438,11 +431,34 @@ export class ProfileStore extends BaseStore {
 
   async deleteAccount() {
     try {
-      await this.profileService.deleteAccount(this.myProfile._id);
+      await this.profileService.deleteAccount();
       this.root.uiStore.showSnackbar("Request sended", "success");
     } catch (error) {
       console.error(error);
     }
   }
 
+
+  private extractFormErrors(error: unknown): Record<string, string> | null {
+    if (isAxiosError<ProfileFormErrorResponse>(error)) {
+      const errors = error.response?.data?.errors;
+      if (Array.isArray(errors)) {
+        return errors.reduce<Record<string, string>>((acc, item) => {
+          acc[item.field] = item.message;
+          return acc;
+        }, {});
+      }
+    }
+
+    return null;
+  }
 }
+
+type ProfileFieldError = {
+  field: string;
+  message: string;
+};
+
+type ProfileFormErrorResponse = {
+  errors?: ProfileFieldError[];
+};

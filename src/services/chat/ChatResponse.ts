@@ -8,7 +8,7 @@ export interface ChatById {
   users: UserDTO[]; // Список пользователей в чате
   chatName?: string;
   postId?: string; // ID связанного поста
-  post: any; // deleted from aiPair
+  post?: unknown; // deleted from aiPair
 }
 
 export type ReadedMessageResponse = {

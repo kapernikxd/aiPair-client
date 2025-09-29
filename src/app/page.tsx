@@ -1,14 +1,13 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowRight, Mic, Sparkles, Shield, Globe2, PlayCircle, CheckCircle2, X, Brain, Bookmark, MessageSquareHeart, XCircle } from "lucide-react";
+import { ArrowRight, Sparkles, PlayCircle, CheckCircle2, X, Brain, Bookmark, MessageSquareHeart, XCircle } from "lucide-react";
 import LandingClient from '@/components/LandingClient';
 import DeviceMockup from '@/components/DeviceMockup';
 import CardRailTwoRows from "@/components/ui/CardRailTwoRows";
 import AuthPopup from "@/components/AuthPopup";
 import { Button } from "@/components/ui/Button";
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
-import type { AuthRouteKey } from "@/helpers/hooks/useAuthRoutes";
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import { BASE_URL } from "@/helpers/http";
 import type { AuthProvider } from "@/stores/AuthStore";
@@ -19,16 +18,6 @@ import Image from "next/image";
 // export const metadata = {
 //   title: 'AI Pair — Talk with an AI companion',
 // }
-
-type BaseCardItem = {
-  id: number;
-  cardWidth?: string;
-  src: string;
-  title: string;
-  views: string;
-  hoverText: string;
-  routeKey: AuthRouteKey;
-};
 
 type LandingCardItem = {
   id: number | string;
@@ -65,12 +54,6 @@ const buildImageUrl = (path?: string) => {
   const normalizedPath = path.startsWith("images/") ? path : `images/${path}`;
   return `${BASE_URL}${normalizedPath}`;
 };
-
-const Pill = ({ children }: { children: React.ReactNode }) => (
-  <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs text-white/80 backdrop-blur">
-    {children}
-  </span>
-);
 
 const Badge = ({ children }: { children: React.ReactNode }) => (
   <span className="rounded-full bg-[#6f2da8]/10 px-3 py-1 text-xs font-medium text-[#6f2da8] ring-1 ring-[#6f2da8]/20">
@@ -329,9 +312,12 @@ export default function Landing() {
           <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-neutral-900 p-2">
             <div className="aspect-video w-full rounded-xl bg-neutral-800">
               <div className="flex h-full items-center justify-center text-white/40">
-                <img
+                <Image
                   src="/img/video.gif"
                   alt="AI character demo"
+                  unoptimized
+                  width={960}
+                  height={540}
                   className="h-full w-full object-cover rounded-2xl"
                 />
               </div>

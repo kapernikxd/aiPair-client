@@ -27,8 +27,10 @@ export const getUserAvatar = (user: UserDTO | UserBasicDTO) =>
 export const getUserLink = (user: UserDTO) =>
   user ? `profile/${user._id}` : undefined;
 
-export const getUserCountryCode = (user: any) =>
-  user && user?.city?.countryCode ? user.city.countryCode : undefined;
+type WithCity = Pick<UserDTO, 'city'> | null | undefined;
+
+export const getUserCountryCode = (user: WithCity) =>
+  user?.city?.countryCode ?? undefined;
 
 export const getUserCity = (user: UserDTO) =>
   user && user?.city?.name ? user.city.name.toUpperCase() : undefined;
@@ -39,7 +41,8 @@ export const getUserFollowerCount = (user: UserDTO) =>
 export const getUserFollowingCount = (user: UserDTO) =>
   user && user.following ? user.following : 0;
 
-export const getUserEventsCount = (events: any) => (events ? events.length : 0);
+export const getUserEventsCount = (events?: Array<unknown> | null) =>
+  events ? events.length : 0;
 
 export const convertPhoneFormat = (phone: string) =>
   phone

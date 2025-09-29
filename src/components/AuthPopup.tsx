@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 
 import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
@@ -81,11 +82,14 @@ export default function AuthPopup({
             <div className="grid grid-cols-5 h-40 sm:h-48">
               {coverUrls.map((src, i) => (
                 <div key={i} className="relative overflow-hidden">
-                  <img
+                  <Image
                     src={src}
                     alt=""
-                    className="h-full w-full object-cover"
+                    fill
+                    unoptimized
+                    className="object-cover"
                     draggable={false}
+                    sizes="(max-width: 768px) 20vw, 144px"
                   />
                   <div className="absolute inset-0 bg-black/20" />
                 </div>

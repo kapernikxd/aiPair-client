@@ -18,11 +18,22 @@ type AiAgentsTimelineProps = {
 };
 
 // Универсально вытягиваем URL из строки или объекта
-const toUrl = (val: any): string | undefined => {
+type ImageSource =
+  | string
+  | null
+  | undefined
+  | {
+      url?: string;
+      src?: string;
+      path?: string;
+      location?: string;
+    };
+
+const toUrl = (val: ImageSource): string | undefined => {
   if (!val) return undefined;
   if (typeof val === 'string') return val;
   if (typeof val === 'object') {
-    return val.url || val.src || val.path || val.location || undefined;
+    return val.url ?? val.src ?? val.path ?? val.location ?? undefined;
   }
   return undefined;
 };
@@ -43,8 +54,7 @@ const getAvatarImage = (agent: TimelineAgent): string | undefined => {
 
 const getHoverDescription = (agent: TimelineAgent): string | undefined => {
   if ('intro' in agent && agent.intro) return agent.intro;
-  // userBio для людей, aiPrompt — для ботов (если есть)
-  return (agent as any).userBio ?? (agent as any).aiPrompt ?? undefined;
+  return agent.userBio ?? ('aiPrompt' in agent ? agent.aiPrompt : undefined);
 };
 
 export default function AiAgentsTimeline({
@@ -73,15 +83,15 @@ export default function AiAgentsTimeline({
           <div className="grid grid-cols-2 gap-2 md:gap-6 items-stretch md:grid-cols-3">
             {items.map((aiAgent) => (
               <HoverSwapCard
-                key={(aiAgent as any)._id ?? aiAgent.name}
+                key={aiAgent._id}
                 src={getCoverImage(aiAgent)}
                 avatarSrc={getAvatarImage(aiAgent)}
                 title={aiAgent.name}
-                views={formatFollowers((aiAgent as any).followers)}
+                views={formatFollowers(aiAgent.followers)}
                 hoverText={getHoverDescription(aiAgent)}
                 href={
-                  (aiAgent as any)._id
-                    ? getAiProfile(encodeURIComponent((aiAgent as any)._id))
+                  aiAgent._id
+                    ? getAiProfile(encodeURIComponent(aiAgent._id))
                     : undefined
                 }
               />
