@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo } from 'react';
+import React, { Suspense, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -30,7 +30,7 @@ type AppShellProps = {
     sidebarCollapsed?: number; // ширина свернутого меню (px)
 };
 
-export default function AppShell({
+function AppShellContent({
     children,
     sidebarWidth = 240,
     sidebarCollapsed = 80,
@@ -394,6 +394,14 @@ export default function AppShell({
             )}
             <AuthPopupContainer />
         </div>
+    );
+}
+
+export default function AppShell(props: AppShellProps) {
+    return (
+        <Suspense fallback={null}>
+            <AppShellContent {...props} />
+        </Suspense>
     );
 }
 
