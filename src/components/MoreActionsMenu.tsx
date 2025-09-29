@@ -12,7 +12,7 @@ import ModalShell from '@/components/profile/edit/overview/ModalShell';
 interface MoreActionsMenuProps {
   buttonAriaLabel?: string;
   align?: 'start' | 'end';
-  buttonVariant?: ButtonVariant;
+  buttonVariant?: Exclude<ButtonVariant, 'gradient'>;
   className?: string;
   mode?: 'self' | 'user' | 'aiAgent';
   reportTargetId?: string;

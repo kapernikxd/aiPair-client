@@ -9,14 +9,11 @@ import { ChangePasswordProps } from '@/services/auth/AuthResponse';
 
 import {
   badges as profileBadges,
-  talkies as profileTalkies,
   milestones,
   genderLabels,
   genderOptions as defaultGenderOptions,
   relationshipOptions as defaultRelationshipOptions,
 } from '@/helpers/data/profile';
-import { badges as userBadges, talkies as userTalkies } from '@/helpers/data/user';
-
 
 export type PublicProfile = {
   name: string;
@@ -51,21 +48,10 @@ export class ProfileStore extends BaseStore {
   private profileService = ProfileService;
 
   badges = [...profileBadges];
-  talkies = [...profileTalkies];
   milestones = [...milestones];
   genderLabels = { ...genderLabels };
   genderOptions = [...defaultGenderOptions];
   relationshipOptions = [...defaultRelationshipOptions];
-
-  userProfile: PublicProfile = {
-    name: 'Keyser Soze',
-    intro: "One of my favorite movies is the “Usual Suspects” (1995) from where I picked up the name Keyser Soze.",
-    location: 'Somewhere in the shadows',
-    avatar: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=500&q=80',
-    badges: [...userBadges],
-    talkies: [...userTalkies],
-  };
-
 
   constructor(root: RootStore) {
     super();
@@ -75,10 +61,6 @@ export class ProfileStore extends BaseStore {
 
   get genderLabel() {
     return;
-  }
-
-  get getProfileInitial() {
-    return this.userProfile;
   }
 
   /**

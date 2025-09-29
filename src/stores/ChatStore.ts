@@ -505,7 +505,7 @@ export class ChatStore extends BaseStore {
 }
 
 type ChatListItem = ChatDTO & {
-  unread?: number | null;
+  unread?: number | null | boolean;
   post?: { title?: string | null } | null;
   latestMessage?: MessageDTO | null;
 };
