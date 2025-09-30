@@ -113,6 +113,9 @@ export default function Landing() {
     }
     uiStore.openAuthPopup();
   };
+  const handleOpenAuthPopup = useCallback(() => {
+    uiStore.openAuthPopup();
+  }, [uiStore]);
   const handleChatNow = useCallback(async (botId: string) => {
     if (!botId) {
       return;
@@ -264,13 +267,14 @@ export default function Landing() {
             <cite className="mt-2 block text-sm text-white/50">{t('landing.hero.testimonial.author', '— Anna')}</cite>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <a
-                href={routes.landingCta}
+              <button
+                type="button"
+                onClick={handleOpenAuthPopup}
                 className="inline-flex items-center gap-2 rounded-2xl bg-[#6f2da8] px-5 py-3 text-sm font-semibold hover:opacity-90"
               >
                 {t('landing.hero.primaryCta', 'Start free')}
                 <ArrowRight className="h-4 w-4" />
-              </a>
+              </button>
               <a
                 href={routes.landingDemo}
                 className="inline-flex items-center gap-2 rounded-2xl border border-white/15 px-5 py-3 text-sm font-semibold hover:bg-white/5"
@@ -357,12 +361,13 @@ export default function Landing() {
               ))}
             </ul>
             <div className="mt-8">
-              <a
-                href={routes.landingPricing}
+              <button
+                type="button"
+                onClick={handleOpenAuthPopup}
                 className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2 text-sm hover:bg-white/5"
               >
                 {t('landing.builder.cta', 'Start creating')} <ArrowRight className="h-4 w-4" />
-              </a>
+              </button>
             </div>
           </div>
           <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-neutral-900 p-2">
@@ -461,12 +466,13 @@ export default function Landing() {
               {t('landing.cta.subtitle', 'Register for free and start building an AI companion who listens, supports, and grows with you.')}
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              <a
-                href={routes.placeholder}
+              <button
+                type="button"
+                onClick={handleOpenAuthPopup}
                 className="inline-flex items-center gap-2 rounded-2xl bg-neutral-950 px-5 py-3 text-sm font-semibold hover:bg-neutral-900"
               >
                 {t('landing.cta.primary', 'Sign up free')} <ArrowRight className="h-4 w-4" />
-              </a>
+              </button>
               <a
                 href={routes.placeholder}
                 className="inline-flex items-center gap-2 rounded-2xl border border-white/20 px-5 py-3 text-sm font-semibold hover:bg-white/10"
