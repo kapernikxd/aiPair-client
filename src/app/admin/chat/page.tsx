@@ -14,6 +14,7 @@ import type { MessageDTO } from '@/helpers/types';
 import { getUserAvatar, getUserFullName } from '@/helpers/utils/user';
 import { useRootStore, useStoreData } from '@/stores/StoreProvider';
 import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
+import { useTranslations } from '@/localization/TranslationProvider';
 
 function formatPinnedTimestamp(value: string) {
   const date = new Date(value);
@@ -24,6 +25,7 @@ function formatPinnedTimestamp(value: string) {
 }
 
 function PinnedMessagesSection({ messages, onUnpin }: { messages: MessageDTO[]; onUnpin: (messageId: string) => void }) {
+  const { t } = useTranslations();
   if (!messages.length) {
     return null;
   }
@@ -31,7 +33,9 @@ function PinnedMessagesSection({ messages, onUnpin }: { messages: MessageDTO[]; 
   return (
     <section className="flex flex-col gap-3">
       <header className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-white/70">Pinned messages</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-white/70">
+          {t('admin.chat.pinned.title', 'Pinned messages')}
+        </h2>
         <span className="text-xs text-white/50">{messages.length}</span>
       </header>
       <div className="space-y-3">
@@ -51,7 +55,7 @@ function PinnedMessagesSection({ messages, onUnpin }: { messages: MessageDTO[]; 
               className="border-white/20 text-white/80 hover:border-white/40 hover:text-white"
               onClick={() => onUnpin(message._id)}
             >
-              Unpin
+              {t('admin.chat.pinned.unpin', 'Unpin')}
             </Button>
           </div>
         ))}
@@ -69,11 +73,12 @@ export default function ChatPage() {
 }
 
 function ChatPageFallback() {
+  const { t } = useTranslations();
   return (
     <AppShell>
       <div className="flex h-full min-h-0 flex-col items-center justify-center gap-4 p-6 text-sm text-white/60">
         <GradientOrbs />
-        <p>Loading chat…</p>
+        <p>{t('admin.chat.fallback.loading', 'Loading chat…')}</p>
       </div>
     </AppShell>
   );
@@ -84,6 +89,7 @@ function ChatPageContent() {
   const chatId = searchParams.get('chatId');
   const { chatStore, authStore, onlineStore } = useRootStore();
   const { routes } = useAuthRoutes();
+  const { t } = useTranslations();
 
   const messages = useStoreData(chatStore, (store) => store.messages);
   const pinnedMessages = useStoreData(chatStore, (store) => store.pinnedMessages);
@@ -301,14 +307,14 @@ function ChatPageContent() {
   }, []);
 
   const conversationTitle = useMemo(() => {
-    if (!selectedChat) return 'Chat';
+    if (!selectedChat) return t('admin.chat.title.default', 'Chat');
     if (selectedChat.isGroupChat) {
-      return selectedChat.chatName || 'Group chat';
+      return selectedChat.chatName || t('admin.chat.title.group', 'Group chat');
     }
     const opponent = selectedChat.users?.find((user) => user._id !== myId);
     const name = [opponent?.name, opponent?.lastname].filter(Boolean).join(' ').trim();
-    return name || opponent?.username || 'Direct chat';
-  }, [myId, selectedChat]);
+    return name || opponent?.username || t('admin.chat.title.direct', 'Direct chat');
+  }, [myId, selectedChat, t]);
 
   const conversationUser = useMemo(() => {
     if (!selectedChat || selectedChat.isGroupChat) return null;
@@ -356,16 +362,18 @@ function ChatPageContent() {
 
   const resolveSenderName = useCallback((message: MessageDTO) => {
     const id = message.sender?._id;
-    if (!id) return 'Anonymous';
+    if (!id) return t('admin.chat.sender.unknown', 'Anonymous');
     const stored = senderNameMap.get(id);
     if (stored) return stored;
     return id.length > 8 ? `${id.slice(0, 6)}…` : id;
-  }, [senderNameMap]);
+  }, [senderNameMap, t]);
 
   const renderEmptyState = () => (
     <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-3xl border border-dashed border-white/10 bg-white/5 p-8 text-center text-sm text-white/60">
-      <p>Select a chat from the list to start messaging.</p>
-      <p className="text-xs text-white/40">Pinned messages and history will appear here.</p>
+      <p>{t('admin.chat.empty.select', 'Select a chat from the list to start messaging.')}</p>
+      <p className="text-xs text-white/40">
+        {t('admin.chat.empty.detail', 'Pinned messages and history will appear here.')}
+      </p>
     </div>
   );
 
@@ -376,7 +384,9 @@ function ChatPageContent() {
         <div className="relative z-10 mx-auto grid h-full w-full max-w-4xl flex-1 grid-rows-[auto,1fr,auto] gap-y-2 px-1 pt-1 md:px-4 pb-16 md:pt-4 md:gap-y-6">
           <header className="rounded-3xl border border-white/10 bg-white/5 px-6 py-5 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur">
             <div className="flex flex-col gap-2">
-              <span className="text-xs uppercase tracking-[0.28em] text-white/40">Conversation</span>
+              <span className="text-xs uppercase tracking-[0.28em] text-white/40">
+                {t('admin.chat.header.label', 'Conversation')}
+              </span>
               {conversationProfileHref ? (
                 <Link
                   href={conversationProfileHref}
@@ -393,7 +403,10 @@ function ChatPageContent() {
                       <p className="text-sm text-white/60">{activeTypingMessage}</p>
                     ) : selectedChat?.users?.length ? (
                       <p className="text-sm text-white/60">
-                        {selectedChat.users.length} participant{selectedChat.users.length === 1 ? '' : 's'}
+                        {t('admin.chat.participants', '{count} participants').replace(
+                          '{count}',
+                          String(selectedChat.users.length),
+                        )}
                       </p>
                     ) : null}
                   </div>
@@ -411,7 +424,10 @@ function ChatPageContent() {
                       <p className="text-sm text-white/60">{activeTypingMessage}</p>
                     ) : selectedChat?.users?.length ? (
                       <p className="text-sm text-white/60">
-                        {selectedChat.users.length} participant{selectedChat.users.length === 1 ? '' : 's'}
+                        {t('admin.chat.participants', '{count} participants').replace(
+                          '{count}',
+                          String(selectedChat.users.length),
+                        )}
                       </p>
                     ) : null}
                   </div>
@@ -426,7 +442,9 @@ function ChatPageContent() {
             ) : (
               <div className="flex h-full min-h-0 flex-col gap-4 rounded-3xl border border-white/10 bg-white/5 p-4 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur">
                 {isLoadingConversation ? (
-                  <div className="flex flex-1 items-center justify-center text-sm text-white/60">Loading conversation…</div>
+                  <div className="flex flex-1 items-center justify-center text-sm text-white/60">
+                    {t('admin.chat.loadingConversation', 'Loading conversation…')}
+                  </div>
                 ) : (
                   <>
                     <PinnedMessagesSection messages={pinnedMessages} onUnpin={handleUnpin} />
@@ -439,7 +457,9 @@ function ChatPageContent() {
                             onClick={handleLoadMore}
                             disabled={isLoadingMore}
                           >
-                            {isLoadingMore ? 'Loading…' : 'Load previous messages'}
+                            {isLoadingMore
+                              ? t('admin.chat.loadingMore', 'Loading…')
+                              : t('admin.chat.loadPrevious', 'Load previous messages')}
                           </Button>
                         </div>
                       ) : null}
@@ -455,7 +475,9 @@ function ChatPageContent() {
                       >
                         <TypingIndicator typingUsers={typingUsers} currentUserId={myId} />
                         {!messages.length ? (
-                          <p className="pt-6 text-center text-sm text-white/50">No messages yet. Say hello!</p>
+                          <p className="pt-6 text-center text-sm text-white/50">
+                            {t('admin.chat.noMessages', 'No messages yet. Say hello!')}
+                          </p>
                         ) : null}
                       </MessageList>
                     </div>
@@ -468,7 +490,11 @@ function ChatPageContent() {
           <div>
             <MessageInput
               onSend={handleSend}
-              placeholder={chatId ? `Message ${conversationTitle}` : 'Select a chat to start messaging'}
+              placeholder={
+                chatId
+                  ? t('admin.chat.input.placeholder', 'Message {name}').replace('{name}', conversationTitle)
+                  : t('admin.chat.input.emptyPlaceholder', 'Select a chat to start messaging')
+              }
               isSending={isSendingMessage}
               onTyping={handleTyping}
               onStopTyping={handleStopTyping}

@@ -23,6 +23,7 @@ import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import type { Highlight } from "@/helpers/types/ai-agent";
 import SessionVibe from "@/components/ai-agent/SessionVibe";
 import { useBreakpoint } from "@/helpers/hooks/useBreakpoint";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 
 interface ClientAiAgentProfilePageProps {
@@ -35,6 +36,7 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
   const router = useRouter();
   const { isMdUp } = useBreakpoint(); // md (≥768px) и выше
   const discoverRoute = routes.discover;
+  const { t } = useTranslations();
 
   const aiBot = useStoreData(aiBotStore, (store) => store.selectAiBot);
   const isLoading = useStoreData(aiBotStore, (store) => store.isAiUserLoading);
@@ -78,14 +80,21 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
 
     return [
       {
-        title: "Creator Info",
+        title: t("admin.profile.aiAgent.highlights.creatorInfo", "Creator Info"),
         lines: [
-          { label: "Creator", value: creatorName, href: creatorHref },
-          { label: "Created", value: `${aiBot.createdAt}` },
+          {
+            label: t("admin.profile.aiAgent.highlights.creator", "Creator"),
+            value: creatorName,
+            href: creatorHref,
+          },
+          {
+            label: t("admin.profile.aiAgent.highlights.created", "Created"),
+            value: `${aiBot.createdAt}`,
+          },
         ],
       },
     ];
-  }, [aiBot, getProfile]);
+  }, [aiBot, getProfile, t]);
 
   const chatHref = routes.adminChat;
   const aiBotProfileId = aiBot?._id;
@@ -160,12 +169,16 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
                   type="button"
                   onClick={() => router.back()}
                   variant="frostedIcon"
-                  aria-label="Go back"
+                  aria-label={t("admin.profile.aiAgent.backAria", "Go back")}
                 >
                   <ArrowLeft className="size-5" />
                 </Button>
               )}
-              <Button type="button" variant="frostedIcon" aria-label="Share agent">
+              <Button
+                type="button"
+                variant="frostedIcon"
+                aria-label={t("admin.profile.aiAgent.shareAria", "Share agent")}
+              >
                 <Share2 className="size-5" />
               </Button>
               <MoreActionsMenu
@@ -183,7 +196,7 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
                   onClick={() => setIsEditOpen(true)}
                   variant="solidWhitePill"
                 >
-                  Edit AI Agent
+                  {t("admin.profile.aiAgent.editButton", "Edit AI Agent")}
                 </Button>
               </div>
             )}
@@ -191,7 +204,12 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
 
           {!aiBot ? (
             <div className="rounded-3xl border border-white/10 bg-neutral-900/70 p-8 text-center text-sm text-white/70">
-              {isLoading ? "Loading agent profile…" : "This agent is unavailable or no longer exists."}
+              {isLoading
+                ? t("admin.profile.aiAgent.loading", "Loading agent profile…")
+                : t(
+                    "admin.profile.aiAgent.unavailable",
+                    "This agent is unavailable or no longer exists.",
+                  )}
             </div>
           ) : (
             <>
@@ -217,12 +235,12 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
                     <button
                       type="button"
                       onClick={() => setActiveTab("info")}
-                      className={`rounded-full px-4 py-2 transition ${activeTab === "info"
+                    className={`rounded-full px-4 py-2 transition ${activeTab === "info"
                         ? "bg-white text-neutral-900 shadow"
                         : "hover:text-white"
                         }`}
-                    >
-                      Information
+                  >
+                      {t("admin.profile.aiAgent.tabs.info", "Information")}
                     </button>
                     <button
                       type="button"
@@ -231,8 +249,8 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
                         ? "bg-white text-neutral-900 shadow"
                         : "hover:text-white"
                         }`}
-                    >
-                      Gallery
+                  >
+                      {t("admin.profile.aiAgent.tabs.gallery", "Gallery")}
                     </button>
                   </div>
 

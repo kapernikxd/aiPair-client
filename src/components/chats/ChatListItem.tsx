@@ -3,6 +3,7 @@ import ChatAvatar from "./ChatAvatar";
 import { ChatDTO, UserDTO } from "@/helpers/types";
 import { getSmartTime } from "@/helpers/utils/date";
 import { getUserAvatar, getUserFullName } from "@/helpers/utils/user";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 export default function ChatListItem({
   chat,
@@ -15,6 +16,7 @@ export default function ChatListItem({
   onSelect?: (chat: ChatDTO) => void;
   currentUserId: string;
 }) {
+  const { t } = useTranslations();
   type ChatParticipant = Pick<UserDTO, "_id" | "name" | "lastname" | "avatarFile">;
 
   const rawParticipants = (chat.users as unknown as Array<ChatParticipant | string>) ?? [];
@@ -27,7 +29,7 @@ export default function ChatListItem({
 
   const chatName = opponent
     ? getUserFullName(opponent)
-    : chat.chatName ?? chat.bot?.name ?? "Untitled chat";
+    : chat.chatName ?? chat.bot?.name ?? t("admin.chats.list.untitled", "Untitled chat");
   const lastMessage = chat.latestMessage;
   const lastMessageContent = lastMessage?.content;
   const timestamp = chat.latestMessage?.createdAt
@@ -40,19 +42,19 @@ export default function ChatListItem({
   const isMyMessage = senderId === currentUserId;
   const senderLabel = lastMessage
     ? isMyMessage
-      ? "Я"
+      ? t("admin.chats.list.me", "Me")
       : senderUser
       ? getUserFullName(senderUser)
-      : chat.bot?.name ?? "Собеседник"
+      : chat.bot?.name ?? t("admin.chats.list.other", "Participant")
     : "";
 
   const messageBody = lastMessageContent?.trim()
     ? lastMessageContent
     : lastMessage?.images?.length
-    ? "Отправлено фото"
+    ? t("admin.chats.list.photo", "Sent a photo")
     : lastMessage?.attachments?.length
-    ? "Отправлен файл"
-    : "Нет сообщений";
+    ? t("admin.chats.list.file", "Sent a file")
+    : t("admin.chats.list.noMessages", "No messages");
 
   const preview = lastMessage
     ? senderLabel
