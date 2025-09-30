@@ -4,9 +4,10 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { Button } from "@/components/ui/Button";
 import { Mic, Bot } from "lucide-react";
+import { useTranslations } from '@/localization/TranslationProvider';
 // импорт иконок, ваших Badge/Pill и т.п.
 
-function Bubble({ role, text }: { role: "ai" | "me"; text: string }) {
+function Bubble({ role, text, aiLabel, youLabel }: { role: "ai" | "me"; text: string; aiLabel: string; youLabel: string }) {
   const isAI = role === "ai";
   return (
     <div
@@ -15,7 +16,7 @@ function Bubble({ role, text }: { role: "ai" | "me"; text: string }) {
     >
       <div className="flex items-center gap-2 text-white/70">
         {isAI ? <Bot className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-        <span className="text-white/80">{isAI ? "AI" : "You"}</span>
+        <span className="text-white/80">{isAI ? aiLabel : youLabel}</span>
       </div>
       <p className="mt-1 text-white/90">{text}</p>
     </div>
@@ -23,6 +24,9 @@ function Bubble({ role, text }: { role: "ai" | "me"; text: string }) {
 }
 
 export default function DeviceMockup() {
+  const { t } = useTranslations();
+  const aiLabel = t('landing.mockup.ai', 'AI');
+  const youLabel = t('landing.mockup.you', 'You');
   return (
     <div>
       <motion.div
@@ -34,19 +38,19 @@ export default function DeviceMockup() {
         <div className="relative rounded-[2rem] border border-white/10 bg-neutral-900 p-3 shadow-xl">
           <div className="rounded-[1.6rem] bg-gradient-to-b from-neutral-800 to-neutral-900 p-4">
             <div className="mb-3 flex items-center justify-between text-xs text-white/50">
-              <span>Conversation</span>
+              <span>{t('landing.mockup.header', 'Conversation')}</span>
               <span>01:12</span>
             </div>
             <div className="space-y-3">
-              <Bubble role="ai" text="You seem quiet today. What’s on your mind?" />
-              <Bubble role="me" text="It’s… something I don’t usually talk about." />
-              <Bubble role="ai" text="Want to hear what I’d do in your place, or do you want to share first?" />
+              <Bubble role="ai" text={t('landing.mockup.messages.1', 'You seem quiet today. What’s on your mind?')} aiLabel={aiLabel} youLabel={youLabel} />
+              <Bubble role="me" text={t('landing.mockup.messages.2', 'It’s… something I don’t usually talk about.')} aiLabel={aiLabel} youLabel={youLabel} />
+              <Bubble role="ai" text={t('landing.mockup.messages.3', 'Want to hear what I’d do in your place, or do you want to share first?')} aiLabel={aiLabel} youLabel={youLabel} />
             </div>
             <div className="mt-5 flex items-center justify-between rounded-xl border border-white/10 bg-neutral-800/60 p-3">
               <div className="flex items-center gap-2 text-white/70">
-                <Mic className="h-4 w-4" /> Tap and talk
+                <Mic className="h-4 w-4" /> {t('landing.mockup.tap', 'Tap and talk')}
               </div>
-              <Button variant="mockup">Hold</Button>
+              <Button variant="mockup">{t('landing.mockup.hold', 'Hold')}</Button>
             </div>
           </div>
         </div>

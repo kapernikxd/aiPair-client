@@ -23,6 +23,7 @@ import { useRootStore, useStoreData } from '@/stores/StoreProvider';
 import { getUserAvatar, getUserFullName } from '@/helpers/utils/user';
 import { textRefactor } from '@/helpers/utils/common';
 import { Logo } from './ui/Logo';
+import { useTranslations } from '@/localization/TranslationProvider';
 
 type AppShellProps = {
     children: React.ReactNode;
@@ -37,6 +38,7 @@ function AppShellContent({
 }: AppShellProps) {
     const router = useRouter();
     const { routes } = useAuthRoutes();
+    const { t } = useTranslations();
 
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -52,7 +54,7 @@ function AppShellContent({
         authStore,
         (store) => store.hasAttemptedAutoLogin,
     );
-    const avatarInitial = (authUser?.name ?? getUserFullName(profile) ?? 'U').charAt(0).toUpperCase();
+    const avatarInitial = (authUser?.name ?? getUserFullName(profile) ?? t('admin.common.userInitial', 'U')).charAt(0).toUpperCase();
 
     const chats = useStoreData(chatStore, (store) => store.chats);
     const isLoadingChats = useStoreData(chatStore, (store) => store.isLoadingChats);
@@ -113,7 +115,7 @@ function AppShellContent({
                 : undefined;
             const chatName = opponent
                 ? textRefactor(getUserFullName(opponent), 25)
-                : chat.chatName ?? chat.bot?.name ?? 'Untitled chat';
+                : chat.chatName ?? chat.bot?.name ?? t('admin.chats.untitled', 'Untitled chat');
             const avatarUrl = opponent ? getUserAvatar(opponent) : undefined;
 
             return {
@@ -123,20 +125,20 @@ function AppShellContent({
                 avatarUrl,
             };
         });
-    }, [adminChatRoute, chats, currentUserId]);
+    }, [adminChatRoute, chats, currentUserId, t]);
 
     const activeChatId = searchParams.get('chatId');
 
     const renderChatNav = (isOpen: boolean) => {
         if (isLoadingChats && recentChatLinks.length === 0) {
             return isOpen ? (
-                <div className="px-3 py-2 text-sm text-white/60">Loading chats…</div>
+                <div className="px-3 py-2 text-sm text-white/60">{t('admin.chats.loading', 'Loading chats…')}</div>
             ) : null;
         }
 
         if (!isLoadingChats && recentChatLinks.length === 0) {
             return isOpen ? (
-                <div className="px-3 py-2 text-sm text-white/60">No recent chats yet</div>
+                <div className="px-3 py-2 text-sm text-white/60">{t('admin.chats.empty', 'No recent chats yet')}</div>
             ) : null;
         }
 
@@ -160,7 +162,7 @@ function AppShellContent({
         <div className="relative flex h-screen min-h-0 overflow-hidden bg-neutral-900 text-white">
             {/* ==== ЛЕВЫЙ САЙДБАР: ДЕСКТОП ==== */}
             <motion.aside
-                aria-label="Sidebar"
+                aria-label={t('admin.sidebar.label', 'Sidebar')}
                 animate={{ width: w }}
                 transition={{ type: 'tween', duration: 0.25 }}
                 className="relative z-20 hidden h-full min-h-0 overflow-hidden md:flex flex-col border-r border-white/5 bg-sidebar/70 backdrop-blur"
@@ -171,11 +173,11 @@ function AppShellContent({
                     <Button
                         onClick={() => uiStore.toggleSidebar()}
                         variant="sidebarIcon"
-                        aria-label={open ? 'Collapse' : 'Expand'}
+                        aria-label={open ? t('admin.sidebar.collapse', 'Collapse') : t('admin.sidebar.expand', 'Expand')}
                     >
                         {open ? <ChevronLeft /> : <Menu />}
                     </Button>
-                    {open && <div className="px-3">MENU</div>}
+                    {open && <div className="px-3">{t('admin.sidebar.menu', 'MENU')}</div>}
                 </div>
 
                 {/* содержимое меню со скроллом у списка чатов */}
@@ -183,7 +185,7 @@ function AppShellContent({
                     <div className="space-y-1">
                         <NavItem
                             href={routes.createAgent}
-                            label="Create aiPair"
+                            label={t('admin.sidebar.create', 'Create aiPair')}
                             icon={<PlusCircle className="size-5" />}
                             open={open}
                             isActive={pathname === routes.createAgent}
@@ -191,14 +193,14 @@ function AppShellContent({
                         <div className="mt-4 border-t border-white/5 pt-3" />
                         <NavItem
                             href={routes.discover}
-                            label="Discover"
+                            label={t('admin.sidebar.discover', 'Discover')}
                             icon={<Home className="size-5" />}
                             open={open}
                             isActive={pathname === routes.discover}
                         />
                         <NavItem
                             href={routes.adminChats}
-                            label="Chats"
+                            label={t('admin.sidebar.chats', 'Chats')}
                             icon={<MessagesSquare className="size-5" />}
                             open={open}
                             isActive={pathname === routes.adminChats || pathname === routes.adminChat}
@@ -206,7 +208,7 @@ function AppShellContent({
                     </div>
 
                     <div className="mt-4 border-t border-white/5 pt-3" />
-                    <SectionTitle open={open}>Recent chats</SectionTitle>
+                    <SectionTitle open={open}>{t('admin.sidebar.recent', 'Recent chats')}</SectionTitle>
 
                     <div className="flex-1 min-h-0 overflow-y-auto pr-1">
                         <div className="space-y-1">{renderChatNav(open)}</div>
@@ -226,7 +228,7 @@ function AppShellContent({
                     <Button
                         onClick={() => router.back()}
                         variant="sidebarIcon"
-                        aria-label="Go back"
+                        aria-label={t('admin.mobile.goBack', 'Go back')}
                     >
                         <ChevronLeft />
                     </Button>
@@ -235,7 +237,7 @@ function AppShellContent({
                             <Search className="size-4 text-white/70" aria-hidden />
                             <input
                                 type="search"
-                                placeholder="Search"
+                                placeholder={t('admin.mobile.searchPlaceholder', 'Search')}
                                 className="w-full bg-transparent text-sm text-white placeholder:text-white/60 focus:outline-none"
                             />
                         </label>
@@ -244,7 +246,7 @@ function AppShellContent({
                         <Link
                             href={routes.myProfile}
                             className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-orange-400 text-sm font-semibold"
-                            aria-label="Перейти в профиль"
+                            aria-label={t('admin.mobile.profile', 'Go to profile')}
                         >
                             {avatarInitial}
                         </Link>
@@ -254,7 +256,7 @@ function AppShellContent({
                             variant="ghostRounded"
                             className="h-10 px-3 text-xs font-semibold"
                         >
-                            Авторизоваться
+                            {t('common.signIn', 'Sign in')}
                         </Button>
                     )}
                 </div>
@@ -275,11 +277,11 @@ function AppShellContent({
                         >
                             {/* заголовок мобильного меню */}
                             <div className="mb-2 flex items-center justify-between">
-                                <span className="text-lg font-semibold">Menu</span>
+                                <span className="text-lg font-semibold">{t('admin.mobile.menuTitle', 'Menu')}</span>
                                 <Button
                                     onClick={() => uiStore.closeMobileSidebar()}
                                     variant="sidebarIcon"
-                                    aria-label="Close menu"
+                                    aria-label={t('admin.mobile.closeMenu', 'Close menu')}
                                 >
                                     <ChevronLeft />
                                 </Button>
@@ -290,7 +292,7 @@ function AppShellContent({
                                 <nav className="space-y-1">
                                     <NavItem
                                         href={routes.discover}
-                                        label="Discover"
+                                        label={t('admin.sidebar.discover', 'Discover')}
                                         icon={<Home className="size-5" />}
                                         open
                                         isActive={pathname === routes.discover}
@@ -298,7 +300,7 @@ function AppShellContent({
                                     <div className="mt-4 border-t border-white/5 pt-3" />
                                     <NavItem
                                         href={routes.createAgent}
-                                        label="Create aiPair"
+                                        label={t('admin.sidebar.create', 'Create aiPair')}
                                         icon={<PlusCircle className="size-5" />}
                                         open
                                         isActive={pathname === routes.createAgent}
@@ -306,7 +308,7 @@ function AppShellContent({
                                 </nav>
 
                                 <div className="mt-4 border-t border-white/5 pt-3" />
-                                <SectionTitle open>Chats</SectionTitle>
+                                <SectionTitle open>{t('admin.sidebar.chats', 'Chats')}</SectionTitle>
 
                                 <div className="flex-1 min-h-0 overflow-y-auto pr-1">
                                     <div className="space-y-1">{renderChatNav(true)}</div>
@@ -329,7 +331,7 @@ function AppShellContent({
                     {/* <div className="text-sm text-white/70">For You</div> */}
                     {/* <>&#8203;</> */}
                     <Link href={routes.home}><Logo/></Link>
-                    <div className="text-sm text-white/50">Right content header</div>
+                    <div className="text-sm text-white/50">{t('admin.header.placeholder', 'Right content header')}</div>
                 </div>
 
                 <div className="flex h-full min-h-0 flex-col pt-[67px] md:pt-0">{isAuthenticated ? children : null}</div>
@@ -375,18 +377,18 @@ function AppShellContent({
                     {showLoadingOverlay ? (
                         <div className="flex flex-col items-center gap-3 text-white">
                             <Loader2 className="size-6 animate-spin text-white" aria-hidden />
-                            <span className="text-sm text-white/70">Checking authentication…</span>
+                            <span className="text-sm text-white/70">{t('admin.overlay.checking', 'Checking authentication…')}</span>
                         </div>
                     ) : (
                         <div className="flex max-w-sm flex-col items-center gap-4 text-white">
                             <div className="space-y-2">
-                                <h2 className="text-xl font-semibold text-white">Authentication required</h2>
+                                <h2 className="text-xl font-semibold text-white">{t('admin.overlay.title', 'Authentication required')}</h2>
                                 <p className="text-sm text-white/70">
-                                    Please sign in to access the aiPair admin experience.
+                                    {t('admin.overlay.description', 'Please sign in to access the aiPair admin experience.')}
                                 </p>
                             </div>
                             <Button onClick={() => uiStore.openAuthPopup()} variant="primary">
-                                Sign in
+                                {t('common.signIn', 'Sign in')}
                             </Button>
                         </div>
                     )}

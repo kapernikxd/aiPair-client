@@ -11,6 +11,7 @@ import { BASE_URL } from "@/helpers/http";
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import { GetProfile, useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 const FALLBACK_IMAGE = "/img/noProfile.jpg";
 
@@ -36,6 +37,7 @@ const getCardItems = (
   getAiProfile: GetProfile,
   onChatNow?: (botId: string) => void,
   chatLoadingBotId?: string | null,
+  translate?: ReturnType<typeof useTranslations>['t'],
 ) =>
   bots.map((bot) => {
     const previewImage = bot.details?.photos?.[0] ?? bot.avatarFile;
@@ -47,7 +49,7 @@ const getCardItems = (
       id: bot.id,
       src,
       avatarSrc,
-      title: fullName || bot.username || "AI Agent",
+      title: fullName || bot.username || translate?.('common.aiAgent', 'AI Agent') || 'AI Agent',
       views: bot.profession || bot.username,
       hoverText: bot.userBio || bot.details?.intro,
       href: getAiProfile(bot.id),
@@ -56,12 +58,13 @@ const getCardItems = (
     };
   });
 
-const EMPTY_STATE_MESSAGE = "Пока что здесь нет ботов.";
+const EMPTY_STATE_KEY = "admin.emptyBots";
 
 export default function Landing() {
   const { aiBotStore, chatStore, uiStore } = useRootStore();
   const { getAiProfile, routes } = useAuthRoutes();
   const router = useRouter();
+  const { t, locale } = useTranslations();
 
   const bots = useStoreData(aiBotStore, (store) => store.mainPageBots);
   const isLoading = useStoreData(aiBotStore, (store) => store.isLoadingMainPageBots);
@@ -78,17 +81,17 @@ export default function Landing() {
     const result = new Map<string, AiBotMainPageBot[]>();
 
     bots.forEach((bot) => {
-      const categories = bot.details?.categories?.length ? bot.details.categories : ["Без категории"];
+      const categories = bot.details?.categories?.length ? bot.details.categories : [t('admin.categories.none', 'Uncategorized')];
       categories.forEach((category) => {
-        const normalizedCategory = category.trim() || "Без категории";
+        const normalizedCategory = category.trim() || t('admin.categories.none', 'Uncategorized');
         const existing = result.get(normalizedCategory) ?? [];
         existing.push(bot);
         result.set(normalizedCategory, existing);
       });
     });
 
-    return Array.from(result.entries()).sort((a, b) => a[0].localeCompare(b[0], "ru"));
-  }, [bots]);
+    return Array.from(result.entries()).sort((a, b) => a[0].localeCompare(b[0], locale));
+  }, [bots, locale, t]);
 
   const hasBots = groupedBots.length > 0;
 
@@ -104,19 +107,19 @@ export default function Landing() {
         const response = await chatStore.messageById(botId);
         const chatId = response?._id ?? response?.data?._id;
 
-        if (chatId) {
-          router.push(`${routes.adminChat}?chatId=${encodeURIComponent(chatId)}`);
-        } else {
-          uiStore.showSnackbar("Failed to open chat. Please try again.", "error");
+          if (chatId) {
+            router.push(`${routes.adminChat}?chatId=${encodeURIComponent(chatId)}`);
+          } else {
+            uiStore.showSnackbar(t('landing.errors.chat', 'Failed to open chat. Please try again.'), "error");
+          }
+        } catch (error) {
+          console.error("Failed to open chat with AI bot:", error);
+          uiStore.showSnackbar(t('landing.errors.chat', 'Failed to open chat. Please try again.'), "error");
+        } finally {
+          setChatLoadingBotId((current) => (current === botId ? null : current));
         }
-      } catch (error) {
-        console.error("Failed to open chat with AI bot:", error);
-        uiStore.showSnackbar("Failed to open chat. Please try again.", "error");
-      } finally {
-        setChatLoadingBotId((current) => (current === botId ? null : current));
-      }
-    },
-    [chatLoadingBotId, chatStore, router, routes.adminChat, uiStore],
+      },
+      [chatLoadingBotId, chatStore, router, routes.adminChat, t, uiStore],
   );
 
   return (
@@ -126,7 +129,7 @@ export default function Landing() {
           <Spacer size={8} />
 
           {isLoading && (
-            <div className="px-3 text-sm text-white/70 md:px-0">Загрузка ботов…</div>
+            <div className="px-3 text-sm text-white/70 md:px-0">{t('admin.loadingBots', 'Loading bots…')}</div>
           )}
 
           {error && (
@@ -134,12 +137,12 @@ export default function Landing() {
           )}
 
           {!isLoading && !error && !hasBots && (
-            <div className="px-3 text-sm text-white/70 md:px-0">{EMPTY_STATE_MESSAGE}</div>
+            <div className="px-3 text-sm text-white/70 md:px-0">{t(EMPTY_STATE_KEY, 'No bots available yet.')}</div>
           )}
 
           {!isLoading && !error &&
             groupedBots.map(([category, categoryBots], index) => {
-              const cardItems = getCardItems(categoryBots, getAiProfile, handleChatNow, chatLoadingBotId);
+              const cardItems = getCardItems(categoryBots, getAiProfile, handleChatNow, chatLoadingBotId, t);
               const spacing = index === groupedBots.length - 1 ? 40 : 90;
 
               if (cardItems.length > 8) {

@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Button } from '@/components/ui/Button';
 import { useRootStore } from '@/stores/StoreProvider';
 import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
+import { useTranslations } from '@/localization/TranslationProvider';
 
 type EmailAuthPopupProps = {
   open: boolean;
@@ -24,6 +25,7 @@ export default function EmailAuthPopup({ open, onBack, onClose, onSuccess }: Ema
   const { authStore } = useRootStore();
   const { goToAdmin } = useAuthRoutes();
   const dialogRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslations();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -61,6 +63,7 @@ export default function EmailAuthPopup({ open, onBack, onClose, onSuccess }: Ema
     event.preventDefault();
     setErrors({});
     setSubmitting(true);
+    const genericError = t('auth.email.error.general', 'Could not sign in. Please try again.');
 
     try {
       await authStore.login({ email, password });
@@ -80,12 +83,12 @@ export default function EmailAuthPopup({ open, onBack, onClose, onSuccess }: Ema
         }
 
         if (!nextErrors.general && !nextErrors.email && !nextErrors.password) {
-          nextErrors.general = 'Не удалось выполнить вход. Попробуйте еще раз.';
+          nextErrors.general = genericError;
         }
 
         setErrors(nextErrors);
       } else {
-        setErrors({ general: 'Не удалось выполнить вход. Попробуйте еще раз.' });
+        setErrors({ general: genericError });
       }
     } finally {
       setSubmitting(false);
@@ -119,11 +122,11 @@ export default function EmailAuthPopup({ open, onBack, onClose, onSuccess }: Ema
                 <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m15 19-7-7 7-7" />
                 </svg>
-                Back
+                {t('auth.email.back', 'Back')}
               </Button>
             </div>
             <div className="absolute right-3 top-3">
-              <Button onClick={onClose} variant="overlayClose" aria-label="Close email auth dialog">
+              <Button onClick={onClose} variant="overlayClose" aria-label={t('auth.email.close', 'Close email auth dialog')}>
                 <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" d="M6 6l12 12M18 6L6 18" />
                 </svg>
@@ -131,33 +134,37 @@ export default function EmailAuthPopup({ open, onBack, onClose, onSuccess }: Ema
             </div>
 
             <div className="px-6 pb-8 pt-16">
-              <h2 id="email-auth-title" className="text-center text-2xl font-semibold tracking-tight">Sign in with email</h2>
-              <p className="mt-2 text-center text-sm text-neutral-300">Введите свой email и пароль, чтобы продолжить.</p>
+              <h2 id="email-auth-title" className="text-center text-2xl font-semibold tracking-tight">
+                {t('auth.email.title', 'Sign in with email')}
+              </h2>
+              <p className="mt-2 text-center text-sm text-neutral-300">
+                {t('auth.email.subtitle', 'Enter your email and password to continue.')}
+              </p>
 
               <form className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
                 <label className="flex flex-col text-sm text-neutral-200">
-                  Email
+                  {t('auth.email.field.email', 'Email')}
                   <input
                     type="email"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
                     required
                     className="mt-1 rounded-2xl border border-white/15 bg-neutral-950 px-4 py-3 text-sm text-white placeholder:text-neutral-500 focus:border-violet-500 focus:outline-none"
-                    placeholder="you@example.com"
+                    placeholder={t('auth.email.placeholder.email', 'you@example.com')}
                     autoComplete="email"
                   />
                   {errors.email && <span className="mt-1 text-xs text-rose-400">{errors.email}</span>}
                 </label>
 
                 <label className="flex flex-col text-sm text-neutral-200">
-                  Password
+                  {t('auth.email.field.password', 'Password')}
                   <input
                     type="password"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
                     required
                     className="mt-1 rounded-2xl border border-white/15 bg-neutral-950 px-4 py-3 text-sm text-white placeholder:text-neutral-500 focus:border-violet-500 focus:outline-none"
-                    placeholder="••••••••"
+                    placeholder={t('auth.email.placeholder.password', '••••••••')}
                     autoComplete="current-password"
                   />
                   {errors.password && <span className="mt-1 text-xs text-rose-400">{errors.password}</span>}
@@ -166,7 +173,7 @@ export default function EmailAuthPopup({ open, onBack, onClose, onSuccess }: Ema
                 {errors.general && <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{errors.general}</div>}
 
                 <Button type="submit" variant="primaryTight" disabled={submitting} className="w-full">
-                  {submitting ? 'Signing in…' : 'Sign in'}
+                  {submitting ? t('auth.email.submitting', 'Signing in…') : t('auth.email.submit', 'Sign in')}
                 </Button>
               </form>
             </div>

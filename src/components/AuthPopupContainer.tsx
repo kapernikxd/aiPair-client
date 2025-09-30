@@ -4,17 +4,19 @@ import { useCallback } from 'react';
 import AuthPopup from './AuthPopup';
 import { useRootStore, useStoreData } from '@/stores/StoreProvider';
 import type { AuthProvider } from '@/stores/AuthStore';
+import { useTranslations } from '@/localization/TranslationProvider';
 
 export default function AuthPopupContainer() {
   const { uiStore, authStore, profileStore } = useRootStore();
   const isOpen = useStoreData(uiStore, (store) => store.isAuthPopupOpen);
   const profileName = useStoreData(profileStore, (store) => store.profile.username || '');
+  const { t } = useTranslations();
 
   const handleProviderAuth = useCallback(
     (provider: AuthProvider) => {
       authStore.startAuth(provider);
       const normalized = profileName.trim().toLowerCase().replace(/\s+/g, '.');
-      const fallbackName = profileName.trim() || 'User';
+      const fallbackName = profileName.trim() || t('auth.userFallback', 'User');
 
       authStore.completeAuth({
         id: `${provider}-${Date.now()}`,
@@ -23,7 +25,7 @@ export default function AuthPopupContainer() {
       });
       uiStore.closeAuthPopup();
     },
-    [authStore, profileName, uiStore],
+    [authStore, profileName, t, uiStore],
   );
 
   return (
