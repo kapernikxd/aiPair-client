@@ -5,12 +5,12 @@ import { storageHelper } from "../utils/storageHelper";
 
 export const isDev = process.env.NODE_ENV === "development";
 
-export const EMAIL = "pllace.support@gmail.com";
+export const EMAIL = "aiPair.support@gmail.com";
 
-export const BASE_URL = "http://localhost:5001/"
+export const BASE_URL = isDev ? "http://localhost:5001/" : "https://aipair.pro/"
 
 export const TELEGRAM_URL = 'https://t.me/pllacesupport';
-export const DOMAIN = "https://pllace.su"
+export const DOMAIN = "https://aipair.pro"
 export const API_URL = `${BASE_URL}api/`;
 
 // Создаем экземпляр Axios

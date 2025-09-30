@@ -16,7 +16,6 @@ export function LanguageSwitcher({ className = '' }: { className?: string }) {
 
   return (
     <label className={`inline-flex items-center gap-2 text-xs text-white/70 ${className}`}>
-      <span className="hidden sm:inline">{t('common.languageLabel', 'Language')}</span>
       <select
         value={locale}
         onChange={handleChange}

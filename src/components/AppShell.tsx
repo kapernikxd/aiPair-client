@@ -24,6 +24,7 @@ import { getUserAvatar, getUserFullName } from '@/helpers/utils/user';
 import { textRefactor } from '@/helpers/utils/common';
 import { Logo } from './ui/Logo';
 import { useTranslations } from '@/localization/TranslationProvider';
+import { LanguageSwitcher } from './ui/LanguageSwitcher';
 
 type AppShellProps = {
     children: React.ReactNode;
@@ -232,15 +233,16 @@ function AppShellContent({
                     >
                         <ChevronLeft />
                     </Button>
-                    <div className="flex-1">
-                        <label className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2">
+                    <div className="flex-1 items-center">
+                        <LanguageSwitcher />
+                        {/* <label className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2">
                             <Search className="size-4 text-white/70" aria-hidden />
                             <input
                                 type="search"
                                 placeholder={t('admin.mobile.searchPlaceholder', 'Search')}
                                 className="w-full bg-transparent text-sm text-white placeholder:text-white/60 focus:outline-none"
                             />
-                        </label>
+                        </label> */}
                     </div>
                     {isAuthenticated ? (
                         <Link
@@ -331,7 +333,7 @@ function AppShellContent({
                     {/* <div className="text-sm text-white/70">For You</div> */}
                     {/* <>&#8203;</> */}
                     <Link href={routes.home}><Logo/></Link>
-                    <div className="text-sm text-white/50">{t('admin.header.placeholder', 'Right content header')}</div>
+                    <div className="text-sm text-white/50"><LanguageSwitcher /></div>
                 </div>
 
                 <div className="flex h-full min-h-0 flex-col pt-[67px] md:pt-0">{isAuthenticated ? children : null}</div>

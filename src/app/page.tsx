@@ -233,18 +233,15 @@ export default function Landing() {
             <a href={routes.landingFaq} className="hover:text-white">FAQ</a>
           </div>
           <div className="flex items-center gap-3">
-            <div className="hidden md:inline">
+            <div className="flex items-center gap-3">
+              <div className="hidden md:inline">
+                <LanguageSwitcher />
+              </div>
               <Button onClick={handleAccountClick} variant="ghostRounded">
                 {isAuthenticated
                   ? authUser?.name ?? profileName
                   : t('common.signIn', 'Sign in')}
               </Button>
-            </div>
-            <div className="flex items-center gap-3">
-              <LanguageSwitcher />
-              <a className="inline-flex items-center gap-2 rounded-xl bg-[#6f2da8] px-4 py-2 text-sm font-medium text-white hover:opacity-90" href={routes.landingCta}>
-                {t('landing.nav.try', 'Try it free')} <ArrowRight className="h-4 w-4" />
-              </a>
             </div>
           </div>
         </Section>
@@ -394,7 +391,7 @@ export default function Landing() {
         <div className="mx-auto mt-8 grid max-w-4xl grid-cols-1 gap-4 md:grid-cols-3">
           <Plan
             name={t('landing.pricing.free.name', 'Free')}
-            price="$0"
+            price="0 /месяц"
             features={[
               { text: t('landing.pricing.free.features.limit', 'Limited daily talk time'), available: true },
               { text: t('landing.pricing.free.features.catalog', 'Chat with 50+ AI agents'), available: true },
@@ -408,7 +405,7 @@ export default function Landing() {
           <Plan
             highlight
             name={t('landing.pricing.plus.name', 'Plus')}
-            price="$9/mo"
+            price="299 /месяц"
             features={[
               { text: t('landing.pricing.plus.features.unlimited', 'Unlimited talk time (no limits)'), available: true },
               { text: t('landing.pricing.plus.features.customAgents', 'Create up to 25 custom AI agents'), available: true },
@@ -421,7 +418,7 @@ export default function Landing() {
           />
           <Plan
             name={t('landing.pricing.pro.name', 'Pro')}
-            price="$19/mo"
+            price="699 /месяц"
             features={[
               { text: t('landing.pricing.pro.features.plus', 'Everything in Plus'), available: true },
               { text: t('landing.pricing.pro.features.customAgents', 'Create up to 100 custom AI agents'), available: true },
@@ -577,7 +574,7 @@ function Plan({
       <div className="mt-1 text-3xl font-extrabold text-white">
         {price}
         <span className="ml-1 align-top text-xs font-medium text-white/50">
-          USD
+          РУБ
         </span>
       </div>
       <ul className="mt-4 space-y-2 text-sm text-white/80">
