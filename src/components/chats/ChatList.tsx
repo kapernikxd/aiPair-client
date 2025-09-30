@@ -2,6 +2,7 @@ import { AuthRouteKey } from "@/helpers/hooks/useAuthRoutes";
 import { ReactNode } from "react";
 import { ChatDTO } from "@/helpers/types";
 import ChatListItem from "./ChatListItem";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 export default function ChatList({
   chats,
@@ -20,6 +21,7 @@ export default function ChatList({
   getChatHref?: (chat: ChatDTO) => string;
   currentUserId: string;
 }) {
+  const { t } = useTranslations();
   const renderSkeleton = () => (
     <ul className="divide-y divide-white/5 overflow-hidden rounded-[28px]">
       {Array.from({ length: 6 }).map((_, index) => (
@@ -46,8 +48,10 @@ export default function ChatList({
         <div className="flex flex-col items-center justify-center gap-2 py-10 text-center text-sm text-white/60">
           {emptyState ?? (
             <>
-              <p>No chats yet.</p>
-              <p className="text-xs text-white/40">Start a conversation to see it here.</p>
+              <p>{t("admin.chats.list.empty", "No chats yet.")}</p>
+              <p className="text-xs text-white/40">
+                {t("admin.chats.list.emptyHint", "Start a conversation to see it here.")}
+              </p>
             </>
           )}
         </div>

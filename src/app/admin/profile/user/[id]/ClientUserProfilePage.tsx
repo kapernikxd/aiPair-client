@@ -11,6 +11,7 @@ import ProfileCard from "@/components/profile/ProfileCard";
 
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 interface UserProfilePageProps {
   profileId?: string;
@@ -19,6 +20,7 @@ interface UserProfilePageProps {
 export default function UserProfilePage({ profileId }: UserProfilePageProps) {
   const { profileStore, aiBotStore } = useRootStore();
   const { goToMyProfile } = useAuthRoutes();
+  const { t } = useTranslations();
 
   const profile = useStoreData(profileStore, (store) => store.profile);
   const genderLabels = useStoreData(profileStore, (store) => store.genderLabels);
@@ -72,7 +74,7 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
 
   const genderLabel = profile?.gender
     ? genderLabels[profile.gender] ?? profile.gender
-    : "Not specified";
+    : t("admin.profile.common.genderUnknown", "Not specified");
   const isViewingOwnProfile = Boolean(profileUserId && myProfileId === profileUserId);
 
   return (
@@ -101,12 +103,20 @@ export default function UserProfilePage({ profileId }: UserProfilePageProps) {
             <AiAgentsTimeline
               items={userAiBots}
               isLoading={isLoadingAiBot}
-              title="AI Companions"
-              description="Персональные напарники, созданные этим пользователем."
-              emptyMessage="Пока что здесь пусто — добавьте своего первого AI-бота, чтобы показать его миру."
+              title={t("admin.profile.user.timeline.title", "AI Companions")}
+              description={t(
+                "admin.profile.user.timeline.description",
+                "Персональные напарники, созданные этим пользователем.",
+              )}
+              emptyMessage={t(
+                "admin.profile.user.timeline.empty",
+                "Пока что здесь пусто — добавьте своего первого AI-бота, чтобы показать его миру.",
+              )}
             />
             {isLoadingProfile && (
-              <p className="text-sm text-white/60">Loading profile…</p>
+              <p className="text-sm text-white/60">
+                {t("admin.profile.user.loading", "Loading profile…")}
+              </p>
             )}
           </section>
         </div>

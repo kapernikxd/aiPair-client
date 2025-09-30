@@ -6,6 +6,7 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { FormState } from "@/helpers/types/agent-create";
 import { categoryOptions } from "@/helpers/data/agent-create";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 const normalized = (value: string) => value.trim().toLowerCase();
 
@@ -18,6 +19,7 @@ type FocusStepProps = {
 
 export default function FocusStep({ form, onChange }: FocusStepProps) {
   const [inputValue, setInputValue] = useState("");
+  const { t } = useTranslations();
 
   const selectedMap = useMemo(
     () => new Set(form.categories.map((item) => normalized(item))),
@@ -65,16 +67,25 @@ export default function FocusStep({ form, onChange }: FocusStepProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-semibold tracking-tight">Define its focus</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">
+          {t("admin.create.focus.title", "Define its focus")}
+        </h2>
         <p className="mt-2 text-sm text-white/70">
-          Choose the categories that match your agent and list out the situations where it shines.
+          {t(
+            "admin.create.focus.subtitle",
+            "Choose the categories that match your agent and list out the situations where it shines.",
+          )}
         </p>
       </div>
 
       <div className="space-y-4 rounded-3xl border border-white/10 bg-neutral-900/70 p-6">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-semibold text-white">Categories</span>
-          <span className="text-xs uppercase tracking-wide text-white/50">Pick multiple</span>
+          <span className="text-sm font-semibold text-white">
+            {t("admin.create.focus.categories", "Categories")}
+          </span>
+          <span className="text-xs uppercase tracking-wide text-white/50">
+            {t("admin.create.focus.categoriesHint", "Pick multiple")}
+          </span>
         </div>
         <div className="flex flex-wrap gap-2">
           {categoryOptions.map((category) => {
@@ -98,26 +109,33 @@ export default function FocusStep({ form, onChange }: FocusStepProps) {
         </div>
         {!form.categories.length && (
           <p className="text-xs text-white/50">
-            Select at least one category to help others understand the agent&rsquo;s domain.
+            {t(
+              "admin.create.focus.categoriesEmpty",
+              "Select at least one category to help others understand the agent’s domain.",
+            )}
           </p>
         )}
       </div>
 
       <div className="space-y-4 rounded-3xl border border-white/10 bg-neutral-900/70 p-6">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-semibold text-white">Usefulness</span>
-          <span className="text-xs uppercase tracking-wide text-white/50">Add as many as you like</span>
+          <span className="text-sm font-semibold text-white">
+            {t("admin.create.focus.usefulness", "Usefulness")}
+          </span>
+          <span className="text-xs uppercase tracking-wide text-white/50">
+            {t("admin.create.focus.usefulnessHint", "Add as many as you like")}
+          </span>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row">
           <input
             value={inputValue}
             onChange={(event) => setInputValue(event.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Например: Быстрые брейнштормы"
+            placeholder={t("admin.create.focus.placeholder", "For example: Quick brainstorms")}
             className="flex-1 rounded-2xl border border-white/15 bg-neutral-900/80 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-violet-400 focus:outline-none"
           />
           <Button type="button" variant="primaryTight" onClick={addUsefulness} disabled={!inputValue.trim()}>
-            Добавить
+            {t("admin.create.focus.add", "Add")}
           </Button>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -132,14 +150,19 @@ export default function FocusStep({ form, onChange }: FocusStepProps) {
                   type="button"
                   onClick={() => removeUsefulness(item)}
                   className="rounded-full p-1 text-white/50 transition hover:bg-white/10 hover:text-white"
-                  aria-label={`Удалить ${item}`}
+                  aria-label={t("admin.create.focus.remove", "Remove {value}").replace("{value}", item)}
                 >
                   <X className="size-3.5" />
                 </button>
               </span>
             ))
           ) : (
-            <p className="text-xs text-white/50">Добавьте несколько вариантов, чтобы подсказать пользователям сценарии использования.</p>
+            <p className="text-xs text-white/50">
+              {t(
+                "admin.create.focus.usefulnessEmpty",
+                "Add a few scenarios to inspire how people can use the agent.",
+              )}
+            </p>
           )}
         </div>
       </div>

@@ -8,7 +8,8 @@ import ProfileCard from "@/components/profile/ProfileCard";
 import AiAgentsTimeline from "@/components/profile/AiAgentsTimeline";
 
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 
 export default function MyProfilePage() {
@@ -21,6 +22,7 @@ export default function MyProfilePage() {
   const isDialogOpen = useStoreData(uiStore, (store) => store.isEditProfileDialogOpen);
 
   const [activeFilter, setActiveFilter] = useState<"my" | "subscribed">("my");
+  const { t } = useTranslations();
 
   useEffect(() => {
     void profileStore.fetchMyProfile();
@@ -28,22 +30,40 @@ export default function MyProfilePage() {
     void aiBotStore.fetchSubscribedAiBots();
   }, [profileStore, aiBotStore]);
 
-  const filters = [
-    { value: "my" as const, label: "My AI Agents" },
-    { value: "subscribed" as const, label: "Subscribed AI Agents" },
-  ];
+  const filters = useMemo(
+    () => [
+      { value: "my" as const, label: t("admin.profile.my.filters.my", "My AI Agents") },
+      {
+        value: "subscribed" as const,
+        label: t("admin.profile.my.filters.subscribed", "Subscribed AI Agents"),
+      },
+    ],
+    [t],
+  );
 
   const timelineCopy =
     activeFilter === "my"
       ? {
-          title: "My AI Agents",
-          description: "Here are the AI agents you have created.",
-          empty: "You haven’t created any AI agents yet.",
+          title: t("admin.profile.my.timeline.my.title", "My AI Agents"),
+          description: t(
+            "admin.profile.my.timeline.my.description",
+            "Here are the AI agents you have created.",
+          ),
+          empty: t(
+            "admin.profile.my.timeline.my.empty",
+            "You haven’t created any AI agents yet.",
+          ),
         }
       : {
-          title: "Subscribed AI Agents",
-          description: "AI agents you follow will appear here.",
-          empty: "You aren’t subscribed to any AI agents yet.",
+          title: t("admin.profile.my.timeline.subscribed.title", "Subscribed AI Agents"),
+          description: t(
+            "admin.profile.my.timeline.subscribed.description",
+            "AI agents you follow will appear here.",
+          ),
+          empty: t(
+            "admin.profile.my.timeline.subscribed.empty",
+            "You aren’t subscribed to any AI agents yet.",
+          ),
         };
 
   const filteredAiAgents = activeFilter === "my" ? aiAgents : subscribedAiAgents;
@@ -66,7 +86,11 @@ export default function MyProfilePage() {
             <HeaderActions onEdit={() => uiStore.openEditProfileDialog()} />
             <ProfileCard
               profile={profile}
-              genderLabel={profile?.gender ? genderLabels[profile.gender] ?? profile.gender : "Not specified"}
+              genderLabel={
+                profile?.gender
+                  ? genderLabels[profile.gender] ?? profile.gender
+                  : t("admin.profile.common.genderUnknown", "Not specified")
+              }
               isCurrentUser
             />
           </header>
@@ -84,10 +108,15 @@ export default function MyProfilePage() {
             <aside className="space-y-6">
               <section className="rounded-3xl border border-white/10 bg-white/5 p-1 md:p-6 backdrop-blur">
                 <div className="p-3 md:p-0">
-                <h2 className="text-lg font-semibold text-white">Filter AI Agents</h2>
-                <p className="mt-2 text-sm text-white/70">
-                  Choose whether to see your own creations or the agents you’re subscribed to.
-                </p>
+                  <h2 className="text-lg font-semibold text-white">
+                    {t("admin.profile.my.sidebar.title", "Filter AI Agents")}
+                  </h2>
+                  <p className="mt-2 text-sm text-white/70">
+                    {t(
+                      "admin.profile.my.sidebar.description",
+                      "Choose whether to see your own creations or the agents you’re subscribed to.",
+                    )}
+                  </p>
                 </div>
                 <div className="mt-4 grid gap-3">
                   {filters.map((filter) => {

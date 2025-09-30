@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { useBreakpoint } from "@/helpers/hooks/useBreakpoint";
 import MoreActionsMenu from "@/components/MoreActionsMenu";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 interface HeaderBarProps {
   isFollowing?: boolean;
@@ -24,12 +25,13 @@ export default function HeaderBar({
   isCurrentUser = false,
   profileId,
 }: HeaderBarProps) {
+  const { t } = useTranslations();
   const isActionDisabled = disableFollowAction || isBusy || !onToggleFollow;
   const buttonLabel = isBusy
-    ? "Processing..."
+    ? t("admin.profile.user.header.processing", "Processing...")
     : isFollowing
-      ? "Subscribed"
-      : "Subscribe";
+      ? t("admin.profile.user.header.subscribed", "Subscribed")
+      : t("admin.profile.user.header.subscribe", "Subscribe");
   const ButtonIcon = isFollowing ? Check : Sparkles;
   const buttonVariant = isFollowing ? "frostedPill" : "subscribe";
   const router = useRouter();
@@ -43,12 +45,16 @@ export default function HeaderBar({
             type="button"
             onClick={() => router.back()}
             variant="frostedIcon"
-            aria-label="Go back"
+            aria-label={t("admin.profile.common.backAria", "Go back")}
           >
             <ArrowLeft className="size-5" />
           </Button>
         )}
-        <Button variant="frostedIcon">
+        <Button
+          type="button"
+          variant="frostedIcon"
+          aria-label={t("admin.profile.common.shareAria", "Share")}
+        >
           <Share2 className="size-5" />
         </Button>
         <MoreActionsMenu

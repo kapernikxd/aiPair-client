@@ -2,6 +2,7 @@
 
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 export default function ActionBar({
   canBack,
@@ -20,6 +21,7 @@ export default function ActionBar({
   isFinal: boolean;
   isLoading?: boolean;
 }) {
+  const { t } = useTranslations();
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex gap-3">
@@ -30,14 +32,14 @@ export default function ActionBar({
           variant="outline"
         >
           <ArrowLeft className="size-4" />
-          Back
+          {t("admin.create.action.back", "Back")}
         </Button>
         <Button
           type="button"
           onClick={onReset}
           variant="outlineMuted"
         >
-          Start over
+          {t("admin.create.action.reset", "Start over")}
         </Button>
       </div>
       <div className="self-end">
@@ -47,7 +49,11 @@ export default function ActionBar({
           disabled={!canNext || isLoading}
           variant="primaryTight"
         >
-          {isFinal ? (isLoading ? "Creating…" : "Create aiAgent") : "Continue"}
+          {isFinal
+            ? isLoading
+              ? t("admin.create.action.creating", "Creating…")
+              : t("admin.create.action.submit", "Create aiAgent")
+            : t("admin.create.action.next", "Continue")}
           {!isLoading && <ArrowRight className="size-4" />}
         </Button>
       </div>
