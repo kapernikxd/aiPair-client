@@ -51,10 +51,6 @@ export function TranslationProvider({ children }: { children: React.ReactNode })
       setLocaleState(stored);
       return;
     }
-    const browserLocale = normalizeLocale(window.navigator.language);
-    if (browserLocale) {
-      setLocaleState(browserLocale);
-    }
   }, []);
 
   useEffect(() => {
