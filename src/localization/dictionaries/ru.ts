@@ -283,7 +283,6 @@ registerTranslations('ru', {
   'landing.mockup.tap': 'Нажми и говори',
   'landing.mockup.hold': 'Отправить',
   'landing.nav.try': 'Попробовать бесплатно',
-  'landing.hero.testimonial.author': '— Анна',
   'contact.channels.support.title': 'Поддержка и отзывы',
   'contact.channels.support.description': 'Нужна помощь или есть предложения? Напишите нам — ответим в течение двух рабочих дней.',
   'contact.channels.support.action': 'feedback@aipair.pro',
