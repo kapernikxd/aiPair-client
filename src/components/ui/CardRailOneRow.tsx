@@ -3,6 +3,7 @@
 import React, { useRef } from 'react';
 import { Button } from '@/components/ui/Button';
 import HoverSwapCard from '../AiCard';
+import { useTranslations } from '@/localization/TranslationProvider';
 
 type Item = {
   id: string | number;
@@ -32,6 +33,7 @@ export default function CardRailOneRow({
   className = '',
 }: Props) {
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslations();
 
   const scrollBy = (dir: 1 | -1) => {
     scrollerRef.current?.scrollBy({
@@ -52,12 +54,12 @@ export default function CardRailOneRow({
 
       {/* Кнопки пролистывания */}
       <div className="hidden md:flex absolute left-2 top-1/2 z-10 -translate-y-1/2">
-        <Button aria-label="Prev" onClick={() => scrollBy(-1)} variant="carouselNav">
+        <Button aria-label={t('common.prev', 'Prev')} onClick={() => scrollBy(-1)} variant="carouselNav">
           ‹
         </Button>
       </div>
       <div className="hidden md:flex absolute right-2 top-1/2 z-10 -translate-y-1/2">
-        <Button aria-label="Next" onClick={() => scrollBy(1)} variant="carouselNav">
+        <Button aria-label={t('common.next', 'Next')} onClick={() => scrollBy(1)} variant="carouselNav">
           ›
         </Button>
       </div>

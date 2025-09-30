@@ -14,6 +14,8 @@ import type { AuthProvider } from "@/stores/AuthStore";
 import { Logo } from "@/components/ui/Logo";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 // export const metadata = {
 //   title: 'AI Pair — Talk with an AI companion',
@@ -84,6 +86,7 @@ export default function Landing() {
   const mainPageBots = useStoreData(aiBotStore, (store) => store.mainPageBots);
   const router = useRouter();
   const [chatLoadingBotId, setChatLoadingBotId] = useState<string | null>(null);
+  const { t, tList } = useTranslations();
 
   useEffect(() => {
     if (aiBotStore.mainPageBots.length === 0 && !aiBotStore.isLoadingMainPageBots) {
@@ -128,15 +131,15 @@ export default function Landing() {
       if (chatId) {
         router.push(`${routes.adminChat}?chatId=${encodeURIComponent(chatId)}`);
       } else {
-        uiStore.showSnackbar("Failed to open chat. Please try again.", "error");
+        uiStore.showSnackbar(t('landing.errors.chat', 'Failed to open chat. Please try again.'), "error");
       }
     } catch (error) {
       console.error("Failed to open chat with AI bot:", error);
-      uiStore.showSnackbar("Failed to open chat. Please try again.", "error");
+      uiStore.showSnackbar(t('landing.errors.chat', 'Failed to open chat. Please try again.'), "error");
     } finally {
       setChatLoadingBotId(null);
     }
-  }, [chatStore, isAuthenticated, router, routes.adminChat, uiStore]);
+  }, [chatStore, isAuthenticated, router, routes.adminChat, t, uiStore]);
   const cardItems: LandingCardItem[] = useMemo(() => {
     if (mainPageBots.length > 0) {
       return mainPageBots.map((bot) => {
@@ -150,7 +153,7 @@ export default function Landing() {
           id: botId,
           src,
           avatarSrc,
-          title: fullName || bot.username || "AI Agent",
+          title: fullName || bot.username || t('common.aiAgent', 'AI Agent'),
           views: bot.profession || bot.username,
           hoverText: bot.userBio || bot.details?.intro,
           href: `${routes.aiAgentProfile}/${botId}`,
@@ -160,7 +163,61 @@ export default function Landing() {
       });
     }
     return []
-  }, [chatLoadingBotId, handleChatNow, mainPageBots, routes]);
+  }, [chatLoadingBotId, handleChatNow, mainPageBots, routes, t]);
+  const faqItems = useMemo(
+    () => [
+      {
+        q: t('landing.faq.items.create.question', 'Can I create my own bot?'),
+        a: t(
+          'landing.faq.items.create.answer',
+          'Yes, the free plan includes one custom agent. Paid plans let you create more.',
+        ),
+      },
+      {
+        q: t('landing.faq.items.skills.question', 'What can the agents do?'),
+        a: t(
+          'landing.faq.items.skills.answer',
+          'Agents can be a friend, tutor, coach, or mentor — you define their style and personality.',
+        ),
+      },
+      {
+        q: t('landing.faq.items.memory.question', 'Will the AI remember our chats?'),
+        a: t(
+          'landing.faq.items.memory.answer',
+          'The free tier has memory disabled, so conversations reset. Plus and higher unlock optional memory.',
+        ),
+      },
+      {
+        q: t('landing.faq.items.mobile.question', 'Does it work on iOS and Android?'),
+        a: t(
+          'landing.faq.items.mobile.answer',
+          'Yes, the web app runs in your mobile browser. Native apps are coming soon.',
+        ),
+      },
+      {
+        q: t('landing.faq.items.share.question', 'Can I share my agents with others?'),
+        a: t(
+          'landing.faq.items.share.answer',
+          'Yes, the Plus plan lets you share the agents you build with other users.',
+        ),
+      },
+      {
+        q: t('landing.faq.items.future.question', 'What features are coming next?'),
+        a: t(
+          'landing.faq.items.future.answer',
+          'Photo and video sharing plus full voice conversations are on the roadmap.',
+        ),
+      },
+      {
+        q: t('landing.faq.items.privacy.question', 'How is my privacy protected?'),
+        a: t(
+          'landing.faq.items.privacy.answer',
+          'You control memory and data sharing. No hidden forms or tracking.',
+        ),
+      },
+    ],
+    [t],
+  );
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white">
@@ -178,12 +235,17 @@ export default function Landing() {
           <div className="flex items-center gap-3">
             <div className="hidden md:inline">
               <Button onClick={handleAccountClick} variant="ghostRounded">
-                {isAuthenticated ? authUser?.name ?? profileName : 'Sign in'}
+                {isAuthenticated
+                  ? authUser?.name ?? profileName
+                  : t('common.signIn', 'Sign in')}
               </Button>
             </div>
-            <a className="inline-flex items-center gap-2 rounded-xl bg-[#6f2da8] px-4 py-2 text-sm font-medium text-white hover:opacity-90" href={routes.landingCta}>
-              Try it free <ArrowRight className="h-4 w-4" />
-            </a>
+            <div className="flex items-center gap-3">
+              <LanguageSwitcher />
+              <a className="inline-flex items-center gap-2 rounded-xl bg-[#6f2da8] px-4 py-2 text-sm font-medium text-white hover:opacity-90" href={routes.landingCta}>
+                {t('landing.nav.try', 'Try it free')} <ArrowRight className="h-4 w-4" />
+              </a>
+            </div>
           </div>
         </Section>
       </nav>
@@ -193,36 +255,35 @@ export default function Landing() {
         <Section className="grid grid-cols-1 items-center gap-10 py-16 md:grid-cols-2 md:py-24">
           <div>
             <div className="mb-4 flex flex-wrap items-center gap-2">
-              <Badge>Customizable</Badge>
-              <Badge>Real-time</Badge>
-              <Badge>Private</Badge>
+              <Badge>{t('landing.hero.badges.customizable', 'Customizable')}</Badge>
+              <Badge>{t('landing.hero.badges.realtime', 'Real-time')}</Badge>
+              <Badge>{t('landing.hero.badges.private', 'Private')}</Badge>
             </div>
             <LandingClient />
 
             <blockquote className="mt-5 max-w-xl italic text-white/80">
-              “It feels like I’m talking to a real friend, not a bot.
-              I never thought AI could remember me like this.”
+              {t('landing.hero.testimonial.text', '“It feels like I’m talking to a real friend, not a bot. I never thought AI could remember me like this.”')}
             </blockquote>
-            <cite className="mt-2 block text-sm text-white/50">— Anna</cite>
+            <cite className="mt-2 block text-sm text-white/50">{t('landing.hero.testimonial.author', '— Anna')}</cite>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <a
                 href={routes.landingCta}
                 className="inline-flex items-center gap-2 rounded-2xl bg-[#6f2da8] px-5 py-3 text-sm font-semibold hover:opacity-90"
               >
-                Start free
+                {t('landing.hero.primaryCta', 'Start free')}
                 <ArrowRight className="h-4 w-4" />
               </a>
               <a
                 href={routes.landingDemo}
                 className="inline-flex items-center gap-2 rounded-2xl border border-white/15 px-5 py-3 text-sm font-semibold hover:bg-white/5"
               >
-                <PlayCircle className="h-4 w-4" /> Watch demo
+                <PlayCircle className="h-4 w-4" /> {t('landing.hero.watchDemo', 'Watch demo')}
               </a>
             </div>
 
             <div className="mt-6 text-xs text-white/50">
-              Available on iOS & Android • Works in the browser
+              {t('landing.hero.availability', 'Available on iOS & Android • Works in the browser')}
             </div>
           </div>
 
@@ -234,11 +295,11 @@ export default function Landing() {
       {/* SOCIAL PROOF */}
       <Section className="py-8">
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs text-white/50">
-          <span>Trusted by creators & students</span>
+          <span>{t('landing.socialProof.creators', 'Trusted by creators & students')}</span>
           <span>•</span>
-          <span>Fast onboarding</span>
+          <span>{t('landing.socialProof.onboarding', 'Fast onboarding')}</span>
           <span>•</span>
-          <span>Human‑like voices</span>
+          <span>{t('landing.socialProof.voices', 'Human‑like voices')}</span>
         </div>
       </Section>
 
@@ -250,31 +311,31 @@ export default function Landing() {
       {/* FEATURES */}
       <Section id="features" className="py-16">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-2xl font-bold">An AI that acts more like a person</h2>
+          <h2 className="text-2xl font-bold">{t('landing.features.title', 'An AI that acts more like a person')}</h2>
           <p className="mt-2 text-white/70">
-            Built around values that make conversations feel natural, meaningful, and human.
+            {t('landing.features.subtitle', 'Built around values that make conversations feel natural, meaningful, and human.')}
           </p>
         </div>
         <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
           <Feature
             icon={<MessageSquareHeart className="h-5 w-5" />}
-            title="Feels human"
-            desc="Speaks with emotion, nuance, and empathy — not just flat responses."
+            title={t('landing.features.items.feelsHuman.title', 'Feels human')}
+            desc={t('landing.features.items.feelsHuman.desc', 'Speaks with emotion, nuance, and empathy — not just flat responses.')}
           />
           <Feature
             icon={<Bookmark className="h-5 w-5" />}
-            title="Remembers you"
-            desc="Keeps track of what matters: your name, goals, and past conversations."
+            title={t('landing.features.items.remembers.title', 'Remembers you')}
+            desc={t('landing.features.items.remembers.desc', 'Keeps track of what matters: your name, goals, and past conversations.')}
           />
           <Feature
             icon={<Sparkles className="h-5 w-5" />}
-            title="Adapts to you"
-            desc="Learns your preferences and adjusts its style to fit your personality."
+            title={t('landing.features.items.adapts.title', 'Adapts to you')}
+            desc={t('landing.features.items.adapts.desc', 'Learns your preferences and adjusts its style to fit your personality.')}
           />
           <Feature
             icon={<Brain className="h-5 w-5" />}
-            title="Thinks it through"
-            desc="Explains reasoning step by step, like talking with a thoughtful friend."
+            title={t('landing.features.items.thinks.title', 'Thinks it through')}
+            desc={t('landing.features.items.thinks.desc', 'Explains reasoning step by step, like talking with a thoughtful friend.')}
           />
         </div>
       </Section>
@@ -283,18 +344,16 @@ export default function Landing() {
       <Section id="demo" className="py-16">
         <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
           <div>
-            <h3 className="text-xl font-bold">Bring any character to life</h3>
+            <h3 className="text-xl font-bold">{t('landing.builder.title', 'Bring any character to life')}</h3>
             <p className="mt-2 max-w-md text-white/70">
-              Create your own AI companion — whether it’s a mentor, a friend, or a
-              completely fictional persona. Customize their traits, style, and the way
-              they interact with you.
+              {t('landing.builder.description', 'Create your own AI companion — whether it’s a mentor, a friend, or a completely fictional persona. Customize their traits, style, and the way they interact with you.')}
             </p>
             <ul className="mt-6 space-y-2 text-sm text-white/80">
-              {[
-                "Design personalities that feel unique",
-                "Choose how they speak, think, and respond",
-                "Role-play with characters from any world you imagine",
-              ].map((x) => (
+              {tList('landing.builder.points', [
+                'Design personalities that feel unique',
+                'Choose how they speak, think, and respond',
+                'Role-play with characters from any world you imagine',
+              ]).map((x) => (
                 <li key={x} className="flex items-start gap-2">
                   <CheckCircle2 className="mt-0.5 h-4 w-4" /> {x}
                 </li>
@@ -305,7 +364,7 @@ export default function Landing() {
                 href={routes.landingPricing}
                 className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2 text-sm hover:bg-white/5"
               >
-                Start creating <ArrowRight className="h-4 w-4" />
+                {t('landing.builder.cta', 'Start creating')} <ArrowRight className="h-4 w-4" />
               </a>
             </div>
           </div>
@@ -329,48 +388,48 @@ export default function Landing() {
       {/* PRICING */}
       <Section id="pricing" className="py-16">
         <div className="mx-auto max-w-2xl text-center">
-          <h3 className="text-xl font-bold">Simple pricing</h3>
-          <p className="mt-2 text-white/70">Start free. Upgrade when you need more talk time.</p>
+          <h3 className="text-xl font-bold">{t('landing.pricing.title', 'Simple pricing')}</h3>
+          <p className="mt-2 text-white/70">{t('landing.pricing.subtitle', 'Start free. Upgrade when you need more talk time.')}</p>
         </div>
         <div className="mx-auto mt-8 grid max-w-4xl grid-cols-1 gap-4 md:grid-cols-3">
           <Plan
-            name="Free"
+            name={t('landing.pricing.free.name', 'Free')}
             price="$0"
             features={[
-              { text: "Limited daily talk time", available: true },
-              { text: "Chat with 50+ AI agents", available: true },
-              { text: "1 custom AI agent", available: true },
-              { text: "No memory (conversations reset)", available: false },
-              { text: "Limited features and updates", available: false },
+              { text: t('landing.pricing.free.features.limit', 'Limited daily talk time'), available: true },
+              { text: t('landing.pricing.free.features.catalog', 'Chat with 50+ AI agents'), available: true },
+              { text: t('landing.pricing.free.features.custom', '1 custom AI agent'), available: true },
+              { text: t('landing.pricing.free.features.memory', 'No memory (conversations reset)'), available: false },
+              { text: t('landing.pricing.free.features.updates', 'Limited features and updates'), available: false },
             ]}
-            cta="Try free"
+            cta={t('landing.pricing.free.cta', 'Try free')}
             href={routes.landingCta}
           />
           <Plan
             highlight
-            name="Plus"
+            name={t('landing.pricing.plus.name', 'Plus')}
             price="$9/mo"
             features={[
-              { text: "Unlimited talk time (no limits)", available: true },
-              { text: "Create up to 25 custom AI agents", available: true },
-              { text: "Memory: your agents remember past conversations", available: true },
-              { text: "Access to premium features and bots", available: true },
-              { text: "Share your bots with other users", available: true },
+              { text: t('landing.pricing.plus.features.unlimited', 'Unlimited talk time (no limits)'), available: true },
+              { text: t('landing.pricing.plus.features.customAgents', 'Create up to 25 custom AI agents'), available: true },
+              { text: t('landing.pricing.plus.features.memory', 'Memory: your agents remember past conversations'), available: true },
+              { text: t('landing.pricing.plus.features.premium', 'Access to premium features and bots'), available: true },
+              { text: t('landing.pricing.plus.features.share', 'Share your bots with other users'), available: true },
             ]}
-            cta="Upgrade"
+            cta={t('landing.pricing.plus.cta', 'Upgrade')}
             href={routes.landingCta}
           />
           <Plan
-            name="Pro"
+            name={t('landing.pricing.pro.name', 'Pro')}
             price="$19/mo"
             features={[
-              { text: "Everything in Plus", available: true },
-              { text: "Create up to 100 custom AI agents", available: true },
-              { text: "Photo sharing", available: true },
-              { text: "Video support", available: true },
-              { text: "Voice conversations", available: true },
+              { text: t('landing.pricing.pro.features.plus', 'Everything in Plus'), available: true },
+              { text: t('landing.pricing.pro.features.customAgents', 'Create up to 100 custom AI agents'), available: true },
+              { text: t('landing.pricing.pro.features.photos', 'Photo sharing'), available: true },
+              { text: t('landing.pricing.pro.features.video', 'Video support'), available: true },
+              { text: t('landing.pricing.pro.features.voice', 'Voice conversations'), available: true },
             ]}
-            cta="Coming soon"
+            cta={t('landing.pricing.pro.cta', 'Coming soon')}
             href="#"
           />
         </div>
@@ -379,17 +438,9 @@ export default function Landing() {
       {/* FAQ */}
       <Section id="faq" className="py-16">
         <div className="mx-auto max-w-3xl">
-          <h3 className="text-xl font-bold">FAQ</h3>
+          <h3 className="text-xl font-bold">{t('landing.faq.title', 'FAQ')}</h3>
           <div className="mt-6 divide-y divide-white/10 rounded-2xl border border-white/10 bg-neutral-900/60">
-            {[
-              { q: "Можно ли создать своего бота?", a: "Да, в бесплатной версии доступен один кастомный агент. В платных планах можно создавать больше." },
-              { q: "Что умеют агенты?", a: "Агенты могут быть другом, учителем, психологом или наставником — ты сам задаёшь их стиль и характер." },
-              { q: "Будет ли память?", a: "В бесплатном тарифе память отключена: разговоры сбрасываются. В Plus и выше — память включается по выбору." },
-              { q: "Работает на iOS и Android?", a: "Да, веб-версия работает в мобильном браузере. Нативные приложения — скоро." },
-              { q: "Можно ли делиться своими агентами?", a: "Да, в тарифе Plus можно делиться созданными агентами с другими пользователями." },
-              { q: "Что дальше в планах?", a: "Скоро появится возможность делиться фото и видео, а также полноценные голосовые разговоры." },
-              { q: "Что с приватностью?", a: "Вы контролируете память и отправку данных. Никаких скрытых форм и трекинга." },
-            ].map((item, idx) => (
+            {faqItems.map((item, idx) => (
               <details key={idx} className="group">
                 <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-4 text-sm font-medium text-white/90 hover:bg-white/5">
                   {item.q}
@@ -407,23 +458,23 @@ export default function Landing() {
         <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-[#6f2da8] via-fuchsia-500 to-indigo-500 p-8 text-center">
           <div className="mx-auto max-w-2xl">
             <h3 className="text-2xl font-extrabold tracking-tight">
-              Ready to create your own AI friend?
+              {t('landing.cta.title', 'Ready to create your own AI friend?')}
             </h3>
             <p className="mt-2 text-white/90">
-              Register for free and start building an AI companion who listens, supports, and grows with you.
+              {t('landing.cta.subtitle', 'Register for free and start building an AI companion who listens, supports, and grows with you.')}
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
               <a
                 href={routes.placeholder}
                 className="inline-flex items-center gap-2 rounded-2xl bg-neutral-950 px-5 py-3 text-sm font-semibold hover:bg-neutral-900"
               >
-                Sign up free <ArrowRight className="h-4 w-4" />
+                {t('landing.cta.primary', 'Sign up free')} <ArrowRight className="h-4 w-4" />
               </a>
               <a
                 href={routes.placeholder}
                 className="inline-flex items-center gap-2 rounded-2xl border border-white/20 px-5 py-3 text-sm font-semibold hover:bg-white/10"
               >
-                Get the app
+                {t('landing.cta.secondary', 'Get the app')}
               </a>
             </div>
           </div>
@@ -435,12 +486,12 @@ export default function Landing() {
         <Section className="flex flex-col items-center justify-between gap-6 text-sm text-white/50 md:flex-row">
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#6f2da8] text-xs font-bold">AI</div>
-            <span>© {new Date().getFullYear()} AI Pair</span>
+            <span>{t('landing.footer.copyright', `© ${new Date().getFullYear()} AI Pair`)}</span>
           </div>
           <div className="flex items-center gap-6">
-            <a href={routes.privacy} className="hover:text-white">Privacy</a>
-            <a href={routes.terms} className="hover:text-white">Terms</a>
-            <a href={routes.contact} className="hover:text-white">Contact</a>
+            <a href={routes.privacy} className="hover:text-white">{t('landing.footer.privacy', 'Privacy')}</a>
+            <a href={routes.terms} className="hover:text-white">{t('landing.footer.terms', 'Terms')}</a>
+            <a href={routes.contact} className="hover:text-white">{t('landing.footer.contact', 'Contact')}</a>
           </div>
         </Section>
       </footer>
@@ -458,7 +509,7 @@ export default function Landing() {
               type="button"
               onClick={() => uiStore.dismissMobileBanner()}
               variant="mobileClose"
-              aria-label="Dismiss mobile banner"
+              aria-label={t('landing.mobile.dismiss', 'Dismiss mobile banner')}
             >
               <X className="h-4 w-4" />
             </Button>
@@ -466,14 +517,14 @@ export default function Landing() {
               t
             </div>
             <div className="flex flex-1 flex-col text-left">
-              <span className="text-sm font-semibold text-white">Download Talkie</span>
-              <span className="text-xs text-white/60">For full features and a superior experience.</span>
+              <span className="text-sm font-semibold text-white">{t('landing.mobile.title', 'Download Talkie')}</span>
+              <span className="text-xs text-white/60">{t('landing.mobile.subtitle', 'For full features and a superior experience.')}</span>
             </div>
             <a
               href={routes.placeholder}
               className="inline-flex items-center rounded-2xl bg-white px-4 py-2 text-sm font-semibold text-neutral-900 shadow-sm hover:bg-white/90"
             >
-              Get
+              {t('landing.mobile.cta', 'Get')}
             </a>
           </div>
         </div>
