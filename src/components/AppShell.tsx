@@ -10,7 +10,6 @@ import {
     Menu,
     ChevronLeft,
     Home,
-    Search,
     MessageSquare,
     PlusCircle,
     MessagesSquare,
