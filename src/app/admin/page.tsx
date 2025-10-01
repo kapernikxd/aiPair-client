@@ -14,6 +14,17 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "@/localization/TranslationProvider";
 
 const FALLBACK_IMAGE = "/img/noProfile.jpg";
+const UNCATEGORIZED_KEY = "uncategorized";
+const CATEGORY_ORDER = ["language", "romantic", "fun", "useful", "scenario"] as const;
+const CATEGORY_TRANSLATIONS: Record<string, { key: string; fallback: string }> = {
+  language: { key: "admin.categories.language", fallback: "Language" },
+  romantic: { key: "admin.categories.romantic", fallback: "Romantic" },
+  fun: { key: "admin.categories.fun", fallback: "Fun" },
+  useful: { key: "admin.categories.useful", fallback: "Useful" },
+  scenario: { key: "admin.categories.scenario", fallback: "Scenario" },
+};
+
+type Translate = ReturnType<typeof useTranslations>["t"];
 
 const buildImageUrl = (path?: string) => {
   if (!path) {
@@ -32,12 +43,38 @@ const buildImageUrl = (path?: string) => {
   return `${BASE_URL}${normalizedPath}`;
 };
 
+const getCategoryLabel = (
+  categoryKey: string,
+  fallbackLabel: string | undefined,
+  translate: Translate,
+) => {
+  if (categoryKey === UNCATEGORIZED_KEY) {
+    return translate("admin.categories.none", "Uncategorized");
+  }
+
+  const normalizedKey = categoryKey.toLowerCase();
+  const translation = CATEGORY_TRANSLATIONS[normalizedKey];
+
+  if (translation) {
+    return translate(translation.key, translation.fallback);
+  }
+
+  return fallbackLabel || categoryKey;
+};
+
+const getCategoryOrderIndex = (categoryKey: string) => {
+  const normalizedKey = categoryKey.toLowerCase();
+  const index = CATEGORY_ORDER.indexOf(normalizedKey as (typeof CATEGORY_ORDER)[number]);
+
+  return index === -1 ? CATEGORY_ORDER.length : index;
+};
+
 const getCardItems = (
   bots: AiBotMainPageBot[],
   getAiProfile: GetProfile,
   onChatNow?: (botId: string) => void,
   chatLoadingBotId?: string | null,
-  translate?: ReturnType<typeof useTranslations>['t'],
+  translate?: Translate,
 ) =>
   bots.map((bot) => {
     const previewImage = bot.details?.photos?.[0] ?? bot.avatarFile;
@@ -78,19 +115,47 @@ export default function Landing() {
   }, [aiBotStore]);
 
   const groupedBots = useMemo(() => {
-    const result = new Map<string, AiBotMainPageBot[]>();
+    const result = new Map<string, { bots: AiBotMainPageBot[]; originalLabel?: string }>();
 
     bots.forEach((bot) => {
-      const categories = bot.details?.categories?.length ? bot.details.categories : [t('admin.categories.none', 'Uncategorized')];
+      const categories = bot.details?.categories?.length ? bot.details.categories : [UNCATEGORIZED_KEY];
+
       categories.forEach((category) => {
-        const normalizedCategory = category.trim() || t('admin.categories.none', 'Uncategorized');
-        const existing = result.get(normalizedCategory) ?? [];
-        existing.push(bot);
-        result.set(normalizedCategory, existing);
+        const rawCategory = typeof category === "string" ? category : "";
+        const trimmedCategory = rawCategory.trim();
+        const categoryKey = trimmedCategory ? trimmedCategory.toLowerCase() : UNCATEGORIZED_KEY;
+        const existing = result.get(categoryKey);
+
+        if (existing) {
+          existing.bots.push(bot);
+          if (!existing.originalLabel && trimmedCategory) {
+            existing.originalLabel = trimmedCategory;
+          }
+        } else {
+          result.set(categoryKey, {
+            bots: [bot],
+            originalLabel: trimmedCategory || undefined,
+          });
+        }
       });
     });
 
-    return Array.from(result.entries()).sort((a, b) => a[0].localeCompare(b[0], locale));
+    return Array.from(result.entries())
+      .map(([categoryKey, { bots: categoryBots, originalLabel }]) => ({
+        key: categoryKey,
+        label: getCategoryLabel(categoryKey, originalLabel, t),
+        bots: categoryBots,
+      }))
+      .sort((a, b) => {
+        const orderA = getCategoryOrderIndex(a.key);
+        const orderB = getCategoryOrderIndex(b.key);
+
+        if (orderA !== orderB) {
+          return orderA - orderB;
+        }
+
+        return a.label.localeCompare(b.label, locale);
+      });
   }, [bots, locale, t]);
 
   const hasBots = groupedBots.length > 0;
@@ -141,22 +206,22 @@ export default function Landing() {
           )}
 
           {!isLoading && !error &&
-            groupedBots.map(([category, categoryBots], index) => {
+            groupedBots.map(({ key, label, bots: categoryBots }, index) => {
               const cardItems = getCardItems(categoryBots, getAiProfile, handleChatNow, chatLoadingBotId, t);
               const spacing = index === groupedBots.length - 1 ? 40 : 90;
 
               if (cardItems.length > 8) {
                 return (
-                  <React.Fragment key={category}>
-                    <CardRailTwoRows title={category} items={cardItems} className="mx-auto max-w-[1400px]" />
+                  <React.Fragment key={key}>
+                    <CardRailTwoRows title={label} items={cardItems} className="mx-auto max-w-[1400px]" />
                     <Spacer size={spacing} />
                   </React.Fragment>
                 );
               }
 
               return (
-                <React.Fragment key={category}>
-                  <CardRailOneRow title={category} items={cardItems} />
+                <React.Fragment key={key}>
+                  <CardRailOneRow title={label} items={cardItems} />
                   <Spacer size={spacing} />
                 </React.Fragment>
               );
