@@ -91,6 +91,8 @@ registerTranslations('ru', {
   'admin.profile.my.sidebar.title': 'Фильтр AI-агентов',
   'admin.profile.my.sidebar.description': 'Выберите, показывать ли собственные работы или агентов, на которых вы подписаны.',
   'admin.profile.my.editButton': 'Редактировать профиль',
+  'admin.profile.my.editDialog.title': 'Редактирование профиля',
+  'admin.profile.my.editDialog.closeAria': 'Закрыть окно редактирования',
   'admin.profile.card.connections': 'Связи',
   'admin.profile.card.followers': 'Подписчики',
   'admin.profile.card.following': 'Подписки',
