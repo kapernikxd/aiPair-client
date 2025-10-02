@@ -21,7 +21,7 @@ export default class AuthService {
   static async loginByGoogle(
     credential: string
   ): Promise<AxiosResponse<AuthResponseExtend, AuthRejection>> {
-    return $api.post("/auth/loginByGoogle", { credential });
+    return $api.post("/auth/loginByGoogleCode", { credential });
   }
 
   static async loginByApple(
