@@ -87,7 +87,7 @@ const variantStyles: Record<Exclude<ButtonVariant, "gradient">, string> = {
   galleryClose:
     "inline-flex size-8 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition hover:bg-black/80 focus:outline-none focus:ring-2 focus:ring-white/40 group-hover:opacity-100",
   authProvider:
-    "inline-flex w-full items-center justify-center gap-3 rounded-full bg-neutral-800 px-6 py-4 text-lg font-medium text-white ring-1 ring-white/10 transition hover:bg-neutral-700 active:scale-[.995]",
+    "inline-flex w-full items-center justify-center gap-3 rounded-full bg-neutral-800 px-6 py-4 text-lg font-medium text-white ring-1 ring-white/10 transition hover:bg-neutral-700 active:scale-[.995] disabled:cursor-not-allowed disabled:opacity-60",
   subscribe:
     "inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-white ring-1 ring-white/10 bg-gradient-to-r from-fuchsia-400/30 via-pink-400/30 to-purple-400/30 transition hover:from-fuchsia-400/40 hover:to-purple-400/40",
   carouselNav:
