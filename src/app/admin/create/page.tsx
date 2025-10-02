@@ -53,12 +53,13 @@ export default function CreateAiAgentPage() {
 
   const handleAvatarChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] ?? null;
-    aiBotStore.setAvatar(file);
+    void aiBotStore.setAvatar(file);
+    event.currentTarget.value = '';
   };
 
   const handleGalleryChange = (event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
-    aiBotStore.addGalleryItems(files);
+    void aiBotStore.addGalleryItems(files);
     event.currentTarget.value = '';
   };
 
