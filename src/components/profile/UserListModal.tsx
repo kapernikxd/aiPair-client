@@ -2,11 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
+
 import { Button } from "@/components/ui/Button";
 import ModalShell from "./edit/overview/ModalShell";
 import { UserDTO } from "@/helpers/types";
 import { getUserAvatar, getUserFullName, getUsername } from "@/helpers/utils/user";
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 type UserListModalProps = {
   open: boolean;
@@ -28,6 +30,7 @@ export default function UserListModal({
   onLoadMore,
 }: UserListModalProps) {
   const { getProfile } = useAuthRoutes();
+  const { t } = useTranslations();
   return (
     <ModalShell open={open} onBackdrop={onClose}>
       <div className="flex max-h-[70vh] flex-col">
@@ -37,7 +40,7 @@ export default function UserListModal({
             type="button"
             onClick={onClose}
             variant="frostedIconCompact"
-            aria-label="Close"
+            aria-label={t("auth.close", "Close")}
           >
             <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" d="M6 6l12 12M18 6L6 18" />
@@ -47,11 +50,15 @@ export default function UserListModal({
 
         <div className="flex-1 overflow-y-auto px-6 pb-6 sm:px-8">
           {isLoading && users.length === 0 ? (
-            <div className="py-8 text-center text-sm text-white/60">Loading...</div>
+            <div className="py-8 text-center text-sm text-white/60">
+              {t("common.loading", "Loading...")}
+            </div>
           ) : null}
 
           {!isLoading && users.length === 0 ? (
-            <div className="py-8 text-center text-sm text-white/60">No users yet</div>
+            <div className="py-8 text-center text-sm text-white/60">
+              {t("admin.profile.userList.empty", "No users yet")}
+            </div>
           ) : null}
 
           <ul className="space-y-4">
@@ -71,7 +78,7 @@ export default function UserListModal({
                       <div className="relative size-12 overflow-hidden rounded-2xl border border-white/10">
                         <Image
                           src={avatar}
-                          alt={`${fullName} avatar`}
+                          alt={`Аватар пользователя ${fullName}`}
                           fill
                           className="object-cover"
                           sizes="48px"
@@ -98,7 +105,9 @@ export default function UserListModal({
           </ul>
 
           {isLoading && users.length > 0 ? (
-            <div className="py-4 text-center text-sm text-white/60">Loading...</div>
+            <div className="py-4 text-center text-sm text-white/60">
+              {t("common.loading", "Loading...")}
+            </div>
           ) : null}
         </div>
 
@@ -111,7 +120,9 @@ export default function UserListModal({
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? "Loading..." : "Load more"}
+              {isLoading
+                ? t("common.loading", "Loading...")
+                : t("common.loadMore", "Load more")}
             </Button>
           </div>
         ) : null}

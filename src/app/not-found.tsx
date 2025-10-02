@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowLeft, Home } from "lucide-react";
+
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 const GradientBackdrop = () => (
   <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
@@ -12,6 +16,8 @@ const GradientBackdrop = () => (
 );
 
 export default function NotFoundPage() {
+  const { t } = useTranslations();
+
   return (
     <div className="relative flex min-h-screen flex-col bg-neutral-950 text-white">
       <GradientBackdrop />
@@ -21,30 +27,32 @@ export default function NotFoundPage() {
         <Link href="/" className="inline-flex">
           <Button variant="ghostRounded" className="gap-2">
             <ArrowLeft className="h-4 w-4" />
-            Back to safety
+            {t("notFound.back", "Back to home")}
           </Button>
         </Link>
       </header>
 
       <main className="relative mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center px-6 text-center">
         <span className="rounded-full bg-white/5 px-4 py-1 text-sm text-white/70 ring-1 ring-white/10">
-          Oops! The page vanished
+          {t("notFound.badge", "Oops! This page is gone")}
         </span>
 
         <h1 className="mt-6 text-5xl font-semibold tracking-tight sm:text-6xl">
-          404 — Page not found
+          {t("notFound.title", "404 — Page not found")}
         </h1>
 
         <p className="mt-4 max-w-xl text-balance text-base text-white/70 sm:text-lg">
-          The link you followed may be broken, or the page might have been removed.
-          Let&apos;s get you back to exploring AI companions.
+          {t(
+            "notFound.description",
+            "The link may be outdated or the page was removed. Let’s get you back to exploring AI companions.",
+          )}
         </p>
 
         <div className="mt-10 flex flex-col gap-3 sm:flex-row">
           <Link href="/" className="inline-flex">
             <Button variant="primary" className="w-auto gap-2 px-6 py-3">
               <Home className="h-5 w-5" />
-              Go home
+              {t("notFound.actions.home", "Go to homepage")}
             </Button>
           </Link>
           <Link href="/contact" className="inline-flex">
@@ -52,14 +60,14 @@ export default function NotFoundPage() {
               variant="outline"
               className="w-auto gap-2 border-white/20 bg-white/5 text-white hover:bg-white/10"
             >
-              Contact support
+              {t("notFound.actions.support", "Contact support")}
             </Button>
           </Link>
         </div>
       </main>
 
       <footer className="border-t border-white/10 bg-neutral-950/80 px-6 py-6 text-center text-sm text-white/50 backdrop-blur">
-        Need something else? Reach out to our team anytime.
+        {t("notFound.footer", "Need help? Reach out to our team anytime.")}
       </footer>
     </div>
   );

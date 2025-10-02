@@ -1,27 +1,33 @@
 import Link from "next/link";
 import { Check, MessageCircle, Share2, UserPlus } from "lucide-react";
-import { Button } from "@/components/ui/Button";
 
+import { Button } from "@/components/ui/Button";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 export default function ActionButtons({
-    homeHref,
+  homeHref,
 }: {
-    homeHref: string;
+  homeHref: string;
 }) {
-    return (
-        <div className="flex items-center gap-3 self-start md:self-center">
-            <Link href={homeHref} className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm text-white/80 hover:bg-white/10">
-                Discover more
-            </Link>
-            <Button variant="ghostPill">
-                <Share2 className="size-4" /> Share
-            </Button>
+  const { t } = useTranslations();
 
+  return (
+    <div className="flex items-center gap-3 self-start md:self-center">
+      <Link
+        href={homeHref}
+        className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm text-white/80 hover:bg-white/10"
+      >
+        {t("admin.aiAgent.actions.discover", "Discover more")}
+      </Link>
+      <Button variant="ghostPill">
+        <Share2 className="size-4" />
+        {t("admin.aiAgent.actions.share", "Share")}
+      </Button>
 
-            {/* Primary CTA row */}
-            <div className="hidden md:flex" />
-        </div>
-    );
+      {/* Primary CTA row */}
+      <div className="hidden md:flex" />
+    </div>
+  );
 }
 
 
@@ -44,15 +50,18 @@ export function PrimaryCTAs({
   onStartChat,
   isChatLoading,
 }: PrimaryCTAProps) {
+  const { t } = useTranslations();
   const isActionDisabled = disableFollowAction || isBusy || !onToggleFollow;
   const buttonLabel = isBusy
-    ? "Processing..."
+    ? t("admin.aiAgent.actions.follow.processing", "Processing...")
     : isFollowing
-      ? "Subscribed"
-      : "Follow";
+      ? t("admin.aiAgent.actions.follow.subscribed", "Subscribed")
+      : t("admin.aiAgent.actions.follow.follow", "Follow");
   const ButtonIcon = isFollowing ? Check : UserPlus;
   const buttonVariant = isFollowing ? "outline" : "primary";
-  const chatButtonLabel = isChatLoading ? "Opening chat..." : "Chat with aiAgent";
+  const chatButtonLabel = isChatLoading
+    ? t("admin.aiAgent.actions.chat.loading", "Opening chat...")
+    : t("admin.aiAgent.actions.chat.cta", "Chat with aiAgent");
 
   return (
     <div className="flex flex-col gap-3 md:flex-row">
@@ -84,7 +93,8 @@ export function PrimaryCTAs({
           href={chatHref}
           className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/15 px-4 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/5"
         >
-          <MessageCircle className="size-4" /> Chat with aiAgent
+          <MessageCircle className="size-4" />
+          {t("admin.aiAgent.actions.chat.cta", "Chat with aiAgent")}
         </Link>
       )}
     </div>
