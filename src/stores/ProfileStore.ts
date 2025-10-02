@@ -12,7 +12,7 @@ import {
   milestones,
   genderLabels,
   genderOptions as defaultGenderOptions,
-  relationshipOptions as defaultRelationshipOptions,
+  professionOptions as defaultProfessionOptions,
 } from '@/helpers/data/profile';
 
 export type PublicProfile = {
@@ -51,7 +51,7 @@ export class ProfileStore extends BaseStore {
   milestones = [...milestones];
   genderLabels = { ...genderLabels };
   genderOptions = [...defaultGenderOptions];
-  relationshipOptions = [...defaultRelationshipOptions];
+  professionOptions = [...defaultProfessionOptions];
 
   constructor(root: RootStore) {
     super();

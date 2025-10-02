@@ -51,5 +51,5 @@ export type EditableProfile = {
   userName: string;
   gender: string;
   intro: string;
-  relationshipPreference: string;
+  profession: string;
 };

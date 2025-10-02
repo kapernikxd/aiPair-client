@@ -8,7 +8,7 @@ import HeroRow from "./overview/HeroRow";
 import NameField from "./overview/NameField";
 import GenderGroup from "./overview/GenderGroup";
 import IntroField from "./overview/IntroField";
-import RelationshipField from "./overview/RelationshipField";
+import ProfessionField from "./overview/ProfessionField";
 import Notice from "./overview/Notice";
 import FormActions from "./overview/FormActions";
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
@@ -27,7 +27,7 @@ type Props = {
 export default function EditProfileDialog({ open, profile, onClose, onSave }: Props) {
   const { profileStore } = useRootStore();
   const genderOptions = useStoreData(profileStore, (store) => store.genderOptions);
-  const relationshipOptions = useStoreData(profileStore, (store) => store.relationshipOptions);
+  const professionOptions = useStoreData(profileStore, (store) => store.professionOptions);
 
   const [formState, setFormState] = useState<MyProfileDTO>(profile);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -155,13 +155,13 @@ export default function EditProfileDialog({ open, profile, onClose, onSave }: Pr
     }
   };
 
-  const relationshipChoices = useMemo(() => {
-    const baseOptions = [...relationshipOptions];
+  const professionChoices = useMemo(() => {
+    const baseOptions = [...professionOptions];
     if (formState.profession && !baseOptions.includes(formState.profession)) {
       baseOptions.push(formState.profession);
     }
     return baseOptions;
-  }, [relationshipOptions, formState.profession]);
+  }, [professionOptions, formState.profession]);
 
   return (
     <ModalShell open={open} onBackdrop={onClose}>
@@ -198,10 +198,10 @@ export default function EditProfileDialog({ open, profile, onClose, onSave }: Pr
             onChange={(val) => setFormState((s) => ({ ...s, userBio: val }))}
           />
 
-          <RelationshipField
-            value={formState.profession || relationshipChoices[0] || ""}
+          <ProfessionField
+            value={formState.profession || professionChoices[0] || ""}
             onChange={(val) => setFormState((s) => ({ ...s, profession: val }))}
-            options={relationshipChoices}
+            options={professionChoices}
           />
 
           <Notice />
