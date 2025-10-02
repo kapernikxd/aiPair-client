@@ -23,9 +23,17 @@ export default function HeroRow({
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const input = event.currentTarget;
+    const file = input.files?.[0];
+
     if (file && onAvatarSelect) {
-      void onAvatarSelect(file);
+      const pending = onAvatarSelect(file);
+      Promise.resolve(pending).finally(() => {
+        if (inputRef.current) {
+          inputRef.current.value = "";
+        }
+      });
+      return;
     }
 
     // allow selecting the same file again

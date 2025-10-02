@@ -178,7 +178,8 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
   const handleGalleryUpload: ChangeEventHandler<HTMLInputElement> = (event) => {
     if (!aiAgent) return;
 
-    const files = Array.from(event.target.files ?? []);
+    const input = event.currentTarget;
+    const files = Array.from(input.files ?? []);
     if (!files.length) return;
 
     const remaining = Math.max(0, maxGalleryItems - botPhotos.length);
@@ -190,8 +191,10 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
       formData.append("photos", file, file.name);
     });
 
-    void aiBotStore.addBotPhotos(aiAgent._id, formData);
-    event.currentTarget.value = "";
+    const pending = aiBotStore.addBotPhotos(aiAgent._id, formData);
+    pending.finally(() => {
+      input.value = "";
+    });
   };
 
   const handleRemovePhoto = (url: string) => {
