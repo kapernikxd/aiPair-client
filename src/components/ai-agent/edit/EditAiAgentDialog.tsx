@@ -478,7 +478,9 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
             </h3>
 
             <div className="rounded-3xl border border-dashed border-white/15 bg-white/[0.04] p-6 text-center text-sm text-white/70">
-              <label className={`flex cursor-pointer flex-col items-center justify-center gap-3 ${!canUploadPhotos ? "pointer-events-none opacity-50" : ""}`}>
+              <label
+                className={`relative flex cursor-pointer flex-col items-center justify-center gap-3 ${!canUploadPhotos ? "pointer-events-none opacity-50" : ""}`}
+              >
                 <ImagePlus className="size-6 text-violet-300" />
                 <span className="font-medium text-white">Upload gallery</span>
                 <span className="text-xs text-white/60">Drop multiple images or pick from your library</span>
@@ -486,7 +488,7 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
                   type="file"
                   accept="image/*"
                   multiple
-                  className="hidden"
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                   disabled={!canUploadPhotos}
                   onChange={handleGalleryUpload}
                 />

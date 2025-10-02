@@ -51,7 +51,7 @@ export default function IdentityStep({
               <Upload className="size-8 text-white/40" />
             )}
           </div>
-          <label className="flex flex-1 cursor-pointer flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-white/20 bg-white/5 p-6 text-center text-sm text-white/70 transition hover:border-violet-400/60 hover:bg-violet-500/10">
+          <label className="relative flex flex-1 cursor-pointer flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-white/20 bg-white/5 p-6 text-center text-sm text-white/70 transition hover:border-violet-400/60 hover:bg-violet-500/10">
             <Upload className="size-5 text-violet-300" />
             <span className="font-medium text-white">
               {t("admin.create.identity.upload", "Upload image")}
@@ -59,7 +59,12 @@ export default function IdentityStep({
             <span className="text-xs text-white/60">
               {t("admin.create.identity.uploadHint", "PNG, JPG up to 5MB")}
             </span>
-            <input type="file" accept="image/*" className="hidden" onChange={onAvatarChange} />
+            <input
+              type="file"
+              accept="image/*"
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+              onChange={onAvatarChange}
+            />
           </label>
         </div>
       </div>

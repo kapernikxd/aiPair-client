@@ -56,7 +56,7 @@ export default function HeroRow({
             ref={inputRef}
             type="file"
             accept="image/*"
-            className="hidden"
+            className="sr-only"
             onChange={handleFileChange}
           />
 

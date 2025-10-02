@@ -33,7 +33,7 @@ export default function MediaKitStep({
       </div>
 
       <div className="rounded-3xl border border-dashed border-white/15 bg-neutral-900/60 p-6 text-center text-sm text-white/70">
-        <label className="flex cursor-pointer flex-col items-center justify-center gap-3">
+        <label className="relative flex cursor-pointer flex-col items-center justify-center gap-3">
           <ImagePlus className="size-6 text-violet-300" />
           <span className="font-medium text-white">
             {t("admin.create.media.upload", "Upload gallery")}
@@ -44,7 +44,13 @@ export default function MediaKitStep({
               "Drop multiple images or pick from your library",
             )}
           </span>
-          <input type="file" accept="image/*" multiple className="hidden" onChange={onAdd} />
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+            onChange={onAdd}
+          />
         </label>
       </div>
 
