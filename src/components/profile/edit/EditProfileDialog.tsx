@@ -16,6 +16,7 @@ import { MyProfileDTO } from "@/helpers/types";
 import LastNameField from "./overview/LastNameField";
 import { getUserAvatar } from "@/helpers/utils/user";
 import { UpdateProfileProps } from "@/helpers/types/profile";
+import { createImagePreview, revokeIfNeeded } from "@/helpers/utils/agent-create";
 
 type Props = {
   open: boolean;
@@ -51,7 +52,7 @@ export default function EditProfileDialog({ open, profile, onClose, onSave }: Pr
 
     setTempUrl((prev) => {
       if (prev) {
-        URL.revokeObjectURL(prev);
+        revokeIfNeeded(prev);
       }
       return null;
     });
@@ -61,7 +62,7 @@ export default function EditProfileDialog({ open, profile, onClose, onSave }: Pr
   useEffect(() => {
     return () => {
       if (tempUrl) {
-        URL.revokeObjectURL(tempUrl);
+        revokeIfNeeded(tempUrl);
       }
     };
   }, [tempUrl]);
@@ -76,21 +77,26 @@ export default function EditProfileDialog({ open, profile, onClose, onSave }: Pr
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open, onClose]);
 
-  const handleAvatarSelect = (file: File) => {
+  const handleAvatarSelect = async (file: File) => {
     if (tempUrl) {
-      URL.revokeObjectURL(tempUrl);
+      revokeIfNeeded(tempUrl);
+      setTempUrl(null);
     }
 
-    const objectUrl = URL.createObjectURL(file);
-    setAvatarFile(file);
-    setAvatarPreview(objectUrl);
-    setShouldRemoveAvatar(false);
-    setTempUrl(objectUrl);
+    try {
+      const preview = await createImagePreview(file);
+      setAvatarFile(file);
+      setAvatarPreview(preview);
+      setShouldRemoveAvatar(false);
+      setTempUrl(preview.startsWith("blob:") ? preview : null);
+    } catch (error) {
+      console.error("Failed to prepare avatar preview", error);
+    }
   };
 
   const handleAvatarRemove = () => {
     if (tempUrl) {
-      URL.revokeObjectURL(tempUrl);
+      revokeIfNeeded(tempUrl);
       setTempUrl(null);
     }
 
