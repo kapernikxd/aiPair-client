@@ -6,7 +6,7 @@ export default function OpeningsList({ openings }: { openings: Opening[] }) {
     return (
         <section>
             <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-white/60">
-                <Clock className="size-4 text-violet-300" /> Openings
+                <Clock className="size-4 text-violet-300" /> Начало диалога
             </h3>
             <div className="mt-4 space-y-3">
                 {openings.map((o) => (

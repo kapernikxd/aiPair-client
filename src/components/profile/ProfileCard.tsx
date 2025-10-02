@@ -2,10 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+
 import { MyProfileDTO, ProfileDTO } from "@/helpers/types";
 import { getUserAvatar, getUserFullName } from "@/helpers/utils/user";
 import { getMonthYear, getTimeAgo } from "@/helpers/utils/date";
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
+import { useTranslations } from "@/localization/TranslationProvider";
+
 import UserListModal from "./UserListModal";
 import TruncatedReveal from "../ui/TruncatedReveal";
 
@@ -111,6 +114,8 @@ export default function ProfileCard({ profile, genderLabel, isCurrentUser = fals
         }
     };
 
+    const { t } = useTranslations();
+
     return (
         <>
             <div className="rounded-3xl border border-white/10 bg-white/5 p-1 md:p-8 backdrop-blur">
@@ -119,7 +124,7 @@ export default function ProfileCard({ profile, genderLabel, isCurrentUser = fals
                         <div className="relative size-24 shrink-0 overflow-hidden rounded-3xl border border-white/15">
                             <Image
                                 src={profileAvatar}
-                                alt={`${userFullName} portrait`}
+                                alt={`Портрет ${userFullName}`}
                                 fill
                                 className="object-cover"
                                 sizes="(max-width: 768px) 96px, 150px"
@@ -141,7 +146,9 @@ export default function ProfileCard({ profile, genderLabel, isCurrentUser = fals
                         </div>
                     </div>
                     <div>
-                        <p className="text-xs uppercase tracking-wide text-white/40">Connections</p>
+                        <p className="text-xs uppercase tracking-wide text-white/40">
+                            {t("admin.profile.card.connections", "Connections")}
+                        </p>
                         <div className="mt-3 grid grid-cols-2 md:grid-cols-1 gap-3">
                             <button
                                 type="button"
@@ -149,7 +156,9 @@ export default function ProfileCard({ profile, genderLabel, isCurrentUser = fals
                                 className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left transition hover:bg-white/10"
                             >
                                 <p className="text-2xl font-semibold text-white">{followerCount}</p>
-                                <p className="text-xs uppercase tracking-wide text-white/50">Followers</p>
+                                <p className="text-xs uppercase tracking-wide text-white/50">
+                                    {t("admin.profile.card.followers", "Followers")}
+                                </p>
                             </button>
                             <button
                                 type="button"
@@ -157,21 +166,29 @@ export default function ProfileCard({ profile, genderLabel, isCurrentUser = fals
                                 className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left transition hover:bg-white/10"
                             >
                                 <p className="text-2xl font-semibold text-white">{followingCount}</p>
-                                <p className="text-xs uppercase tracking-wide text-white/50">Following</p>
+                                <p className="text-xs uppercase tracking-wide text-white/50">
+                                    {t("admin.profile.card.following", "Following")}
+                                </p>
                             </button>
                         </div>
                     </div>
                     <div className="grid w-full max-w-xs gap-4 rounded-2xl border border-white/10 bg-neutral-900/80 p-5 text-sm text-white/70">
                         <div>
-                            <p className="text-xs uppercase tracking-wide text-white/40">Membership</p>
+                            <p className="text-xs uppercase tracking-wide text-white/40">
+                                {t("admin.profile.card.membership", "Membership")}
+                            </p>
                             <p className="mt-1 font-medium text-white">{profile?.role}</p>
                         </div>
                         <div>
-                            <p className="text-xs uppercase tracking-wide text-white/40">Joined</p>
+                            <p className="text-xs uppercase tracking-wide text-white/40">
+                                {t("admin.profile.card.joined", "Joined")}
+                            </p>
                             <p className="mt-1">{getMonthYear(profile?.createdAt)}</p>
                         </div>
                         <div>
-                            <p className="text-xs uppercase tracking-wide text-white/40">Last updated</p>
+                            <p className="text-xs uppercase tracking-wide text-white/40">
+                                {t("admin.profile.card.updated", "Last updated")}
+                            </p>
                             <p className="mt-1">{getTimeAgo(profile?.updatedAt)}</p>
                         </div>
                     </div>
@@ -180,7 +197,10 @@ export default function ProfileCard({ profile, genderLabel, isCurrentUser = fals
 
             <UserListModal
                 open={activeModal !== null}
-                title={activeModal === "followers" ? "Followers" : "Following"}
+                title=
+                    {activeModal === "followers"
+                        ? t("admin.profile.card.modal.followers", "Followers")
+                        : t("admin.profile.card.modal.following", "Following")}
                 users={activeUsers}
                 isLoading={Boolean(activeModal) && modalState.isLoading}
                 hasMore={Boolean(activeModal) && modalState.hasMore}

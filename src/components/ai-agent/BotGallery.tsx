@@ -4,12 +4,15 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
+import { useTranslations } from "@/localization/TranslationProvider";
+
 interface BotGalleryProps {
   photos: string[];
   isLoading: boolean;
 }
 
 export default function BotGallery({ photos, isLoading }: BotGalleryProps) {
+  const { t } = useTranslations();
   const hasPhotos = photos.length > 0;
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
@@ -79,10 +82,12 @@ export default function BotGallery({ photos, isLoading }: BotGalleryProps) {
   return (
     <section>
       <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-white/60">
-        Gallery
+        {t("admin.aiAgent.gallery.title", "Gallery")}
       </h3>
       {isLoading && !hasPhotos ? (
-        <p className="mt-3 text-sm text-white/60">Loading gallery…</p>
+        <p className="mt-3 text-sm text-white/60">
+          {t("admin.aiAgent.gallery.loading", "Loading gallery…")}
+        </p>
       ) : hasPhotos ? (
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {photos.map((photo, index) => (
@@ -94,7 +99,7 @@ export default function BotGallery({ photos, isLoading }: BotGalleryProps) {
             >
               <Image
                 src={photo}
-                alt="Agent gallery image"
+                alt={t("admin.aiAgent.gallery.imageAlt", "Agent gallery image")}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 sizes="(max-width: 640px) 100vw, 300px"
@@ -104,14 +109,16 @@ export default function BotGallery({ photos, isLoading }: BotGalleryProps) {
           ))}
         </div>
       ) : (
-        <p className="mt-3 text-sm text-white/60">No gallery images yet.</p>
+        <p className="mt-3 text-sm text-white/60">
+          {t("admin.aiAgent.gallery.empty", "No gallery images yet.")}
+        </p>
       )}
 
       {activePhoto && (
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="Agent gallery preview"
+          aria-label={t("admin.aiAgent.gallery.previewAria", "Agent gallery preview")}
           className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 px-4 py-10"
           onClick={(event) => {
             if (event.target === event.currentTarget) {
@@ -124,7 +131,7 @@ export default function BotGallery({ photos, isLoading }: BotGalleryProps) {
               type="button"
               onClick={closeViewer}
               className="self-end rounded-full border border-white/10 bg-white/10 p-2 text-white transition hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-              aria-label="Close gallery preview"
+              aria-label={t("admin.aiAgent.gallery.closeAria", "Close gallery preview")}
             >
               <X className="h-5 w-5" />
             </button>
@@ -135,7 +142,7 @@ export default function BotGallery({ photos, isLoading }: BotGalleryProps) {
                   type="button"
                   onClick={showPrev}
                   className="absolute left-0 top-1/2 -translate-y-1/2 rounded-full border border-white/10 bg-white/10 p-3 text-white transition hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-                  aria-label="Show previous image"
+                  aria-label={t("admin.aiAgent.gallery.prevAria", "Show previous image")}
                 >
                   <ChevronLeft className="h-5 w-5" />
                 </button>
@@ -144,7 +151,7 @@ export default function BotGallery({ photos, isLoading }: BotGalleryProps) {
               <div className="relative h-full max-h-[75vh] w-full overflow-hidden rounded-3xl border border-white/10 bg-black/40">
                 <Image
                   src={activePhoto}
-                  alt="Agent gallery image enlarged"
+                  alt={t("admin.aiAgent.gallery.expandedAlt", "Agent gallery image enlarged")}
                   fill
                   className="object-contain"
                   sizes="(max-width: 768px) 100vw, 800px"
@@ -157,7 +164,7 @@ export default function BotGallery({ photos, isLoading }: BotGalleryProps) {
                   type="button"
                   onClick={showNext}
                   className="absolute right-0 top-1/2 -translate-y-1/2 rounded-full border border-white/10 bg-white/10 p-3 text-white transition hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-                  aria-label="Show next image"
+                  aria-label={t("admin.aiAgent.gallery.nextAria", "Show next image")}
                 >
                   <ChevronRight className="h-5 w-5" />
                 </button>
