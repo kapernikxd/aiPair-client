@@ -87,6 +87,7 @@ export default function Landing() {
   const router = useRouter();
   const [chatLoadingBotId, setChatLoadingBotId] = useState<string | null>(null);
   const { t, tList } = useTranslations();
+  const [isPlusUnavailableOpen, setIsPlusUnavailableOpen] = useState(false);
 
   useEffect(() => {
     if (aiBotStore.mainPageBots.length === 0 && !aiBotStore.isLoadingMainPageBots) {
@@ -420,6 +421,7 @@ export default function Landing() {
             ]}
             cta={t('landing.pricing.plus.cta', 'Upgrade')}
             href={routes.landingCta}
+            onClick={() => setIsPlusUnavailableOpen(true)}
           />
           <Plan
             name={t('landing.pricing.pro.name', 'Pro')}
@@ -436,6 +438,42 @@ export default function Landing() {
           />
         </div>
       </Section>
+
+      {isPlusUnavailableOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4"
+          onClick={() => setIsPlusUnavailableOpen(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="relative w-full max-w-md rounded-2xl border border-white/10 bg-neutral-900 p-6 text-center text-white shadow-xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setIsPlusUnavailableOpen(false)}
+              className="absolute right-3 top-3 rounded-full p-1 text-white/60 transition hover:bg-white/10 hover:text-white"
+              aria-label={t('landing.pricing.plus.close', 'Close notification')}
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <h3 className="text-lg font-semibold">{t('landing.pricing.plus.unavailableTitle', 'Тариф Plus временно недоступен')}</h3>
+            <p className="mt-3 text-sm text-white/70">
+              {t(
+                'landing.pricing.plus.unavailableDescription',
+                'Чтобы перейти на тариф, напишите нам на почту info@aipair.pro.'
+              )}
+            </p>
+            <a
+              href="mailto:info@aipair.pro"
+              className="mt-5 inline-flex items-center justify-center rounded-xl bg-white px-4 py-2 text-sm font-semibold text-neutral-900 transition hover:bg-white/90"
+            >
+              info@aipair.pro
+            </a>
+          </div>
+        </div>
+      )}
 
       {/* FAQ */}
       <Section id="faq" className="py-16">
@@ -556,6 +594,7 @@ function Plan({
   cta,
   highlight,
   href,
+  onClick,
 }: {
   name: string;
   price: string;
@@ -563,6 +602,7 @@ function Plan({
   cta: string;
   highlight?: boolean;
   href: string;
+  onClick?: () => void;
 }) {
   return (
     <div
@@ -601,6 +641,12 @@ function Plan({
           ? "bg-[#6f2da8] text-white hover:opacity-90"
           : "border border-white/15 text-white hover:bg-white/5"
           }`}
+        onClick={(event) => {
+          if (onClick) {
+            event.preventDefault();
+            onClick();
+          }
+        }}
       >
         {cta}
       </a>
