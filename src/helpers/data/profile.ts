@@ -3,11 +3,12 @@ export const genderOptions = [
   { value: "FEMALE", label: "Female" },
 ] as const;
 
-export const relationshipOptions: string[] = [
-  "View your relationship preference",
-  "Open to exploring",
-  "Looking for long-term",
-  "Here for friendship",
+export const professionOptions: string[] = [
+  "Выберите ваш род занятий",
+  "Обучаюсь",
+  "Студент",
+  "Работаю",
+  "Запускаю собственный проект",
 ] as const;
 
 
@@ -30,7 +31,7 @@ export const initialProfile = {
     userName: "Vadim Stepanov",
     gender: "MALE",
     intro: "AI product designer exploring the edges of digital companions.",
-    relationshipPreference: "View your relationship preference",
+    profession: "Выберите ваш род занятий",
 };
 
 

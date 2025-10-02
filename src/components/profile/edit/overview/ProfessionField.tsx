@@ -1,6 +1,6 @@
 "use client";
 
-export default function RelationshipField({
+export default function ProfessionField({
   value,
   onChange,
   options,
@@ -12,7 +12,7 @@ export default function RelationshipField({
   return (
     <label className="block space-y-2">
       <span className="text-xs font-medium uppercase tracking-wide text-neutral-400">
-        Relationship Preference
+        Profession
       </span>
       <div className="relative">
         <select
