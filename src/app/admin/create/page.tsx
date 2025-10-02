@@ -1,6 +1,5 @@
 'use client';
 
-import type { ChangeEvent } from 'react';
 import { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { AlertCircle, CheckCircle2, Sparkles } from 'lucide-react';
@@ -51,24 +50,14 @@ export default function CreateAiAgentPage() {
 
   useEffect(() => () => aiBotStore.dispose(), [aiBotStore]);
 
-  const handleAvatarChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const input = event.currentTarget;
-    const file = input.files?.[0] ?? null;
-
+  const handleAvatarChange = (files: File[]) => {
+    const file = files[0] ?? null;
     const upload = aiBotStore.setAvatar(file);
-    upload.finally(() => {
-      input.value = '';
-    });
+    void upload;
   };
 
-  const handleGalleryChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const input = event.currentTarget;
-    const files = Array.from(input.files ?? []);
-
-    const upload = aiBotStore.addGalleryItems(files);
-    upload.finally(() => {
-      input.value = '';
-    });
+  const handleGalleryChange = (files: File[]) => {
+    void aiBotStore.addGalleryItems(files);
   };
 
   const removeGalleryItem = (id: string) => {

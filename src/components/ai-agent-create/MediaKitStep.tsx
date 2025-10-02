@@ -5,6 +5,7 @@ import { ImagePlus, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { GalleryItem } from "../../helpers/types/agent-create";
 import { useTranslations } from "@/localization/TranslationProvider";
+import { useImageUploader } from "@/helpers/hooks/useImageUploader";
 
 export default function MediaKitStep({
   gallery,
@@ -14,10 +15,19 @@ export default function MediaKitStep({
 }: {
   gallery: GalleryItem[];
   maxItems: number;
-  onAdd: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onAdd: (files: File[]) => void;
   onRemove: (id: string) => void;
 }) {
   const { t } = useTranslations();
+  const remainingSlots = Math.max(0, maxItems - gallery.length);
+  const canUpload = remainingSlots > 0;
+  const { getRootProps, getInputProps, isDragActive } = useImageUploader({
+    onFiles: onAdd,
+    multiple: true,
+    maxFiles: remainingSlots,
+    enableCameraCapture: true,
+    disableClick: !canUpload,
+  });
   return (
     <div className="space-y-6">
       <div>
@@ -32,8 +42,14 @@ export default function MediaKitStep({
         </p>
       </div>
 
-      <div className="rounded-3xl border border-dashed border-white/15 bg-neutral-900/60 p-6 text-center text-sm text-white/70">
-        <label className="relative flex cursor-pointer flex-col items-center justify-center gap-3">
+      <div
+        {...getRootProps({
+          className: `relative rounded-3xl border border-dashed bg-neutral-900/60 p-6 text-center text-sm text-white/70 ${
+            canUpload ? "cursor-pointer" : "pointer-events-none opacity-60"
+          } ${isDragActive ? "border-violet-400/60 bg-violet-500/10" : "border-white/15"}`,
+        })}
+      >
+        <div className="relative flex flex-col items-center justify-center gap-3">
           <ImagePlus className="size-6 text-violet-300" />
           <span className="font-medium text-white">
             {t("admin.create.media.upload", "Upload gallery")}
@@ -44,14 +60,13 @@ export default function MediaKitStep({
               "Drop multiple images or pick from your library",
             )}
           </span>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-            onChange={onAdd}
-          />
-        </label>
+        </div>
+        <input
+          {...getInputProps({
+            className: "absolute inset-0 h-full w-full cursor-pointer opacity-0",
+            disabled: !canUpload,
+          })}
+        />
       </div>
 
       {gallery.length >= maxItems && (

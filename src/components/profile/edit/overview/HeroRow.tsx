@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { ChangeEvent, useRef } from "react";
+import { useCallback } from "react";
+import { useImageUploader } from "@/helpers/hooks/useImageUploader";
 
 type Props = {
   userName?: string;
@@ -20,33 +21,32 @@ export default function HeroRow({
   canRemoveAvatar,
   description = "Update your personal details to help others know you better.",
 }: Props) {
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const handleFiles = useCallback(
+    (files: File[]) => {
+      if (!files.length || !onAvatarSelect) return;
+      const pending = onAvatarSelect(files[0]);
+      void Promise.resolve(pending);
+    },
+    [onAvatarSelect],
+  );
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const input = event.currentTarget;
-    const file = input.files?.[0];
-
-    if (file && onAvatarSelect) {
-      const pending = onAvatarSelect(file);
-      Promise.resolve(pending).finally(() => {
-        if (inputRef.current) {
-          inputRef.current.value = "";
-        }
-      });
-      return;
-    }
-
-    // allow selecting the same file again
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    }
-  };
+  const { getRootProps, getInputProps, open, isDragActive } = useImageUploader({
+    onFiles: handleFiles,
+    enableCameraCapture: true,
+  });
 
   return (
     <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
       <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-4">
         <div className="relative">
-          <div className="relative left-[26px] flex size-20 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-orange-400 to-red-500 text-2xl font-semibold">
+          <div
+            {...getRootProps({
+              className: `relative left-[26px] flex size-20 items-center justify-center overflow-hidden rounded-2xl border bg-gradient-to-br from-orange-400 to-red-500 text-2xl font-semibold ${
+                isDragActive ? "border-white/40" : "border-white/10"
+              }`,
+            })}
+          >
+            <input {...getInputProps({ className: "sr-only" })} />
             {avatarUrl ? (
               <Image
                 src={avatarUrl}
@@ -60,18 +60,10 @@ export default function HeroRow({
             )}
           </div>
 
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/*"
-            className="sr-only"
-            onChange={handleFileChange}
-          />
-
           <div className="mt-2 grid gap-2 sm:grid-cols-1">
             <button
               type="button"
-              onClick={() => inputRef.current?.click()}
+              onClick={open}
               className="w-full rounded-2xl border border-white/15 bg-white/5 px-4 py-2 text-xs font-medium uppercase tracking-wide text-white/80 transition hover:bg-white/10"
             >
               Change photo

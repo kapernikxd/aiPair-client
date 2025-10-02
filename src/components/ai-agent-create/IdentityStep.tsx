@@ -4,13 +4,14 @@
 import { Upload } from "lucide-react";
 import { FormState } from "../../helpers/types/agent-create";
 import { useTranslations } from "@/localization/TranslationProvider";
+import { useImageUploader } from "@/helpers/hooks/useImageUploader";
 
 type IdentityForm = Pick<FormState, "firstName" | "lastName">;
 
 type IdentityStepProps = {
   form: IdentityForm;
   avatarPreview: string | null;
-  onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onAvatarChange: (files: File[]) => void;
   onChange: <K extends keyof IdentityForm>(field: K, value: IdentityForm[K]) => void;
 };
 
@@ -21,6 +22,10 @@ export default function IdentityStep({
   onChange,
 }: IdentityStepProps) {
   const { t } = useTranslations();
+  const { getRootProps, getInputProps, isDragActive } = useImageUploader({
+    onFiles: onAvatarChange,
+    enableCameraCapture: true,
+  });
   return (
     <div className="space-y-6">
       <div>
@@ -51,7 +56,13 @@ export default function IdentityStep({
               <Upload className="size-8 text-white/40" />
             )}
           </div>
-          <label className="relative flex flex-1 cursor-pointer flex-col items-center justify-center gap-3 rounded-3xl border border-dashed border-white/20 bg-white/5 p-6 text-center text-sm text-white/70 transition hover:border-violet-400/60 hover:bg-violet-500/10">
+          <div
+            {...getRootProps({
+              className: `relative flex flex-1 cursor-pointer flex-col items-center justify-center gap-3 rounded-3xl border border-dashed bg-white/5 p-6 text-center text-sm text-white/70 transition hover:border-violet-400/60 hover:bg-violet-500/10 ${
+                isDragActive ? "border-violet-400/60 bg-violet-500/10" : "border-white/20"
+              }`,
+            })}
+          >
             <Upload className="size-5 text-violet-300" />
             <span className="font-medium text-white">
               {t("admin.create.identity.upload", "Upload image")}
@@ -60,12 +71,11 @@ export default function IdentityStep({
               {t("admin.create.identity.uploadHint", "PNG, JPG up to 5MB")}
             </span>
             <input
-              type="file"
-              accept="image/*"
-              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-              onChange={onAvatarChange}
+              {...getInputProps({
+                className: "absolute inset-0 h-full w-full cursor-pointer opacity-0",
+              })}
             />
-          </label>
+          </div>
         </div>
       </div>
 

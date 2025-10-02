@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { ChangeEventHandler, FormEventHandler, KeyboardEvent } from "react";
+import type { FormEventHandler, KeyboardEvent } from "react";
 import { ImagePlus, X } from "lucide-react";
 
 import ModalShell from "@/components/profile/edit/overview/ModalShell";
@@ -9,6 +9,7 @@ import DialogHeader from "@/components/profile/edit/overview/DialogHeader";
 import HeroRow from "@/components/profile/edit/overview/HeroRow";
 import FormActions from "@/components/profile/edit/overview/FormActions";
 import { Button } from "@/components/ui/Button";
+import { useImageUploader } from "@/helpers/hooks/useImageUploader";
 
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import type { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
@@ -175,26 +176,21 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
     }
   };
 
-  const handleGalleryUpload: ChangeEventHandler<HTMLInputElement> = (event) => {
-    if (!aiAgent) return;
-
-    const input = event.currentTarget;
-    const files = Array.from(input.files ?? []);
-    if (!files.length) return;
+  const handleGalleryUpload = (files: File[]) => {
+    if (!aiAgent || !files.length) return;
 
     const remaining = Math.max(0, maxGalleryItems - botPhotos.length);
     if (remaining === 0) return;
 
     const allowed = files.slice(0, remaining);
+    if (!allowed.length) return;
+
     const formData = new FormData();
     allowed.forEach((file) => {
       formData.append("photos", file, file.name);
     });
 
-    const pending = aiBotStore.addBotPhotos(aiAgent._id, formData);
-    pending.finally(() => {
-      input.value = "";
-    });
+    void aiBotStore.addBotPhotos(aiAgent._id, formData);
   };
 
   const handleRemovePhoto = (url: string) => {
@@ -291,6 +287,17 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
 
   const remainingGallerySlots = Math.max(0, maxGalleryItems - botPhotos.length);
   const canUploadPhotos = remainingGallerySlots > 0 && !photosUpdating;
+  const {
+    getRootProps: getGalleryRootProps,
+    getInputProps: getGalleryInputProps,
+    isDragActive: isGalleryDragActive,
+  } = useImageUploader({
+    onFiles: handleGalleryUpload,
+    multiple: true,
+    maxFiles: remainingGallerySlots,
+    enableCameraCapture: true,
+    disableClick: !canUploadPhotos,
+  });
 
   return (
     <ModalShell open={open} onBackdrop={onClose}>
@@ -488,22 +495,24 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
               Media kit
             </h3>
 
-            <div className="rounded-3xl border border-dashed border-white/15 bg-white/[0.04] p-6 text-center text-sm text-white/70">
-              <label
-                className={`relative flex cursor-pointer flex-col items-center justify-center gap-3 ${!canUploadPhotos ? "pointer-events-none opacity-50" : ""}`}
-              >
+            <div
+              {...getGalleryRootProps({
+                className: `relative rounded-3xl border border-dashed bg-white/[0.04] p-6 text-center text-sm text-white/70 ${
+                  canUploadPhotos ? "cursor-pointer" : "pointer-events-none opacity-50"
+                } ${isGalleryDragActive ? "border-violet-400/60 bg-violet-500/10" : "border-white/15"}`,
+              })}
+            >
+              <div className="relative flex flex-col items-center justify-center gap-3">
                 <ImagePlus className="size-6 text-violet-300" />
                 <span className="font-medium text-white">Upload gallery</span>
                 <span className="text-xs text-white/60">Drop multiple images or pick from your library</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                  disabled={!canUploadPhotos}
-                  onChange={handleGalleryUpload}
-                />
-              </label>
+              </div>
+              <input
+                {...getGalleryInputProps({
+                  className: "absolute inset-0 h-full w-full cursor-pointer opacity-0",
+                  disabled: !canUploadPhotos,
+                })}
+              />
               {!canUploadPhotos && remainingGallerySlots === 0 && (
                 <p className="mt-4 text-xs text-white/50">
                   You&rsquo;ve reached the {maxGalleryItems}-image limit. Remove an image to upload new ones.
