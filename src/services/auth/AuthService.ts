@@ -27,7 +27,7 @@ export default class AuthService {
   static async loginByApple(
     identityToken: string
   ): Promise<AxiosResponse<AuthResponseExtend, AuthRejection>> {
-    return $api.post("/auth/loginByApple", { identityToken });
+    return $api.post("/auth/loginByAppleCode", { identityToken });
   }
 
   static async registration(

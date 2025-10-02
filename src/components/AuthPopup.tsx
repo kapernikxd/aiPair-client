@@ -11,10 +11,55 @@ import EmailAuthPopup from './EmailAuthPopup';
 import { useTranslations } from '@/localization/TranslationProvider';
 import { useRootStore } from '@/stores/StoreProvider';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare global { interface Window { AppleID?: any } }
+
+const APPLE_JS = 'https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js';
+
+export function AppleLoginButton({ onClose }: { onClose: () => void }) {
+  const { authStore } = useRootStore();
+  const { goToAdmin } = useAuthRoutes();
+  const { t } = useTranslations();
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    if (window.AppleID) { setReady(true); return; }
+    const s = document.createElement('script');
+    s.src = APPLE_JS; s.async = true; s.onload = () => {
+      window.AppleID.auth.init({
+        clientId: process.env.NEXT_PUBLIC_APPLE_CLIENT_ID!,         // Services ID (…web)
+        scope: 'name email',
+        redirectURI: process.env.NEXT_PUBLIC_APPLE_REDIRECT_URI!,   // тот же origin/URL, что в Apple
+        usePopup: true,
+      });
+      setReady(true);
+    };
+    document.body.appendChild(s);
+  }, []);
+
+  const handleApple = async () => {
+    const resp = await window.AppleID.auth.signIn(); // popup
+    const code = resp?.authorization?.code;
+    if (!code) return;
+    await authStore.loginByApple(code); // на бэке обменяешь code→tokens (как с Google)
+    goToAdmin();
+    onClose();
+  };
+
+  return (
+    <Button onClick={handleApple} disabled={!ready} variant="authProvider">
+      <svg viewBox="0 0 24 24" className="size-5" fill="currentColor" aria-hidden="true">
+        <path d="M16.36 13.46c-.03-2.36 1.93-3.49 2.02-3.55-1.1-1.6-2.83-1.82-3.43-1.85-1.46-.15-2.85.86-3.6.86-.75 0-1.9-.84-3.12-.82-1.61.02-3.1.94-3.93 2.39-1.68 2.9-.43 7.18 1.2 9.53.8 1.16 1.75 2.47 3.01 2.42 1.21-.05 1.66-.78 3.12-.78s1.86.78 3.12.76c1.29-.03 2.11-1.18 2.9-2.35.9-1.33 1.27-2.62 1.29-2.69-.03-.01-2.51-.96-2.58-3.92zM14.5 5.6c.66-.8 1.11-1.9.99-2.99-.96.04-2.12.64-2.8 1.43-.61.71-1.15 1.86-1 2.95 1.06.08 2.15-.53 2.81-1.39z" />
+      </svg>
+      {t('auth.apple', 'Continue with Apple')}
+    </Button>
+  );
+}
 
 export function LoginByGoogleComponent() {
   const { authStore } = useRootStore();
   const { goToAdmin } = useAuthRoutes();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleGoogleSuccess = async (response: any) => {
     const credential = response?.credential;
 
@@ -155,7 +200,7 @@ export default function AuthPopup({
                 {t('auth.title', 'Create an account.')}
               </h2>
               <p className="mt-3 text-center text-neutral-300">
-                {t('auth.subtitle', 'Create an account to unlock free chats with any Talkie!')}
+                {t('auth.subtitle', 'Create an account to unlock free chats with any Ai Pairs!')}
               </p>
 
               <div className="mx-auto mt-6 flex max-w-md flex-col gap-4">
@@ -171,7 +216,8 @@ export default function AuthPopup({
                 </Button>
 
                 {/* Apple */}
-                <Button
+                <AppleLoginButton onClose={onClose} />
+                {/* <Button
                   onClick={() => {
                     onApple?.();
                     goToAdmin();
@@ -182,7 +228,7 @@ export default function AuthPopup({
                     <path d="M16.36 13.46c-.03-2.36 1.93-3.49 2.02-3.55-1.1-1.6-2.83-1.82-3.43-1.85-1.46-.15-2.85.86-3.6.86-.75 0-1.9-.84-3.12-.82-1.61.02-3.1.94-3.93 2.39-1.68 2.9-.43 7.18 1.2 9.53.8 1.16 1.75 2.47 3.01 2.42 1.21-.05 1.66-.78 3.12-.78s1.86.78 3.12.76c1.29-.03 2.11-1.18 2.9-2.35.9-1.33 1.27-2.62 1.29-2.69-.03-.01-2.51-.96-2.58-3.92zM14.5 5.6c.66-.8 1.11-1.9.99-2.99-.96.04-2.12.64-2.8 1.43-.61.71-1.15 1.86-1 2.95 1.06.08 2.15-.53 2.81-1.39z" />
                   </svg>
                   {t('auth.apple', 'Continue with Apple')}
-                </Button>
+                </Button> */}
 
                 <Button
                   onClick={() => setEmailPopupOpen(true)}
