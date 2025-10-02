@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import type { MouseEvent as ReactMouseEvent } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
@@ -122,8 +123,12 @@ export default function AuthPopup({
   }, [open, onClose]);
 
   // Клик по фону
-  const backdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) onClose();
+  const handleBackdropMouseDown = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (!dialogRef.current) return;
+
+    if (!dialogRef.current.contains(event.target as Node)) {
+      onClose();
+    }
   };
 
 
@@ -148,7 +153,7 @@ export default function AuthPopup({
       {open && (
         <motion.div
           className="fixed inset-0 z-50 flex items-center justify-center"
-          onMouseDown={backdropClick}
+          onMouseDown={handleBackdropMouseDown}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

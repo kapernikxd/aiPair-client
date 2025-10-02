@@ -54,7 +54,9 @@ export default function EmailAuthPopup({ open, onBack, onClose, onSuccess }: Ema
   }, [open, onClose]);
 
   const handleBackdropClick = (event: ReactMouseEvent<HTMLDivElement>) => {
-    if (event.target === event.currentTarget) {
+    if (!dialogRef.current) return;
+
+    if (!dialogRef.current.contains(event.target as Node)) {
       onClose();
     }
   };
