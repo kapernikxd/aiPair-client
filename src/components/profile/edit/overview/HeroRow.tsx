@@ -6,7 +6,7 @@ import { ChangeEvent, useRef } from "react";
 type Props = {
   userName?: string;
   avatarUrl?: string | null;
-  onAvatarSelect?: (file: File) => void;
+  onAvatarSelect?: (file: File) => void | Promise<void>;
   onAvatarRemove?: () => void;
   canRemoveAvatar?: boolean;
   description?: string;
@@ -23,9 +23,17 @@ export default function HeroRow({
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const input = event.currentTarget;
+    const file = input.files?.[0];
+
     if (file && onAvatarSelect) {
-      onAvatarSelect(file);
+      const pending = onAvatarSelect(file);
+      Promise.resolve(pending).finally(() => {
+        if (inputRef.current) {
+          inputRef.current.value = "";
+        }
+      });
+      return;
     }
 
     // allow selecting the same file again

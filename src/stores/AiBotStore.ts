@@ -4,7 +4,7 @@ import { BaseStore } from './BaseStore';
 import type { RootStore } from './RootStore';
 import { MAX_GALLERY_ITEMS, steps } from '@/helpers/data/agent-create';
 import type { FormState, GalleryItem } from '@/helpers/types/agent-create';
-import { revokeGallery, revokeIfNeeded } from '@/helpers/utils/agent-create';
+import { createImagePreview, revokeGallery, revokeIfNeeded } from '@/helpers/utils/agent-create';
 import { AiBotDetails, AiBotDTO } from '@/helpers/types/dtos/AiBotDto';
 import { AiBotMainPageBot } from '@/helpers/types';
 import { UserDTO } from '@/helpers/types';
@@ -114,29 +114,46 @@ export class AiBotStore extends BaseStore {
     this.avatarPreview = preview;
   }
 
-  setAvatar(file: File | null) {
+  async setAvatar(file: File | null) {
     if (!file) {
       this.avatar = null;
       this.replaceAvatarPreview(null);
       this.notify();
       return;
     }
-    const preview = URL.createObjectURL(file);
     this.avatar = file;
-    this.replaceAvatarPreview(preview);
+    try {
+      const preview = await createImagePreview(file);
+      this.replaceAvatarPreview(preview);
+    } catch (error) {
+      console.error('Failed to generate avatar preview', error);
+      this.replaceAvatarPreview(null);
+    }
     this.notify();
   }
 
-  addGalleryItems(files: File[]) {
+  async addGalleryItems(files: File[]) {
     if (!files.length) return;
     const remaining = Math.max(0, this.maxGalleryItems - this.gallery.length);
     if (remaining === 0) return;
     const allowed = files.slice(0, remaining);
-    const mapped = allowed.map((file, index) => ({
-      id: `${file.name}-${Date.now()}-${index}`,
-      preview: URL.createObjectURL(file),
-      file,
-    }));
+    const generated = await Promise.all(
+      allowed.map(async (file, index) => {
+        try {
+          const preview = await createImagePreview(file);
+          return {
+            id: `${file.name}-${Date.now()}-${index}`,
+            preview,
+            file,
+          };
+        } catch (error) {
+          console.error('Failed to generate gallery preview', error);
+          return null;
+        }
+      }),
+    );
+    const mapped = generated.filter((item): item is GalleryItem => Boolean(item));
+    if (!mapped.length) return;
     this.gallery = [...this.gallery, ...mapped];
     this.notify();
   }

@@ -15,6 +15,7 @@ import type { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
 import { getUserAvatar } from "@/helpers/utils/user";
 import type { AiBotUpdatePayload } from "@/services/profile/ProfileService";
 import { categoryOptions } from "@/helpers/data/agent-create";
+import { createImagePreview, revokeIfNeeded } from "@/helpers/utils/agent-create";
 
 const fieldLabelClasses =
   "flex items-center justify-between text-xs font-medium uppercase tracking-wide text-neutral-400";
@@ -93,7 +94,7 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
     setAvatarPreview(avatar);
 
     if (tempUrlRef.current) {
-      URL.revokeObjectURL(tempUrlRef.current);
+      revokeIfNeeded(tempUrlRef.current);
       tempUrlRef.current = null;
     }
   }, [open, aiAgent, botDetails]);
@@ -101,26 +102,33 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
   useEffect(() => {
     return () => {
       if (tempUrlRef.current) {
-        URL.revokeObjectURL(tempUrlRef.current);
+        revokeIfNeeded(tempUrlRef.current);
+        tempUrlRef.current = null;
       }
     };
   }, []);
 
-  const handleAvatarSelect = (file: File) => {
+  const handleAvatarSelect = async (file: File) => {
     if (tempUrlRef.current) {
-      URL.revokeObjectURL(tempUrlRef.current);
+      revokeIfNeeded(tempUrlRef.current);
+      tempUrlRef.current = null;
     }
 
-    const objectUrl = URL.createObjectURL(file);
-    tempUrlRef.current = objectUrl;
-
-    setAvatarFile(file);
-    setAvatarPreview(objectUrl);
+    try {
+      const preview = await createImagePreview(file);
+      if (preview.startsWith("blob:")) {
+        tempUrlRef.current = preview;
+      }
+      setAvatarFile(file);
+      setAvatarPreview(preview);
+    } catch (error) {
+      console.error("Failed to prepare avatar preview", error);
+    }
   };
 
   const handleAvatarRemove = () => {
     if (tempUrlRef.current) {
-      URL.revokeObjectURL(tempUrlRef.current);
+      revokeIfNeeded(tempUrlRef.current);
       tempUrlRef.current = null;
     }
 
@@ -170,7 +178,8 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
   const handleGalleryUpload: ChangeEventHandler<HTMLInputElement> = (event) => {
     if (!aiAgent) return;
 
-    const files = Array.from(event.target.files ?? []);
+    const input = event.currentTarget;
+    const files = Array.from(input.files ?? []);
     if (!files.length) return;
 
     const remaining = Math.max(0, maxGalleryItems - botPhotos.length);
@@ -182,8 +191,10 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
       formData.append("photos", file, file.name);
     });
 
-    void aiBotStore.addBotPhotos(aiAgent._id, formData);
-    event.currentTarget.value = "";
+    const pending = aiBotStore.addBotPhotos(aiAgent._id, formData);
+    pending.finally(() => {
+      input.value = "";
+    });
   };
 
   const handleRemovePhoto = (url: string) => {

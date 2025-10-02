@@ -52,14 +52,23 @@ export default function CreateAiAgentPage() {
   useEffect(() => () => aiBotStore.dispose(), [aiBotStore]);
 
   const handleAvatarChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] ?? null;
-    aiBotStore.setAvatar(file);
+    const input = event.currentTarget;
+    const file = input.files?.[0] ?? null;
+
+    const upload = aiBotStore.setAvatar(file);
+    upload.finally(() => {
+      input.value = '';
+    });
   };
 
   const handleGalleryChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files ?? []);
-    aiBotStore.addGalleryItems(files);
-    event.currentTarget.value = '';
+    const input = event.currentTarget;
+    const files = Array.from(input.files ?? []);
+
+    const upload = aiBotStore.addGalleryItems(files);
+    upload.finally(() => {
+      input.value = '';
+    });
   };
 
   const removeGalleryItem = (id: string) => {
