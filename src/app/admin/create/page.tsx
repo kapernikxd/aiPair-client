@@ -19,6 +19,7 @@ import { FormState } from '@/helpers/types/agent-create';
 import { useRootStore, useStoreData } from '@/stores/StoreProvider';
 import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
 import { useTranslations } from '@/localization/TranslationProvider';
+import { isLikelyImage, normalizeImageToJpeg } from '@/helpers/utils/image';
 
 
 export default function CreateAiAgentPage() {
@@ -51,15 +52,60 @@ export default function CreateAiAgentPage() {
 
   useEffect(() => () => aiBotStore.dispose(), [aiBotStore]);
 
-  const handleAvatarChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] ?? null;
-    aiBotStore.setAvatar(file);
+    if (!file) {
+      aiBotStore.setAvatar(null);
+      return;
+    }
+
+    if (!isLikelyImage(file)) {
+      console.warn('Selected file is not a supported image format.');
+      return;
+    }
+
+    try {
+      const normalized = await normalizeImageToJpeg(file);
+      aiBotStore.setAvatar(normalized);
+    } catch (error) {
+      console.error('Failed to process avatar image', error);
+    } finally {
+      event.currentTarget.value = '';
+    }
   };
 
-  const handleGalleryChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleGalleryChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
-    aiBotStore.addGalleryItems(files);
-    event.currentTarget.value = '';
+    if (!files.length) {
+      event.currentTarget.value = '';
+      return;
+    }
+
+    const remaining = Math.max(0, maxGalleryItems - gallery.length);
+    if (remaining === 0) {
+      event.currentTarget.value = '';
+      return;
+    }
+
+    const allowed = files.slice(0, remaining).filter((file) => {
+      if (isLikelyImage(file)) return true;
+      console.warn('Skipped non-image file in gallery upload:', file.name);
+      return false;
+    });
+
+    if (!allowed.length) {
+      event.currentTarget.value = '';
+      return;
+    }
+
+    try {
+      const normalized = await Promise.all(allowed.map((file) => normalizeImageToJpeg(file)));
+      aiBotStore.addGalleryItems(normalized);
+    } catch (error) {
+      console.error('Failed to process gallery images', error);
+    } finally {
+      event.currentTarget.value = '';
+    }
   };
 
   const removeGalleryItem = (id: string) => {
