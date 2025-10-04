@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { Trash2 } from 'lucide-react';
 import AppShell from '@/components/AppShell';
 import ChatAvatar from '@/components/chats/ChatAvatar';
 import MessageList from '@/components/chat/MessageList';
@@ -87,7 +88,7 @@ function ChatPageFallback() {
 function ChatPageContent() {
   const searchParams = useSearchParams();
   const chatId = searchParams.get('chatId');
-  const { chatStore, authStore, onlineStore } = useRootStore();
+  const { chatStore, authStore, onlineStore, uiStore } = useRootStore();
   const { routes } = useAuthRoutes();
   const { t } = useTranslations();
 
@@ -102,6 +103,7 @@ function ChatPageContent() {
 
   const [isLoadingConversation, setIsLoadingConversation] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isClearingHistory, setIsClearingHistory] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const messageListRef = useRef<HTMLDivElement | null>(null);
   const scrollAnchorRef = useRef<HTMLDivElement | null>(null);
@@ -186,6 +188,34 @@ function ChatPageContent() {
     if (!chatId) return;
     onlineStore.emitStopTyping(chatId);
   }, [chatId, onlineStore]);
+
+  const handleClearHistory = useCallback(async () => {
+    if (!chatId) return;
+    const confirmed = window.confirm(
+      t(
+        'admin.chat.clearHistory.confirm',
+        'Are you sure you want to delete this conversation history? This action cannot be undone.',
+      ),
+    );
+    if (!confirmed) return;
+
+    setIsClearingHistory(true);
+    try {
+      await chatStore.clearChatHistory(chatId);
+      uiStore.showSnackbar(
+        t('admin.chat.clearHistory.success', 'Conversation history deleted.'),
+        'success',
+      );
+    } catch (error) {
+      console.error('Failed to delete conversation history:', error);
+      uiStore.showSnackbar(
+        t('admin.chat.clearHistory.error', 'Failed to delete conversation history.'),
+        'error',
+      );
+    } finally {
+      setIsClearingHistory(false);
+    }
+  }, [chatId, chatStore, t, uiStore]);
 
   const handlePin = useCallback((message: MessageDTO) => {
     if (chatStore.isMessagePinned(message._id)) return;
@@ -390,10 +420,28 @@ function ChatPageContent() {
 
           {/* HEADER */}
           <header className="rounded-3xl max-h-[140px] border border-white/10 bg-white/5 px-6 py-5 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur"> {/* CHANGED: max-h unit */}
-            <div className="flex flex-col gap-2">
-              <span className="text-xs uppercase tracking-[0.28em] text-white/40">
-                {t('admin.chat.header.label', 'Conversation')}
-              </span>
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-xs uppercase tracking-[0.28em] text-white/40">
+                  {t('admin.chat.header.label', 'Conversation')}
+                </span>
+                {chatId ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="whitespace-nowrap"
+                    disabled={isClearingHistory}
+                    onClick={handleClearHistory}
+                  >
+                    <Trash2 className="size-4" />
+                    <span>
+                      {isClearingHistory
+                        ? t('admin.chat.clearHistory.clearing', 'Clearing…')
+                        : t('admin.chat.clearHistory.action', 'Clear history')}
+                    </span>
+                  </Button>
+                ) : null}
+              </div>
 
               {conversationProfileHref ? (
                 <Link

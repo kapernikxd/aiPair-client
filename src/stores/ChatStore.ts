@@ -148,6 +148,21 @@ export class ChatStore extends BaseStore {
     this.notify();
   }
 
+  async clearChatHistory(chatId: string) {
+    try {
+      await this.chatService.clearChatHistory(chatId);
+      runInAction(() => {
+        this.messages = [];
+        this.pinnedMessages = [];
+        this.hasMoreMessages = false;
+      });
+      this.notify();
+    } catch (err) {
+      console.error("Ошибка при очистке истории чата:", err);
+      throw err;
+    }
+  }
+
   cleanOpponentId() {
     this.opponentId = undefined;
     this.notify();
