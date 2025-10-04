@@ -15,7 +15,7 @@ export interface SnackBarParams {
 export class UiStore extends BaseStore {
   private root: RootStore;
   isAuthPopupOpen = false;
-  isMobileBannerVisible = true;
+  isMobileBannerVisible = false;
   isEditProfileDialogOpen = false;
   isSidebarOpen = true;
   isMobileSidebarOpen = false;

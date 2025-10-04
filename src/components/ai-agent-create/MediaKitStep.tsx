@@ -46,7 +46,6 @@ export default function MediaKitStep({
           </span>
           <input
             type="file"
-            accept="image/*"
             multiple
             className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
             onChange={onAdd}

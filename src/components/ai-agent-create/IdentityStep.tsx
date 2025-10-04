@@ -61,7 +61,6 @@ export default function IdentityStep({
             </span>
             <input
               type="file"
-              accept="image/*"
               className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
               onChange={onAvatarChange}
             />

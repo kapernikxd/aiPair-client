@@ -558,7 +558,7 @@ export default function Landing() {
               t
             </div>
             <div className="flex flex-1 flex-col text-left">
-              <span className="text-sm font-semibold text-white">{t('landing.mobile.title', 'Download Talkie')}</span>
+              <span className="text-sm font-semibold text-white">{t('landing.mobile.title', 'Download AiPair')}</span>
               <span className="text-xs text-white/60">{t('landing.mobile.subtitle', 'For full features and a superior experience.')}</span>
             </div>
             <a

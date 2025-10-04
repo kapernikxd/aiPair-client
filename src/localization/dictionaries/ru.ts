@@ -327,7 +327,7 @@ registerTranslations('ru', {
   'landing.footer.terms': 'Условия',
   'landing.footer.contact': 'Контакты',
   'landing.mobile.dismiss': 'Скрыть мобильный баннер',
-  'landing.mobile.title': 'Скачай Talkie',
+  'landing.mobile.title': 'Скачай AiPair',
   'landing.mobile.subtitle': 'Для полного набора функций и лучшего опыта.',
   'landing.mobile.cta': 'Получить',
   'landing.mockup.ai': 'ИИ',
