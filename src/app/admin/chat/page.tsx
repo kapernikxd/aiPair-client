@@ -409,12 +409,9 @@ function ChatPageContent() {
                     <h1 className="text-2xl font-semibold text-white">{conversationFullName}</h1>
                     {activeTypingMessage ? (
                       <p className="text-sm text-white/60">{activeTypingMessage}</p>
-                    ) : selectedChat?.users?.length ? (
+                    ) : conversationUser?.profession ? (
                       <p className="text-sm text-white/60">
-                        {t('admin.chat.participants', '{count} participants').replace(
-                          '{count}',
-                          String(selectedChat.users.length),
-                        )}
+                        { conversationUser?.profession }
                       </p>
                     ) : null}
                   </div>
@@ -430,12 +427,9 @@ function ChatPageContent() {
                     <h1 className="text-2xl font-semibold text-white">{conversationFullName}</h1>
                     {activeTypingMessage ? (
                       <p className="text-sm text-white/60">{activeTypingMessage}</p>
-                    ) : selectedChat?.users?.length ? (
+                    ) : conversationUser?.profession ? (
                       <p className="text-sm text-white/60">
-                        {t('admin.chat.participants', '{count} participants').replace(
-                          '{count}',
-                          String(selectedChat.users.length),
-                        )}
+                        { conversationUser?.profession }
                       </p>
                     ) : null}
                   </div>
