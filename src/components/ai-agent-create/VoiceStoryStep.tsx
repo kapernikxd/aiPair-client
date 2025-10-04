@@ -37,6 +37,7 @@ export default function VoiceStoryStep({ form, onChange }: VoiceStoryStepProps) 
               "admin.create.voice.promptPlaceholder",
               "You are a strategic confidant who helps people reframe their challenges with empathy...",
             )}
+            required
             className="min-h-[140px] rounded-3xl border border-white/10 bg-neutral-900/80 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-violet-400 focus:outline-none"
           />
         </label>

@@ -1,6 +1,7 @@
 export type FormState = {
   firstName: string;
   lastName: string;
+  profession: string;
   prompt: string;
   description: string;
   intro: string;

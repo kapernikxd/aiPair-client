@@ -314,6 +314,7 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
                   }
                   placeholder="Enter how people will call your agent"
                   maxLength={24}
+                  required
                   className={inputClasses}
                 />
               </label>
@@ -331,10 +332,29 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
                   }
                   placeholder="Optional last name or identifier"
                   maxLength={24}
+                  required
                   className={inputClasses}
                 />
               </label>
             </div>
+
+            <label className="space-y-2">
+              <div className={fieldLabelClasses}>
+                <span>Profession</span>
+                <span>{charCounters.profession}/24</span>
+              </div>
+              <input
+                type="text"
+                value={formState.profession}
+                onChange={(event) =>
+                  setFormState((prev) => ({ ...prev, profession: event.target.value.slice(0, 24) }))
+                }
+                placeholder="What role does your agent embody?"
+                maxLength={24}
+                required
+                className={inputClasses}
+              />
+            </label>
 
             <label className="space-y-2">
               <div className={fieldLabelClasses}>
@@ -454,6 +474,7 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
                 }
                 rows={5}
                 placeholder="You are a strategic confidant who helps people reframe their challenges with empathy..."
+                required
                 className="min-h-[140px] w-full rounded-3xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-neutral-500 focus:border-white/40 focus:outline-none"
               />
             </label>
