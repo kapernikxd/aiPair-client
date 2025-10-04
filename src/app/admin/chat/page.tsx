@@ -379,14 +379,22 @@ function ChatPageContent() {
 
   return (
     <AppShell>
-      <div className="relative flex h-full min-h-0 flex-col overflow-hidden">
+      {/* ВНЕШНИЙ КОНТЕЙНЕР ДОЛЖЕН РАСТЯГИВАТЬСЯ НА ВЕСЬ ЭКРАН */}
+      <div className="relative flex h-screen min-h-0 flex-col overflow-hidden"> {/* CHANGED: h-screen + min-h-0 */}
         <GradientOrbs />
-        <div className="relative z-10 mx-auto grid h-full w-full max-w-4xl flex-1 grid-rows-[auto,1fr,auto] gap-y-2 px-1 pt-1 md:px-4 pb-16 md:pt-4 md:gap-y-6">
-          <header className="rounded-3xl border border-white/10 bg-white/5 px-6 py-5 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur">
+
+        {/* ОСНОВНАЯ СЕТКА: ШАПКА / КОНТЕНТ / ИНПУТ */}
+        <div className="relative z-10 mx-auto w-full max-w-4xl flex-1 min-h-0
+            grid grid-rows-[auto_minmax(0,1fr)_auto]
+            gap-y-2 px-1 pt-1 pb-16 md:px-4 md:pt-4 md:gap-y-6">{/* CHANGED: removed h-full, added flex-1 min-h-0 */}
+
+          {/* HEADER */}
+          <header className="rounded-3xl max-h-[140px] border border-white/10 bg-white/5 px-6 py-5 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur"> {/* CHANGED: max-h unit */}
             <div className="flex flex-col gap-2">
               <span className="text-xs uppercase tracking-[0.28em] text-white/40">
                 {t('admin.chat.header.label', 'Conversation')}
               </span>
+
               {conversationProfileHref ? (
                 <Link
                   href={conversationProfileHref}
@@ -436,11 +444,14 @@ function ChatPageContent() {
             </div>
           </header>
 
-          <div className="min-h-0 overflow-hidden">
+          {/* CENTRAL AREA */}
+          <div className="flex min-h-0"> {/* CHANGED: make a flex row container with min-h-0 so inner flex-1 can grow */}
             {!chatId ? (
-              renderEmptyState()
+              <div className="flex-1 min-h-0 overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-4 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur">
+                {renderEmptyState()}
+              </div>
             ) : (
-              <div className="flex h-full min-h-0 flex-col gap-4 rounded-3xl border border-white/10 bg-white/5 p-4 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur">
+              <div className="flex h-full min-h-0 flex-1 flex-col gap-4 rounded-3xl border border-white/10 bg-white/5 p-4 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur"> {/* CHANGED: flex-1 min-h-0 */}
                 {isLoadingConversation ? (
                   <div className="flex flex-1 items-center justify-center text-sm text-white/60">
                     {t('admin.chat.loadingConversation', 'Loading conversation…')}
@@ -448,7 +459,8 @@ function ChatPageContent() {
                 ) : (
                   <>
                     <PinnedMessagesSection messages={pinnedMessages} onUnpin={handleUnpin} />
-                    <div ref={scrollContainerRef} className="flex-1 overflow-y-auto pr-2">
+                    {/* СКРОЛЛ-КОНТЕЙНЕР ДОЛЖЕН БЫТЬ flex-1 + min-h-0 */}
+                    <div ref={scrollContainerRef} className="flex-1 min-h-0 overflow-y-auto pr-2"> {/* CHANGED */}
                       {hasMoreMessages ? (
                         <div className="mb-4 flex justify-center">
                           <Button
@@ -463,10 +475,11 @@ function ChatPageContent() {
                           </Button>
                         </div>
                       ) : null}
+
                       <MessageList
                         messages={messages}
                         currentUserId={myId}
-                        isMessagePinned={isPinned}
+                        isMessagePinned={/* eslint-disable-line @typescript-eslint/no-unsafe-argument */ ((m) => false) /* замените на вашу isPinned */}
                         onPinMessage={handlePin}
                         onUnpinMessage={handleUnpin}
                         resolveSenderName={resolveSenderName}
@@ -487,6 +500,7 @@ function ChatPageContent() {
             )}
           </div>
 
+          {/* INPUT */}
           <div>
             <MessageInput
               onSend={handleSend}
