@@ -25,6 +25,7 @@ export class AiBotStore extends BaseStore {
   form: FormState = {
     firstName: '',
     lastName: '',
+    profession: '',
     prompt: '',
     description: '',
     intro: '',
@@ -79,18 +80,15 @@ export class AiBotStore extends BaseStore {
         return Boolean(
           this.form.firstName.trim() &&
           this.form.lastName.trim() &&
+          this.form.profession.trim() &&
           (this.avatar !== null || this.avatarPreview !== null),
         );
       case 1:
-        return this.form.categories.length > 0 && this.form.usefulness.length > 0;
+        return true;
       case 2:
-        return Boolean(
-          this.form.prompt.trim() &&
-          this.form.description.trim() &&
-          this.form.intro.trim(),
-        );
+        return Boolean(this.form.prompt.trim());
       default:
-        return this.gallery.length > 0;
+        return true;
     }
   }
 
@@ -170,6 +168,7 @@ export class AiBotStore extends BaseStore {
     this.form = {
       firstName: '',
       lastName: '',
+      profession: '',
       prompt: '',
       description: '',
       intro: '',
@@ -398,7 +397,11 @@ export class AiBotStore extends BaseStore {
     const formData = new FormData();
     formData.append('name', this.form.firstName.trim());
     formData.append('lastname', this.form.lastName.trim());
-    formData.append('userBio', this.form.description.trim());
+    formData.append('profession', this.form.profession.trim());
+    const userBio = this.form.description.trim();
+    if (userBio) {
+      formData.append('userBio', userBio);
+    }
     formData.append('aiPrompt', this.form.prompt.trim());
     const intro = this.form.intro.trim();
     if (intro) {

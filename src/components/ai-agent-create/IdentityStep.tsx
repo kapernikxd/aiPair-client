@@ -5,7 +5,7 @@ import { Upload } from "lucide-react";
 import { FormState } from "../../helpers/types/agent-create";
 import { useTranslations } from "@/localization/TranslationProvider";
 
-type IdentityForm = Pick<FormState, "firstName" | "lastName">;
+type IdentityForm = Pick<FormState, "firstName" | "lastName" | "profession">;
 
 type IdentityStepProps = {
   form: IdentityForm;
@@ -75,6 +75,7 @@ export default function IdentityStep({
             value={form.firstName}
             onChange={(e) => onChange("firstName", e.target.value)}
             placeholder={t("admin.create.identity.firstNamePlaceholder", "aiAgent")}
+            required
             className="rounded-2xl border border-white/10 bg-neutral-900/80 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-violet-400 focus:outline-none"
           />
         </label>
@@ -84,6 +85,17 @@ export default function IdentityStep({
             value={form.lastName}
             onChange={(e) => onChange("lastName", e.target.value)}
             placeholder={t("admin.create.identity.lastNamePlaceholder", "Alpha")}
+            required
+            className="rounded-2xl border border-white/10 bg-neutral-900/80 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-violet-400 focus:outline-none"
+          />
+        </label>
+        <label className="flex flex-col gap-2 text-sm text-white/70 sm:col-span-2">
+          {t("admin.create.identity.profession", "Profession")}
+          <input
+            value={form.profession}
+            onChange={(e) => onChange("profession", e.target.value)}
+            placeholder={t("admin.create.identity.professionPlaceholder", "Product designer")}
+            required
             className="rounded-2xl border border-white/10 bg-neutral-900/80 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-violet-400 focus:outline-none"
           />
         </label>

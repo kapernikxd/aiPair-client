@@ -189,7 +189,7 @@ export default function CreateAiAgentPage() {
             <div className="rounded-3xl border border-white/10 bg-neutral-900/80 p-6 shadow-[0_30px_80px_-50px_rgba(79,70,229,0.6)]">
               {step === 0 && (
                 <IdentityStep
-                  form={{ firstName: form.firstName, lastName: form.lastName }}
+                  form={{ firstName: form.firstName, lastName: form.lastName, profession: form.profession }}
                   avatarPreview={avatarPreview}
                   onAvatarChange={handleAvatarChange}
                   onChange={handleChange}

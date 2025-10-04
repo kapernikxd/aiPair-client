@@ -48,6 +48,9 @@ export default function PreviewSidebar({
                 " " +
                 (form.lastName || t("admin.create.preview.defaultLast", "agent"))}
             </p>
+            <p className="text-xs uppercase tracking-wide text-white/50">
+              {form.profession || t("admin.create.preview.professionPlaceholder", "Profession")}
+            </p>
             <p className="max-h-20 overflow-hidden text-xs text-white/60">
               {form.description ||
                 t(
