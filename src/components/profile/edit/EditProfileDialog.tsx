@@ -155,14 +155,6 @@ export default function EditProfileDialog({ open, profile, onClose, onSave }: Pr
     }
   };
 
-  const professionChoices = useMemo(() => {
-    const baseOptions = [...professionOptions];
-    if (formState.profession && !baseOptions.includes(formState.profession)) {
-      baseOptions.push(formState.profession);
-    }
-    return baseOptions;
-  }, [professionOptions, formState.profession]);
-
   return (
     <ModalShell open={open} onBackdrop={onClose}>
       <form onSubmit={handleSubmit}>
@@ -199,9 +191,9 @@ export default function EditProfileDialog({ open, profile, onClose, onSave }: Pr
           />
 
           <ProfessionField
-            value={formState.profession || professionChoices[0] || ""}
+            value={formState.profession || ""}
             onChange={(val) => setFormState((s) => ({ ...s, profession: val }))}
-            options={professionChoices}
+            placeholder={professionOptions[0] || ""}
           />
 
           <Notice />
