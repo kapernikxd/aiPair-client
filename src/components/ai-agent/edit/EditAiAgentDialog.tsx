@@ -15,6 +15,7 @@ import type { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
 import { getUserAvatar } from "@/helpers/utils/user";
 import type { AiBotUpdatePayload } from "@/services/profile/ProfileService";
 import { categoryOptions } from "@/helpers/data/agent-create";
+import { Spacer } from "@/components/ui/Spacer";
 
 const fieldLabelClasses =
   "flex items-center justify-between text-xs font-medium uppercase tracking-wide text-neutral-400";
@@ -355,6 +356,7 @@ export default function EditAiAgentDialog({ open, aiAgent, onClose }: Props) {
                 className={inputClasses}
               />
             </label>
+            <Spacer />
 
             <label className="space-y-2">
               <div className={fieldLabelClasses}>
