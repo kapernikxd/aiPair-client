@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { useBreakpoint } from "@/helpers/hooks/useBreakpoint";
 import { useCopyLink } from "@/helpers/hooks/useCopyLink";
+import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 import MoreActionsMenu from "@/components/MoreActionsMenu";
 import { useTranslations } from "@/localization/TranslationProvider";
 
@@ -40,11 +41,13 @@ export default function HeaderBar({
   const pathname = usePathname();
   const { isMdUp } = useBreakpoint(); // md (≥768px) и выше
   const copyLink = useCopyLink();
+  const { getProfile } = useAuthRoutes();
 
   const handleShare = useCallback(() => {
-    if (!pathname) return;
-    void copyLink(pathname);
-  }, [copyLink, pathname]);
+    const target = profileId ? getProfile(profileId) : pathname;
+    if (!target) return;
+    void copyLink(target);
+  }, [copyLink, getProfile, pathname, profileId]);
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-4">

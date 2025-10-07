@@ -10,7 +10,12 @@ import { useCopyLink } from "@/helpers/hooks/useCopyLink";
 import MoreActionsMenu from "@/components/MoreActionsMenu";
 import { useTranslations } from "@/localization/TranslationProvider";
 
-export default function HeaderActions({ onEdit }: { onEdit: () => void }) {
+interface HeaderActionsProps {
+  onEdit: () => void;
+  shareHref?: string;
+}
+
+export default function HeaderActions({ onEdit, shareHref }: HeaderActionsProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { isMdUp } = useBreakpoint(); // md (≥768px) и выше
@@ -18,9 +23,10 @@ export default function HeaderActions({ onEdit }: { onEdit: () => void }) {
   const { t } = useTranslations();
 
   const handleShare = useCallback(() => {
-    if (!pathname) return;
-    void copyLink(pathname);
-  }, [copyLink, pathname]);
+    const target = shareHref ?? pathname;
+    if (!target) return;
+    void copyLink(target);
+  }, [copyLink, pathname, shareHref]);
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-4">
