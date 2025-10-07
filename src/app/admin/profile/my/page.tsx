@@ -7,9 +7,11 @@ import HeaderActions from "@/components/profile/HeaderActions";
 import ProfileCard from "@/components/profile/ProfileCard";
 import AiAgentsTimeline from "@/components/profile/AiAgentsTimeline";
 
-import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import { useEffect, useMemo, useState } from "react";
+
+import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import { useTranslations } from "@/localization/TranslationProvider";
+import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 
 
 export default function MyProfilePage() {
@@ -23,6 +25,9 @@ export default function MyProfilePage() {
 
   const [activeFilter, setActiveFilter] = useState<"my" | "subscribed">("my");
   const { t } = useTranslations();
+  const { getProfile } = useAuthRoutes();
+
+  const shareHref = profile?._id ? getProfile(profile._id) : undefined;
 
   useEffect(() => {
     void profileStore.fetchMyProfile();
@@ -83,7 +88,10 @@ export default function MyProfilePage() {
 
         <div className="mx-auto w-full max-w-5xl px-4 pb-32 md:pb-20 pt-4 md:pt-14">
           <header className="space-y-8">
-            <HeaderActions onEdit={() => uiStore.openEditProfileDialog()} />
+            <HeaderActions
+              onEdit={() => uiStore.openEditProfileDialog()}
+              shareHref={shareHref}
+            />
             <ProfileCard
               profile={profile}
               genderLabel={

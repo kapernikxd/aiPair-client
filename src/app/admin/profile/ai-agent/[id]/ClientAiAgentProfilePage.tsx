@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ArrowLeft, Share2 } from "lucide-react";
 
 import AppShell from "@/components/AppShell";
@@ -23,6 +23,7 @@ import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import type { Highlight } from "@/helpers/types/ai-agent";
 import SessionVibe from "@/components/ai-agent/SessionVibe";
 import { useBreakpoint } from "@/helpers/hooks/useBreakpoint";
+import { useCopyLink } from "@/helpers/hooks/useCopyLink";
 import { useTranslations } from "@/localization/TranslationProvider";
 
 
@@ -34,9 +35,11 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
   const { routes, getProfile } = useAuthRoutes();
   const { aiBotStore, authStore, chatStore } = useRootStore();
   const router = useRouter();
+  const pathname = usePathname();
   const { isMdUp } = useBreakpoint(); // md (≥768px) и выше
   const discoverRoute = routes.discover;
   const { t } = useTranslations();
+  const copyLink = useCopyLink();
 
   const aiBot = useStoreData(aiBotStore, (store) => store.selectAiBot);
   const isLoading = useStoreData(aiBotStore, (store) => store.isAiUserLoading);
@@ -152,6 +155,11 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
     router.push(discoverRoute);
   }, [router, discoverRoute]);
 
+  const handleShare = useCallback(() => {
+    if (!pathname) return;
+    void copyLink(pathname);
+  }, [copyLink, pathname]);
+
   return (
     <AppShell>
       <div className="relative min-h-screen overflow-y-auto bg-neutral-950 text-white">
@@ -176,6 +184,7 @@ export default function ClientAiAgentProfilePage({ aiBotId }: ClientAiAgentProfi
               )}
               <Button
                 type="button"
+                onClick={handleShare}
                 variant="frostedIcon"
                 aria-label={t("admin.profile.aiAgent.shareAria", "Share agent")}
               >
