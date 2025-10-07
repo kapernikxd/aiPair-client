@@ -1,10 +1,12 @@
 "use client";
 
+import { useCallback } from "react";
 import { ArrowLeft, Check, Share2, Sparkles } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/Button";
 import { useBreakpoint } from "@/helpers/hooks/useBreakpoint";
+import { useCopyLink } from "@/helpers/hooks/useCopyLink";
 import MoreActionsMenu from "@/components/MoreActionsMenu";
 import { useTranslations } from "@/localization/TranslationProvider";
 
@@ -35,7 +37,14 @@ export default function HeaderBar({
   const ButtonIcon = isFollowing ? Check : Sparkles;
   const buttonVariant = isFollowing ? "frostedPill" : "subscribe";
   const router = useRouter();
+  const pathname = usePathname();
   const { isMdUp } = useBreakpoint(); // md (≥768px) и выше
+  const copyLink = useCopyLink();
+
+  const handleShare = useCallback(() => {
+    if (!pathname) return;
+    void copyLink(pathname);
+  }, [copyLink, pathname]);
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-4">
@@ -52,6 +61,7 @@ export default function HeaderBar({
         )}
         <Button
           type="button"
+          onClick={handleShare}
           variant="frostedIcon"
           aria-label={t("admin.profile.common.shareAria", "Share")}
         >
