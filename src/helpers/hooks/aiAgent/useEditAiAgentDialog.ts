@@ -1,15 +1,14 @@
 // hooks/useEditAiAgentDialog.ts
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEventHandler, FormEventHandler, KeyboardEvent } from "react";
-
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
-import type { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
 import { getUserAvatar } from "@/helpers/utils/user";
+import type { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
 import type { AiBotUpdatePayload } from "@/services/profile/ProfileService";
 
-export type FormState = {
+export interface EditAiAgentFormState {
   name: string;
   lastname: string;
   profession: string;
@@ -18,9 +17,9 @@ export type FormState = {
   intro: string;
   categories: string[];
   usefulness: string[];
-};
+}
 
-export const INITIAL_FORM: FormState = {
+const INITIAL_FORM: EditAiAgentFormState = {
   name: "",
   lastname: "",
   profession: "",
@@ -31,21 +30,21 @@ export const INITIAL_FORM: FormState = {
   usefulness: [],
 };
 
-const normalized = (value: string) => value.trim().toLowerCase();
+const normalized = (v: string) => v.trim().toLowerCase();
 const arraysEqual = (a: string[], b: string[]) =>
-  a.length === b.length && a.every((item, index) => item === b[index]);
+  a.length === b.length && a.every((item, i) => item === b[i]);
 
-export function useEditAiAgentDialog(open: boolean, aiAgent: AiBotDTO | null) {
+export function useEditAiAgentDialog(open: boolean, aiAgent: AiBotDTO | null, onClose: () => void) {
   const { aiBotStore } = useRootStore();
 
-  // store data
+  // store-derived
   const botDetails = useStoreData(aiBotStore, (s) => s.botDetails);
   const botPhotos = useStoreData(aiBotStore, (s) => s.botPhotos);
   const photosUpdating = useStoreData(aiBotStore, (s) => s.photosUpdating);
   const maxGalleryItems = aiBotStore.maxGalleryItems;
 
   // local state
-  const [formState, setFormState] = useState<FormState>(INITIAL_FORM);
+  const [formState, setFormState] = useState<EditAiAgentFormState>(INITIAL_FORM);
   const [usefulnessInput, setUsefulnessInput] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -53,11 +52,11 @@ export function useEditAiAgentDialog(open: boolean, aiAgent: AiBotDTO | null) {
   const tempUrlRef = useRef<string | null>(null);
   const initialAvatarRef = useRef<string | null>(null);
 
-  // init form on open/aiAgent change
+  // init on open
   useEffect(() => {
     if (!open || !aiAgent) return;
 
-    const nextFormState: FormState = {
+    const next: EditAiAgentFormState = {
       name: aiAgent.name ?? "",
       lastname: aiAgent.lastname ?? "",
       profession: aiAgent.profession ?? "",
@@ -68,7 +67,7 @@ export function useEditAiAgentDialog(open: boolean, aiAgent: AiBotDTO | null) {
       usefulness: botDetails?.usefulness ?? aiAgent.usefulness ?? [],
     };
 
-    setFormState(nextFormState);
+    setFormState(next);
     setUsefulnessInput("");
     setAvatarFile(null);
 
@@ -82,7 +81,7 @@ export function useEditAiAgentDialog(open: boolean, aiAgent: AiBotDTO | null) {
     }
   }, [open, aiAgent, botDetails]);
 
-  // revoke temp URL on unmount
+  // cleanup temp url
   useEffect(() => {
     return () => {
       if (tempUrlRef.current) URL.revokeObjectURL(tempUrlRef.current);
@@ -92,10 +91,10 @@ export function useEditAiAgentDialog(open: boolean, aiAgent: AiBotDTO | null) {
   // avatar
   const handleAvatarSelect = useCallback((file: File) => {
     if (tempUrlRef.current) URL.revokeObjectURL(tempUrlRef.current);
-    const objectUrl = URL.createObjectURL(file);
-    tempUrlRef.current = objectUrl;
+    const url = URL.createObjectURL(file);
+    tempUrlRef.current = url;
     setAvatarFile(file);
-    setAvatarPreview(objectUrl);
+    setAvatarPreview(url);
   }, []);
 
   const handleAvatarRemove = useCallback(() => {
@@ -111,11 +110,11 @@ export function useEditAiAgentDialog(open: boolean, aiAgent: AiBotDTO | null) {
   const toggleCategory = useCallback((category: string) => {
     setFormState((prev) => {
       const key = normalized(category);
-      const exists = prev.categories.some((item) => normalized(item) === key);
-      const nextCategories = exists
-        ? prev.categories.filter((item) => normalized(item) !== key)
+      const exists = prev.categories.some((i) => normalized(i) === key);
+      const next = exists
+        ? prev.categories.filter((i) => normalized(i) !== key)
         : [...prev.categories, category];
-      return { ...prev, categories: nextCategories };
+      return { ...prev, categories: next };
     });
   }, []);
 
@@ -124,22 +123,19 @@ export function useEditAiAgentDialog(open: boolean, aiAgent: AiBotDTO | null) {
     const value = usefulnessInput.trim();
     if (!value) return;
     setFormState((prev) => {
-      const exists = prev.usefulness.some((item) => normalized(item) === normalized(value));
+      const exists = prev.usefulness.some((i) => normalized(i) === normalized(value));
       return exists ? prev : { ...prev, usefulness: [...prev.usefulness, value] };
     });
     setUsefulnessInput("");
   }, [usefulnessInput]);
 
   const handleRemoveUsefulness = useCallback((value: string) => {
-    setFormState((prev) => ({
-      ...prev,
-      usefulness: prev.usefulness.filter((item) => item !== value),
-    }));
+    setFormState((prev) => ({ ...prev, usefulness: prev.usefulness.filter((i) => i !== value) }));
   }, []);
 
-  const handleUsefulnessKeyDown = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
+  const handleUsefulnessKeyDown = useCallback((e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
       handleAddUsefulness();
     }
   }, [handleAddUsefulness]);
@@ -172,11 +168,14 @@ export function useEditAiAgentDialog(open: boolean, aiAgent: AiBotDTO | null) {
   // submit
   const handleSubmit: FormEventHandler<HTMLFormElement> = useCallback(async (event) => {
     event.preventDefault();
-    if (!aiAgent) return;
+    if (!aiAgent) {
+      onClose();
+      return;
+    }
 
     const hasAvatarUpdate = Boolean(avatarFile);
-
     const payload: AiBotUpdatePayload = {};
+
     const normalizedName = formState.name.trim();
     const normalizedLastName = formState.lastname.trim();
     const normalizedProfession = formState.profession.trim();
@@ -202,17 +201,21 @@ export function useEditAiAgentDialog(open: boolean, aiAgent: AiBotDTO | null) {
     if (!arraysEqual(formState.usefulness, currentUsefulness)) payload.usefulness = formState.usefulness;
 
     const hasTextUpdates = Object.keys(payload).length > 0;
-    if (!hasTextUpdates && !hasAvatarUpdate) return;
+    if (!hasTextUpdates && !hasAvatarUpdate) {
+      onClose();
+      return;
+    }
 
     setIsSubmitting(true);
     try {
       await aiBotStore.updateBot(aiAgent._id, payload, avatarFile ?? undefined);
+      onClose();
     } catch (e) {
       console.error("Failed to update AI agent", e);
     } finally {
       setIsSubmitting(false);
     }
-  }, [aiAgent, avatarFile, formState, botDetails, aiBotStore]);
+  }, [aiAgent, onClose, avatarFile, formState, botDetails, aiBotStore]);
 
   // computed for view
   const charCounters = useMemo(
@@ -231,7 +234,7 @@ export function useEditAiAgentDialog(open: boolean, aiAgent: AiBotDTO | null) {
   );
 
   return {
-    // store-derived
+    // store data
     botDetails,
     botPhotos,
     photosUpdating,
@@ -240,11 +243,14 @@ export function useEditAiAgentDialog(open: boolean, aiAgent: AiBotDTO | null) {
     // local state
     formState, setFormState,
     usefulnessInput, setUsefulnessInput,
-    avatarFile, avatarPreview, isSubmitting,
+    avatarFile, avatarPreview,
+    isSubmitting,
 
     // computed
-    charCounters, selectedCategories,
-    remainingGallerySlots, canUploadPhotos,
+    charCounters,
+    selectedCategories,
+    remainingGallerySlots,
+    canUploadPhotos,
 
     // handlers
     handleAvatarSelect,
