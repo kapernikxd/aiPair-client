@@ -6,7 +6,7 @@ import type { ChangeEventHandler, FormEventHandler, KeyboardEvent } from "react"
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import { getUserAvatar } from "@/helpers/utils/user";
 import type { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
-import type { AiBotUpdatePayload } from "@/services/profile/ProfileService";
+import { AiBotUpdatePayload } from "@/services/ai-bot-details/AiBotDetailsService";
 
 export interface EditAiAgentFormState {
   name: string;

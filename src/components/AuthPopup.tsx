@@ -248,7 +248,7 @@ export default function AuthPopup({
               </div>
 
               <p className="mt-6 text-center text-sm text-neutral-400">
-                {t('auth.agreement.prefix', 'By continuing, you agree to Talkie’s')}{' '}
+                {t('auth.agreement.prefix', 'By continuing, you agree to AiPair’s')}{' '}
                 <a className="underline hover:text-white" href={routes.terms}>{t('auth.agreement.terms', 'Terms of Service')}</a>{' '}
                 {t('auth.agreement.and', 'and')}{' '}
                 <a className="underline hover:text-white" href={routes.privacy}>{t('auth.agreement.privacy', 'Privacy Policy')}</a>.

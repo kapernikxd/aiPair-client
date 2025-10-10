@@ -204,7 +204,7 @@ registerTranslations('ru', {
   'auth.userFallback': 'Пользователь',
   'auth.close': 'Закрыть',
   'auth.title': 'Создайте аккаунт.',
-  'auth.subtitle': 'Создайте аккаунт и получите бесплатный доступ к любому Talkie!',
+  'auth.subtitle': 'Создайте аккаунт и получите бесплатный доступ к любому AiPair!',
   'auth.google': 'Продолжить с Google',
   'auth.apple': 'Продолжить с Apple',
   'auth.email': 'Продолжить по email',

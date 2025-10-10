@@ -9,8 +9,8 @@ import { AiBotDetails, AiBotDTO } from '@/helpers/types/dtos/AiBotDto';
 import { AiBotMainPageBot } from '@/helpers/types';
 import { UserDTO } from '@/helpers/types';
 import { AvatarFile, ProfilesFilterParams } from '@/helpers/types/profile';
-import ProfileService, { AiBotUpdatePayload } from '@/services/profile/ProfileService';
-import AiBotDetailsService from '@/services/ai-bot-details/AiBotDetailsService';
+import ProfileService from '@/services/profile/ProfileService';
+import AiBotDetailsService, { AiBotUpdatePayload } from '@/services/ai-bot-details/AiBotDetailsService';
 
 export type AiAgentHeader = {
   name: string;
@@ -200,7 +200,7 @@ export class AiBotStore extends BaseStore {
 
     this.isLoadingAiProfiles = true;
     try {
-      const { data } = await this.profileService.getAllAiBots({ page, limit });
+      const { data } = await this.aiBotDetailsService.getAllAiBots({ page, limit });
       runInAction(() => {
         // Если это первая страница — заменяем события
         if (page === 1) {
@@ -255,7 +255,7 @@ export class AiBotStore extends BaseStore {
     this.isAiUserLoading = true;
     this.notify();
     try {
-      const { data } = await this.profileService.getAiBotById(id);
+      const { data } = await this.aiBotDetailsService.getAiBotById(id);
       runInAction(() => {
         this.selectAiBot = data;
       });
@@ -280,7 +280,7 @@ export class AiBotStore extends BaseStore {
     this.isAiUserLoading = true;
     this.notify();
     try {
-      const { data } = await this.profileService.getAiBotsByCreator(userId);
+      const { data } = await this.aiBotDetailsService.getAiBotsByCreator(userId);
       runInAction(() => {
         this.userAiBots = data;
       });
@@ -312,7 +312,7 @@ export class AiBotStore extends BaseStore {
 
   async fetchMyAiBots() {
     try {
-      const { data } = await this.profileService.getMyAiBots();
+      const { data } = await this.aiBotDetailsService.getMyAiBots();
       runInAction(() => {
         this.myBots = data;
         this.notify();
@@ -325,7 +325,7 @@ export class AiBotStore extends BaseStore {
 
   async fetchSubscribedAiBots() {
     try {
-      const { data } = await this.profileService.getSubscribedAiBots();
+      const { data } = await this.aiBotDetailsService.getSubscribedAiBots();
       runInAction(() => {
         this.subscribedBots = data;
         this.notify();
@@ -338,7 +338,7 @@ export class AiBotStore extends BaseStore {
 
   async followAiBot(id: string) {
     try {
-      const { data } = await this.profileService.followAiBotById(id);
+      const { data } = await this.aiBotDetailsService.followAiBotById(id);
       runInAction(() => {
         const updateFollowers = <T extends UserDTO>(collection: T[]) =>
           collection.map((bot) => (bot._id === id ? ({ ...bot, followers: data.followers } as T) : bot));
@@ -380,7 +380,7 @@ export class AiBotStore extends BaseStore {
 
   async createBot(formData: FormData) {
     try {
-      const { data } = await this.profileService.createAiBot(formData);
+      const { data } = await this.aiBotDetailsService.createAiBot(formData);
       runInAction(() => {
         this.myBots.push(data);
         this.notify();
@@ -505,7 +505,7 @@ export class AiBotStore extends BaseStore {
       let updated: UserDTO | undefined;
 
       if (Object.keys(payload).length) {
-        const res = await this.profileService.updateAiBot(id, payload);
+        const res = await this.aiBotDetailsService.updateAiBot(id, payload);
         updated = res.data;
       }
 
@@ -521,7 +521,7 @@ export class AiBotStore extends BaseStore {
           } as unknown as Blob;
           formData.append("avatar", file);
         }
-        const res = await this.profileService.uploadAiBotAvatar(id, formData);
+        const res = await this.aiBotDetailsService.uploadAiBotAvatar(id, formData);
         updated = res.data;
       }
 
@@ -584,7 +584,7 @@ export class AiBotStore extends BaseStore {
 
   async deleteBot(id: string) {
     try {
-      await this.profileService.deleteAiBot(id);
+      await this.aiBotDetailsService.deleteAiBot(id);
       runInAction(() => {
         this.myBots = this.myBots.filter((bot) => bot._id !== id);
         this.userAiBots = this.userAiBots.filter((bot) => bot._id !== id);
@@ -613,7 +613,7 @@ export class AiBotStore extends BaseStore {
     this.photosLoading = true;
     this.notify();
     try {
-      const { data } = await this.profileService.getAiBotDetails(id);
+      const { data } = await this.aiBotDetailsService.getAiBotDetails(id);
       runInAction(() => {
         this.botPhotos = data.photos ?? [];
         this.botDetails = data;
@@ -634,7 +634,7 @@ export class AiBotStore extends BaseStore {
     this.photosUpdating = true;
     this.notify();
     try {
-      const { data } = await this.profileService.addAiBotPhotos(id, formData);
+      const { data } = await this.aiBotDetailsService.addAiBotPhotos(id, formData);
       runInAction(() => {
         this.botPhotos = data.photos ?? [];
       });
@@ -656,7 +656,7 @@ export class AiBotStore extends BaseStore {
     this.photosUpdating = true;
     this.notify();
     try {
-      const { data } = await this.profileService.deleteAiBotPhotos(id, photoUrls);
+      const { data } = await this.aiBotDetailsService.deleteAiBotPhotos(id, photoUrls);
       runInAction(() => {
         this.botPhotos = data.photos ?? [];
       });
