@@ -4,13 +4,13 @@ import { useMemo, useState } from "react";
 import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/Button";
-import { FormState } from "@/helpers/types/agent-create";
+import { CreateAiAgentFormState } from "@/helpers/types/agent-create";
 import { categoryOptions } from "@/helpers/data/agent-create";
 import { useTranslations } from "@/localization/TranslationProvider";
 
 const normalized = (value: string) => value.trim().toLowerCase();
 
-type FocusForm = Pick<FormState, "categories" | "usefulness">;
+type FocusForm = Pick<CreateAiAgentFormState, "categories" | "usefulness">;
 
 type FocusStepProps = {
   form: FocusForm;

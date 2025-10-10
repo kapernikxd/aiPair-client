@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { Sparkles } from "lucide-react";
-import { FormState, GalleryItem } from "../../helpers/types/agent-create";
+import { CreateAiAgentFormState, GalleryItem } from "../../helpers/types/agent-create";
 import { useTranslations } from "@/localization/TranslationProvider";
 
 export default function PreviewSidebar({
@@ -9,7 +9,7 @@ export default function PreviewSidebar({
   gallery,
   maxItems,
 }: {
-  form: FormState;
+  form: CreateAiAgentFormState;
   avatarPreview: string | null;
   gallery: GalleryItem[];
   maxItems: number;

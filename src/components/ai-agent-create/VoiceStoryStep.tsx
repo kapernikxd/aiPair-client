@@ -1,9 +1,9 @@
 "use client";
 
-import { FormState } from "../../helpers/types/agent-create";
+import { CreateAiAgentFormState } from "../../helpers/types/agent-create";
 import { useTranslations } from "@/localization/TranslationProvider";
 
-type VoiceForm = Pick<FormState, "prompt" | "description" | "intro">;
+type VoiceForm = Pick<CreateAiAgentFormState, "prompt" | "description" | "intro">;
 
 type VoiceStoryStepProps = {
   form: VoiceForm;

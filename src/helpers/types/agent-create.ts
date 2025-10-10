@@ -1,4 +1,4 @@
-export type FormState = {
+export type CreateAiAgentFormState = {
   firstName: string;
   lastName: string;
   profession: string;

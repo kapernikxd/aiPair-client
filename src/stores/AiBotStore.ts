@@ -3,7 +3,7 @@ import { isAxiosError } from 'axios';
 import { BaseStore } from './BaseStore';
 import type { RootStore } from './RootStore';
 import { MAX_GALLERY_ITEMS, steps } from '@/helpers/data/agent-create';
-import type { FormState, GalleryItem } from '@/helpers/types/agent-create';
+import type { CreateAiAgentFormState, GalleryItem } from '@/helpers/types/agent-create';
 import { revokeGallery, revokeIfNeeded } from '@/helpers/utils/agent-create';
 import { AiBotDetails, AiBotDTO } from '@/helpers/types/dtos/AiBotDto';
 import { AiBotMainPageBot } from '@/helpers/types';
@@ -22,7 +22,7 @@ export type AiAgentHeader = {
 export class AiBotStore extends BaseStore {
   private root: RootStore;
   step = 0;
-  form: FormState = {
+  form: CreateAiAgentFormState = {
     firstName: '',
     lastName: '',
     profession: '',
@@ -100,7 +100,7 @@ export class AiBotStore extends BaseStore {
     this.notify();
   }
 
-  setFormField<K extends keyof FormState>(field: K, value: FormState[K]) {
+  setFormField<K extends keyof CreateAiAgentFormState>(field: K, value: CreateAiAgentFormState[K]) {
     this.form = { ...this.form, [field]: value };
     this.notify();
   }
