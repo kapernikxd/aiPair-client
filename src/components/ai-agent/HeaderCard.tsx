@@ -23,7 +23,7 @@ export default function HeaderCard({ user }: { user: AiBotDTO }) {
                     {t("common.aiAgent", "AI agent")}
                 </div>
                 <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">{userFullName}</h1>
-                {user.userBio &&
+                {user?.userBio &&
                     <TruncatedReveal
                         text={user.userBio}
                         maxChars={160}
