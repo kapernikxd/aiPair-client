@@ -1,67 +1,67 @@
-'use client';
+// app/.../ChatPage.tsx
+"use client";
 
-import Link from 'next/link';
-import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { Trash2 } from 'lucide-react';
-import AppShell from '@/components/AppShell';
-import ChatAvatar from '@/components/chats/ChatAvatar';
-import MessageList from '@/components/chat/MessageList';
-import MessageInput from '@/components/chat/MessageInput';
-import TypingIndicator, { buildTypingMessage } from '@/components/chat/TypingIndicator';
-import GradientOrbs from '@/components/ui/GradientOrbs';
-import { Button } from '@/components/ui/Button';
-import type { MessageDTO } from '@/helpers/types';
-import { getUserAvatar, getUserFullName } from '@/helpers/utils/user';
-import { useRootStore, useStoreData } from '@/stores/StoreProvider';
-import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
-import { useTranslations } from '@/localization/TranslationProvider';
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import AppShell from "@/components/AppShell";
+import GradientOrbs from "@/components/ui/GradientOrbs";
+import ChatPageView from "./ChatPageView";
+import { useChatPage } from "@/helpers/hooks/chat/useChatPage";
+import { useTranslations } from "@/localization/TranslationProvider";
 
-function formatPinnedTimestamp(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return '';
-  }
-  return date.toLocaleString();
+function ChatPageFallback() {
+  const { t } = useTranslations();
+  return (
+    <AppShell>
+      <div className="flex h-full min-h-0 flex-col items-center justify-center gap-4 p-6 text-sm text-white/60">
+        <GradientOrbs />
+        <p>{t("admin.chat.fallback.loading", "Loading chat…")}</p>
+      </div>
+    </AppShell>
+  );
 }
 
-function PinnedMessagesSection({ messages, onUnpin }: { messages: MessageDTO[]; onUnpin: (messageId: string) => void }) {
-  const { t } = useTranslations();
-  if (!messages.length) {
-    return null;
-  }
+function ChatPageContent() {
+  const params = useSearchParams();
+  const chatId = params.get("chatId");
+  const vm = useChatPage(chatId);
 
   return (
-    <section className="flex flex-col gap-3">
-      <header className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-white/70">
-          {t('admin.chat.pinned.title', 'Pinned messages')}
-        </h2>
-        <span className="text-xs text-white/50">{messages.length}</span>
-      </header>
-      <div className="space-y-3">
-        {messages.map((message) => (
-          <div
-            key={message._id}
-            className="flex items-start justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/90"
-          >
-            <div className="flex-1 space-y-1">
-              <p className="font-medium text-white">{message.content}</p>
-              <span className="text-[11px] uppercase tracking-wide text-white/60">
-                {formatPinnedTimestamp(message.createdAt)}
-              </span>
-            </div>
-            <Button
-              variant="ghostPillCompact"
-              className="border-white/20 text-white/80 hover:border-white/40 hover:text-white"
-              onClick={() => onUnpin(message._id)}
-            >
-              {t('admin.chat.pinned.unpin', 'Unpin')}
-            </Button>
-          </div>
-        ))}
-      </div>
-    </section>
+    <AppShell>
+      <ChatPageView
+        chatId={chatId}
+        // data
+        messages={vm.messages}
+        pinnedMessages={vm.pinnedMessages}
+        hasMoreMessages={vm.hasMoreMessages}
+        isSendingMessage={vm.isSendingMessage}
+        typingUsers={vm.typingUsers}
+        myId={vm.myId}
+        // flags
+        isLoadingConversation={vm.isLoadingConversation}
+        isLoadingMore={vm.isLoadingMore}
+        isClearingHistory={vm.isClearingHistory}
+        // header info
+        conversationUser={vm.conversationUser}
+        conversationTitle={vm.conversationTitle}
+        conversationFullName={vm.conversationFullName}
+        conversationProfileHref={vm.conversationProfileHref}
+        // utils
+        getUserAvatar={vm.getUserAvatar}
+        t={vm.t}
+        activeTypingMessage={vm.activeTypingMessage}
+        // handlers
+        handleClearHistory={vm.handleClearHistory}
+        handleLoadMore={vm.handleLoadMore}
+        handleSend={vm.handleSend}
+        handleTyping={vm.handleTyping}
+        handleStopTyping={vm.handleStopTyping}
+        handlePin={vm.handlePin}
+        handleUnpin={vm.handleUnpin}
+        resolveSenderName={vm.resolveSenderName}
+        isPinned={vm.isPinned}
+      />
+    </AppShell>
   );
 }
 
@@ -72,493 +72,3 @@ export default function ChatPage() {
     </Suspense>
   );
 }
-
-function ChatPageFallback() {
-  const { t } = useTranslations();
-  return (
-    <AppShell>
-      <div className="flex h-full min-h-0 flex-col items-center justify-center gap-4 p-6 text-sm text-white/60">
-        <GradientOrbs />
-        <p>{t('admin.chat.fallback.loading', 'Loading chat…')}</p>
-      </div>
-    </AppShell>
-  );
-}
-
-function ChatPageContent() {
-  const searchParams = useSearchParams();
-  const chatId = searchParams.get('chatId');
-  const { chatStore, authStore, onlineStore, uiStore } = useRootStore();
-  const { routes } = useAuthRoutes();
-  const { t } = useTranslations();
-
-  const messages = useStoreData(chatStore, (store) => store.messages);
-  const pinnedMessages = useStoreData(chatStore, (store) => store.pinnedMessages);
-  const hasMoreMessages = useStoreData(chatStore, (store) => store.hasMoreMessages);
-  const selectedChat = useStoreData(chatStore, (store) => store.selectedChat);
-  const isSendingMessage = useStoreData(chatStore, (store) => store.isSendingMessage);
-  const myId = useStoreData(authStore, (store) => store.user?.id ?? '');
-  const isSocketConnected = useStoreData(onlineStore, (store) => store.isConnected);
-  const typingUsers = useStoreData(onlineStore, (store) => store.typingUsers);
-
-  const [isLoadingConversation, setIsLoadingConversation] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [isClearingHistory, setIsClearingHistory] = useState(false);
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-  const messageListRef = useRef<HTMLDivElement | null>(null);
-  const scrollAnchorRef = useRef<HTMLDivElement | null>(null);
-  const scrollAnimationFrameRef = useRef<number | null>(null);
-  const maintainScrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const shouldMaintainScrollRef = useRef(false);
-  const previousLastMessageIdRef = useRef<string | undefined>(undefined);
-  const previousChatIdRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (!chatId) {
-      chatStore.cleanMessages();
-      chatStore.clearPinnedMessages();
-      chatStore.cleanOpponentId();
-      return;
-    }
-
-    let isCancelled = false;
-
-    const loadConversation = async () => {
-      setIsLoadingConversation(true);
-      chatStore.cleanMessages();
-      chatStore.clearPinnedMessages();
-      try {
-        await Promise.all([
-          chatStore.fetchChatMessages(chatId, 0),
-          chatStore.loadPinnedMessages(chatId),
-        ]);
-      } finally {
-        if (!isCancelled) {
-          setIsLoadingConversation(false);
-        }
-      }
-    };
-
-    void loadConversation();
-
-    return () => {
-      isCancelled = true;
-      chatStore.cleanMessages();
-      chatStore.clearPinnedMessages();
-      chatStore.cleanOpponentId();
-    };
-  }, [chatId, chatStore]);
-
-  useEffect(() => {
-    if (!chatId) return;
-    void chatStore.fetchChat(chatId, myId);
-  }, [chatId, chatStore, myId]);
-
-  useEffect(() => {
-    if (!myId) return;
-    void onlineStore.connectSocket();
-  }, [myId, onlineStore]);
-
-  useEffect(() => {
-    if (!chatId) return;
-    void onlineStore.ensureConnectedAndJoined([chatId]);
-  }, [chatId, onlineStore]);
-
-  useEffect(() => {
-    if (!chatId || !isSocketConnected) return;
-    chatStore.subscribeToChat(chatId);
-    return () => {
-      chatStore.unsubscribeFromChat();
-    };
-  }, [chatId, chatStore, isSocketConnected]);
-
-  useEffect(() => {
-    onlineStore.clearTypingUsers();
-    return () => {
-      onlineStore.clearTypingUsers();
-    };
-  }, [chatId, onlineStore]);
-
-  const handleTyping = useCallback(() => {
-    if (!chatId) return;
-    onlineStore.emitTyping(chatId);
-  }, [chatId, onlineStore]);
-
-  const handleStopTyping = useCallback(() => {
-    if (!chatId) return;
-    onlineStore.emitStopTyping(chatId);
-  }, [chatId, onlineStore]);
-
-  const handleClearHistory = useCallback(async () => {
-    if (!chatId) return;
-    const confirmed = window.confirm(
-      t(
-        'admin.chat.clearHistory.confirm',
-        'Are you sure you want to delete this conversation history? This action cannot be undone.',
-      ),
-    );
-    if (!confirmed) return;
-
-    setIsClearingHistory(true);
-    try {
-      await chatStore.clearChatHistory(chatId);
-      uiStore.showSnackbar(
-        t('admin.chat.clearHistory.success', 'Conversation history deleted.'),
-        'success',
-      );
-    } catch (error) {
-      console.error('Failed to delete conversation history:', error);
-      uiStore.showSnackbar(
-        t('admin.chat.clearHistory.error', 'Failed to delete conversation history.'),
-        'error',
-      );
-    } finally {
-      setIsClearingHistory(false);
-    }
-  }, [chatId, chatStore, t, uiStore]);
-
-  const handlePin = useCallback((message: MessageDTO) => {
-    if (chatStore.isMessagePinned(message._id)) return;
-    void chatStore.pinMessage(message);
-  }, [chatStore]);
-
-  const handleUnpin = useCallback((messageId: string) => {
-    void chatStore.unpinMessage(messageId);
-  }, [chatStore]);
-
-  const isPinned = useCallback((id: string) => chatStore.isMessagePinned(id), [chatStore]);
-
-  const handleLoadMore = useCallback(async () => {
-    if (!chatId || isLoadingMore) return;
-    setIsLoadingMore(true);
-    try {
-      await chatStore.fetchChatMessages(chatId, messages.length);
-    } finally {
-      setIsLoadingMore(false);
-    }
-  }, [chatId, chatStore, isLoadingMore, messages.length]);
-
-  const messageCount = messages.length;
-  const lastMessageId = messageCount ? messages[messageCount - 1]?._id : undefined;
-
-  const queueScrollToBottom = useCallback(() => {
-    const anchor = scrollAnchorRef.current;
-    const container = scrollContainerRef.current;
-
-    if (!anchor || !container) {
-      return;
-    }
-
-    shouldMaintainScrollRef.current = true;
-
-    if (maintainScrollTimeoutRef.current) {
-      clearTimeout(maintainScrollTimeoutRef.current);
-    }
-
-    maintainScrollTimeoutRef.current = setTimeout(() => {
-      shouldMaintainScrollRef.current = false;
-      maintainScrollTimeoutRef.current = null;
-    }, 1500);
-
-    if (scrollAnimationFrameRef.current !== null) {
-      cancelAnimationFrame(scrollAnimationFrameRef.current);
-    }
-
-    scrollAnimationFrameRef.current = requestAnimationFrame(() => {
-      container.scrollTop = container.scrollHeight;
-      anchor.scrollIntoView({ block: 'end', inline: 'nearest', behavior: 'auto' });
-      scrollAnimationFrameRef.current = null;
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!chatId || isLoadingConversation || !messageCount) {
-      return;
-    }
-
-    queueScrollToBottom();
-  }, [chatId, isLoadingConversation, messageCount, queueScrollToBottom]);
-
-  useLayoutEffect(() => {
-    const container = scrollContainerRef.current;
-
-    if (!container || !messageCount) {
-      previousLastMessageIdRef.current = lastMessageId;
-      previousChatIdRef.current = chatId;
-      return;
-    }
-
-    const chatHasChanged = chatId && chatId !== previousChatIdRef.current;
-    const hasNewLastMessage = lastMessageId && lastMessageId !== previousLastMessageIdRef.current;
-
-    if (chatHasChanged || hasNewLastMessage) {
-      queueScrollToBottom();
-    }
-
-    previousLastMessageIdRef.current = lastMessageId;
-    previousChatIdRef.current = chatId;
-  }, [chatId, lastMessageId, messageCount, queueScrollToBottom]);
-
-  const handleSend = useCallback(async (text: string) => {
-    if (!chatId || !text.trim()) return;
-
-    await chatStore.sendMessage(text, chatId);
-    queueScrollToBottom();
-  }, [chatId, chatStore, queueScrollToBottom]);
-
-  const messageListElement = messageListRef.current;
-
-  useEffect(() => {
-    if (!messageListElement) {
-      return;
-    }
-
-    const observer = new ResizeObserver(() => {
-      if (shouldMaintainScrollRef.current) {
-        queueScrollToBottom();
-      }
-    });
-
-    observer.observe(messageListElement);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [messageListElement, queueScrollToBottom]);
-
-  useEffect(() => () => {
-    if (scrollAnimationFrameRef.current !== null) {
-      cancelAnimationFrame(scrollAnimationFrameRef.current);
-    }
-    if (maintainScrollTimeoutRef.current) {
-      clearTimeout(maintainScrollTimeoutRef.current);
-    }
-    shouldMaintainScrollRef.current = false;
-  }, []);
-
-  const conversationTitle = useMemo(() => {
-    if (!selectedChat) return t('admin.chat.title.default', 'Chat');
-    if (selectedChat.isGroupChat) {
-      return selectedChat.chatName || t('admin.chat.title.group', 'Group chat');
-    }
-    const opponent = selectedChat.users?.find((user) => user._id !== myId);
-    const name = [opponent?.name, opponent?.lastname].filter(Boolean).join(' ').trim();
-    return name || opponent?.username || t('admin.chat.title.direct', 'Direct chat');
-  }, [myId, selectedChat, t]);
-
-  const conversationUser = useMemo(() => {
-    if (!selectedChat || selectedChat.isGroupChat) return null;
-    return selectedChat.users?.find((user) => user._id !== myId) ?? null;
-  }, [myId, selectedChat]);
-
-  const conversationFullName = useMemo(() => {
-    if (conversationUser) {
-      const fullName = getUserFullName(conversationUser).trim();
-      if (fullName) {
-        return fullName;
-      }
-      return conversationUser.username || conversationUser.email || conversationTitle;
-    }
-    return conversationTitle;
-  }, [conversationTitle, conversationUser]);
-
-  const conversationProfileHref = useMemo(() => {
-    if (conversationUser) {
-      const isAiBot = conversationUser.role === 'aiBot';
-      const baseRoute = isAiBot ? routes.aiAgentProfile : routes.userProfile;
-      return `${baseRoute}/${encodeURIComponent(conversationUser._id)}`;
-    }
-
-    return null;
-  }, [conversationUser, routes]);
-
-  const senderNameMap = useMemo(() => {
-    const map = new Map<string, string>();
-    selectedChat?.users?.forEach((user) => {
-      const fullName = [user.name, user.lastname].filter(Boolean).join(' ').trim();
-      const displayName = fullName || user.username || user.email || user._id;
-      map.set(user._id, displayName);
-    });
-    return map;
-  }, [selectedChat]);
-
-  const activeTypingMessage = useMemo(() => {
-    const filteredUsers = typingUsers.filter((user) => user.userId && user.userId !== myId);
-    if (!filteredUsers.length) {
-      return null;
-    }
-    return buildTypingMessage(filteredUsers);
-  }, [myId, typingUsers]);
-
-  const resolveSenderName = useCallback((message: MessageDTO) => {
-    const id = message.sender?._id;
-    if (!id) return t('admin.chat.sender.unknown', 'Anonymous');
-    const stored = senderNameMap.get(id);
-    if (stored) return stored;
-    return id.length > 8 ? `${id.slice(0, 6)}…` : id;
-  }, [senderNameMap, t]);
-
-  const renderEmptyState = () => (
-    <div className="flex flex-1 flex-col items-center justify-center gap-2 rounded-3xl border border-dashed border-white/10 bg-white/5 p-8 text-center text-sm text-white/60">
-      <p>{t('admin.chat.empty.select', 'Select a chat from the list to start messaging.')}</p>
-      <p className="text-xs text-white/40">
-        {t('admin.chat.empty.detail', 'Pinned messages and history will appear here.')}
-      </p>
-    </div>
-  );
-
-  return (
-    <AppShell>
-      {/* ВНЕШНИЙ КОНТЕЙНЕР ДОЛЖЕН РАСТЯГИВАТЬСЯ НА ВЕСЬ ЭКРАН */}
-      <div className="relative flex h-screen min-h-0 flex-col overflow-hidden"> {/* CHANGED: h-screen + min-h-0 */}
-        <GradientOrbs />
-
-        {/* ОСНОВНАЯ СЕТКА: ШАПКА / КОНТЕНТ / ИНПУТ */}
-        <div className="relative z-10 mx-auto w-full max-w-4xl flex-1 min-h-0
-            grid grid-rows-[auto_minmax(0,1fr)_auto]
-            gap-y-2 px-1 pt-1 pb-16 md:px-4 md:pt-4 md:gap-y-6">{/* CHANGED: removed h-full, added flex-1 min-h-0 */}
-
-          {/* HEADER */}
-          <header className="rounded-3xl max-h-[140px] border border-white/10 bg-white/5 px-6 py-5 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur"> {/* CHANGED: max-h unit */}
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-xs uppercase tracking-[0.28em] text-white/40">
-                  {t('admin.chat.header.label', 'Conversation')}
-                </span>
-                {chatId ? (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="whitespace-nowrap"
-                    disabled={isClearingHistory}
-                    onClick={handleClearHistory}
-                  >
-                    <Trash2 className="size-4" />
-                    <span>
-                      {isClearingHistory
-                        ? t('admin.chat.clearHistory.clearing', 'Clearing…')
-                        : t('admin.chat.clearHistory.action', 'Clear history')}
-                    </span>
-                  </Button>
-                ) : null}
-              </div>
-
-              {conversationProfileHref ? (
-                <Link
-                  href={conversationProfileHref}
-                  className="flex items-center gap-4 rounded-2xl transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-                >
-                  <ChatAvatar
-                    name={conversationFullName}
-                    avatarUrl={conversationUser ? getUserAvatar(conversationUser) : undefined}
-                    avatarAlt={conversationFullName}
-                  />
-                  <div className="flex flex-col">
-                    <h1 className="text-2xl font-semibold text-white">{conversationFullName}</h1>
-                    {activeTypingMessage ? (
-                      <p className="text-sm text-white/60">{activeTypingMessage}</p>
-                    ) : conversationUser?.profession ? (
-                      <p className="text-sm text-white/60">
-                        { conversationUser?.profession }
-                      </p>
-                    ) : null}
-                  </div>
-                </Link>
-              ) : (
-                <div className="flex items-center gap-4">
-                  <ChatAvatar
-                    name={conversationFullName}
-                    avatarUrl={conversationUser ? getUserAvatar(conversationUser) : undefined}
-                    avatarAlt={conversationFullName}
-                  />
-                  <div className="flex flex-col">
-                    <h1 className="text-2xl font-semibold text-white">{conversationFullName}</h1>
-                    {activeTypingMessage ? (
-                      <p className="text-sm text-white/60">{activeTypingMessage}</p>
-                    ) : conversationUser?.profession ? (
-                      <p className="text-sm text-white/60">
-                        { conversationUser?.profession }
-                      </p>
-                    ) : null}
-                  </div>
-                </div>
-              )}
-            </div>
-          </header>
-
-          {/* CENTRAL AREA */}
-          <div className="flex min-h-0"> {/* CHANGED: make a flex row container with min-h-0 so inner flex-1 can grow */}
-            {!chatId ? (
-              <div className="flex-1 min-h-0 overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-4 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur">
-                {renderEmptyState()}
-              </div>
-            ) : (
-              <div className="flex h-full min-h-0 flex-1 flex-col gap-4 rounded-3xl border border-white/10 bg-white/5 p-4 shadow-[0_18px_40px_rgba(15,15,15,0.45)] backdrop-blur"> {/* CHANGED: flex-1 min-h-0 */}
-                {isLoadingConversation ? (
-                  <div className="flex flex-1 items-center justify-center text-sm text-white/60">
-                    {t('admin.chat.loadingConversation', 'Loading conversation…')}
-                  </div>
-                ) : (
-                  <>
-                    <PinnedMessagesSection messages={pinnedMessages} onUnpin={handleUnpin} />
-                    {/* СКРОЛЛ-КОНТЕЙНЕР ДОЛЖЕН БЫТЬ flex-1 + min-h-0 */}
-                    <div ref={scrollContainerRef} className="flex-1 min-h-0 overflow-y-auto pr-2"> {/* CHANGED */}
-                      {hasMoreMessages ? (
-                        <div className="mb-4 flex justify-center">
-                          <Button
-                            variant="outline"
-                            className="rounded-full border-white/20 px-4 py-1 text-xs text-white/70 hover:border-white/50 hover:text-white"
-                            onClick={handleLoadMore}
-                            disabled={isLoadingMore}
-                          >
-                            {isLoadingMore
-                              ? t('admin.chat.loadingMore', 'Loading…')
-                              : t('admin.chat.loadPrevious', 'Load previous messages')}
-                          </Button>
-                        </div>
-                      ) : null}
-
-                      <MessageList
-                        messages={messages}
-                        currentUserId={myId}
-                        isMessagePinned={/* eslint-disable-line @typescript-eslint/no-unsafe-argument */ ((m) => false) /* замените на вашу isPinned */}
-                        onPinMessage={handlePin}
-                        onUnpinMessage={handleUnpin}
-                        resolveSenderName={resolveSenderName}
-                        containerRef={messageListRef}
-                        bottomSentinelRef={scrollAnchorRef}
-                      >
-                        <TypingIndicator typingUsers={typingUsers} currentUserId={myId} />
-                        {!messages.length ? (
-                          <p className="pt-6 text-center text-sm text-white/50">
-                            {t('admin.chat.noMessages', 'No messages yet. Say hello!')}
-                          </p>
-                        ) : null}
-                      </MessageList>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* INPUT */}
-          <div>
-            <MessageInput
-              onSend={handleSend}
-              placeholder={
-                chatId
-                  ? t('admin.chat.input.placeholder', 'Message {name}').replace('{name}', conversationTitle)
-                  : t('admin.chat.input.emptyPlaceholder', 'Select a chat to start messaging')
-              }
-              isSending={isSendingMessage}
-              onTyping={handleTyping}
-              onStopTyping={handleStopTyping}
-            />
-          </div>
-        </div>
-      </div>
-    </AppShell>
-  );
-}
-
