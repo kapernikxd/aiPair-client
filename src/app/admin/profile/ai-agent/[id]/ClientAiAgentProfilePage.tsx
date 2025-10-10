@@ -3,7 +3,7 @@
 import AppShell from "@/components/AppShell";
 import GradientBackdrop from "@/components/ai-agent/GradientBackdrop";
 import { AiAgentProfileView } from "./AiAgentProfileView";
-import { useAiAgentProfile } from "@/helpers/hooks/useAiAgentProfile";
+import { useAiAgentProfile } from "@/helpers/hooks/aiAgent/useAiAgentProfile";
 
 interface ClientAiAgentProfilePageProps { aiBotId?: string }
 

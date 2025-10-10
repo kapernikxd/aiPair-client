@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/Button";
 import EditAiAgentDialog from "@/components/ai-agent/edit/EditAiAgentDialog";
 import MoreActionsMenu from "@/components/MoreActionsMenu";
 import SessionVibe from "@/components/ai-agent/SessionVibe";
-import type { ActiveTab } from "../../../../../helpers/hooks/useAiAgentProfile";
+import type { ActiveTab } from "@/helpers/hooks/aiAgent/useAiAgentProfile";
 import { Highlight } from "@/helpers/types/ai-agent";
 import { AiBotDetails, AiBotDTO } from "@/helpers/types";
 
@@ -39,7 +39,7 @@ type Props = {
   chatHref: string;
   aiBotProfileId?: string;
   isMdUp: boolean;
-  t: any;
+  t: (key: string, fallback: string) => string;
   // handlers
   onBack: () => void;
   handleShare: () => void;
