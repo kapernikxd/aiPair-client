@@ -8,6 +8,7 @@ import { Users, UserPlus, Sparkles } from "lucide-react";
 import type { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
 import { getUserAvatar } from "@/helpers/utils/user";
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 
 type AiBotCardProps = {
@@ -19,11 +20,13 @@ const formatNumber = (value?: number) =>
 
 export default function AiBotCard({ bot }: AiBotCardProps) {
     const [isHovered, setIsHovered] = useState(false);
-    const { getAiProfile } = useAuthRoutes(); 
+    const { getAiProfile } = useAuthRoutes();
+    const { t } = useTranslations();
 
     const avatar = getUserAvatar(bot);
     const description = bot.userBio?.trim() || "Описание пока отсутствует.";
     const botHref = getAiProfile(encodeURIComponent(bot._id));
+    const tagLabel = t('admin.profile.aiAgentCard.tag', 'AI Bot');
 
     const stats = [
         { label: "Подписчики", value: formatNumber(bot.followers), icon: Users },
@@ -55,7 +58,7 @@ export default function AiBotCard({ bot }: AiBotCardProps) {
                 <div>
                     <div className="flex items-center justify-between gap-2">
                         <h3 className="text-xl font-semibold text-white">{bot.name}</h3>
-                        <span className="text-xs uppercase tracking-widest text-violet-200/80">AI Bot</span>
+                        <span className="text-xs uppercase tracking-widest text-violet-200/80">{tagLabel}</span>
                     </div>
                     <p
                         className="mt-3 text-sm leading-6 text-white/70"

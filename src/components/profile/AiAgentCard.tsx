@@ -4,19 +4,21 @@ import { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
 import { getUserAvatar } from "@/helpers/utils/user";
 import { Clock3, Flame, Heart } from "lucide-react";
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 
 export default function AiAgentCard({ aiAgent }: { aiAgent: AiBotDTO }) {
-    const { getAiProfile } = useAuthRoutes(); 
+    const { getAiProfile } = useAuthRoutes();
+    const { t } = useTranslations();
 
     const userAvatar = getUserAvatar(aiAgent);
     const aiAgentHref = getAiProfile(encodeURIComponent(aiAgent._id));
 
     const stats = [
-            { label: "episodes", value: "02", icon: Clock3 },
-            { label: "intensity", value: "8.2", icon: Flame },
-            { label: "saves", value: "26", icon: Heart },
-        ]
+        { label: t('admin.profile.aiAgentCard.stats.episodes', 'episodes'), value: "02", icon: Clock3 },
+        { label: t('admin.profile.aiAgentCard.stats.intensity', 'intensity'), value: "8.2", icon: Flame },
+        { label: t('admin.profile.aiAgentCard.stats.saves', 'saves'), value: "26", icon: Heart },
+    ];
 
     return (
         <Link

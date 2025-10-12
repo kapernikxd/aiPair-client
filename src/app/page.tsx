@@ -87,6 +87,7 @@ export default function Landing() {
   const router = useRouter();
   const [chatLoadingBotId, setChatLoadingBotId] = useState<string | null>(null);
   const { t, tList } = useTranslations();
+  const popularLabel = t('landing.pricing.popular', 'Popular');
   const [isPlusUnavailableOpen, setIsPlusUnavailableOpen] = useState(false);
 
   useEffect(() => {
@@ -99,7 +100,7 @@ export default function Landing() {
     authStore.startAuth(provider);
     const rawProfileName = profileName ?? '';
     const normalizedProfile = rawProfileName.trim().toLowerCase().replace(/\s+/g, '.');
-    const fallbackName = rawProfileName.trim() || 'User';
+    const fallbackName = rawProfileName.trim() || t('auth.userFallback', 'User');
     authStore.completeAuth({
       id: `${provider}-${Date.now()}`,
       name: fallbackName,
@@ -166,7 +167,7 @@ export default function Landing() {
         } satisfies LandingCardItem;
       });
     }
-    return []
+    return [];
   }, [chatLoadingBotId, handleChatNow, mainPageBots, routes, t]);
   const faqItems = useMemo(
     () => [
@@ -231,10 +232,18 @@ export default function Landing() {
         <Section className="flex items-center justify-between py-3">
           <Logo />
           <div className="hidden gap-6 text-sm text-white/80 md:flex">
-            <a href={routes.landingFeatures} className="hover:text-white">Features</a>
-            <a href={routes.landingDemo} className="hover:text-white">Demo</a>
-            <a href={routes.landingPricing} className="hover:text-white">Pricing</a>
-            <a href={routes.landingFaq} className="hover:text-white">FAQ</a>
+            <a href={routes.landingFeatures} className="hover:text-white">
+              {t('landing.nav.features', 'Features')}
+            </a>
+            <a href={routes.landingDemo} className="hover:text-white">
+              {t('landing.nav.demo', 'Demo')}
+            </a>
+            <a href={routes.landingPricing} className="hover:text-white">
+              {t('landing.nav.pricing', 'Pricing')}
+            </a>
+            <a href={routes.landingFaq} className="hover:text-white">
+              {t('landing.nav.faq', 'FAQ')}
+            </a>
           </div>
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-3">
@@ -376,7 +385,7 @@ export default function Landing() {
               <div className="flex h-full items-center justify-center text-white/40">
                 <Image
                   src="/img/video.gif"
-                  alt="AI character demo"
+                  alt={t('landing.demo.alt', 'AI character demo')}
                   unoptimized
                   width={960}
                   height={540}
@@ -421,6 +430,7 @@ export default function Landing() {
             ]}
             cta={t('landing.pricing.plus.cta', 'Upgrade')}
             href={routes.landingCta}
+            popularLabel={popularLabel}
             onClick={() => setIsPlusUnavailableOpen(true)}
           />
           <Plan
@@ -555,7 +565,7 @@ export default function Landing() {
               <X className="h-4 w-4" />
             </Button>
             <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[#6f2da8] text-lg font-semibold text-white">
-              t
+              AI
             </div>
             <div className="flex flex-1 flex-col text-left">
               <span className="text-sm font-semibold text-white">{t('landing.mobile.title', 'Download AiPair')}</span>
@@ -595,6 +605,7 @@ function Plan({
   highlight,
   href,
   onClick,
+  popularLabel,
 }: {
   name: string;
   price: string;
@@ -603,6 +614,7 @@ function Plan({
   highlight?: boolean;
   href: string;
   onClick?: () => void;
+  popularLabel?: string;
 }) {
   return (
     <div
@@ -613,7 +625,7 @@ function Plan({
     >
       {highlight && (
         <span className="absolute -top-2 right-4 rounded-full bg-[#6f2da8] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-          Popular
+          {popularLabel ?? 'Popular'}
         </span>
       )}
       <h4 className="text-lg font-bold text-white/90">{name}</h4>

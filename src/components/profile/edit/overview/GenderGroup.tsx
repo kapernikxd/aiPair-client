@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "@/localization/TranslationProvider";
+
 export default function GenderGroup({
   value,
   onChange,
@@ -9,9 +11,12 @@ export default function GenderGroup({
   onChange: (val: string) => void;
   options: readonly { value: string; label: string }[];
 }) {
+  const { t } = useTranslations();
   return (
     <fieldset className="space-y-3">
-      <legend className="text-xs font-medium uppercase tracking-wide text-neutral-400">Gender</legend>
+      <legend className="text-xs font-medium uppercase tracking-wide text-neutral-400">
+        {t('admin.profile.edit.genderLabel', 'Gender')}
+      </legend>
       <div className="grid gap-2 sm:grid-cols-3">
         {options.map((option) => (
           <label

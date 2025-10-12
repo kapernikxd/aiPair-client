@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Spacer } from "@/components/ui/Spacer";
 import { categoryOptions } from "@/helpers/data/agent-create";
 import { EditAiAgentFormState } from "@/helpers/hooks/aiAgent/useEditAiAgentDialog";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 const fieldLabelClasses =
   "flex items-center justify-between text-xs font-medium uppercase tracking-wide text-neutral-400";
@@ -62,6 +63,7 @@ export default function EditAiAgentDialogView(props: ViewProps) {
     toggleCategory, handleAddUsefulness, handleRemoveUsefulness,
     handleUsefulnessKeyDown, handleGalleryUpload, handleRemovePhoto,
   } = props;
+  const { t } = useTranslations();
 
   return (
     <div className="space-y-8 px-1 md:px-6 pb-6 sm:pb-8">
@@ -71,22 +73,30 @@ export default function EditAiAgentDialogView(props: ViewProps) {
         onAvatarSelect={handleAvatarSelect}
         onAvatarRemove={handleAvatarRemove}
         canRemoveAvatar={Boolean(avatarFile)}
-        description="Refresh your AI agent with updated visuals, identity, and vibe."
+        description={t(
+          'admin.editAiAgent.hero.description',
+          'Refresh your AI agent with updated visuals, identity, and vibe.',
+        )}
       />
 
       <section className="space-y-4">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-400">Identity</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-400">
+          {t('admin.editAiAgent.identity.sectionTitle', 'Identity')}
+        </h3>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="space-y-2">
             <div className={fieldLabelClasses}>
-              <span>Agent Name</span>
+              <span>{t('admin.editAiAgent.identity.nameLabel', 'Agent Name')}</span>
               <span>{charCounters.name}/24</span>
             </div>
             <input
               type="text"
               value={formState.name}
               onChange={(e) => setFormState((p) => ({ ...p, name: e.target.value.slice(0, 24) }))}
-              placeholder="Enter how people will call your agent"
+              placeholder={t(
+                'admin.editAiAgent.identity.namePlaceholder',
+                'Enter how people will call your agent',
+              )}
               maxLength={24}
               required
               className={inputClasses}
@@ -95,14 +105,17 @@ export default function EditAiAgentDialogView(props: ViewProps) {
 
           <label className="space-y-2">
             <div className={fieldLabelClasses}>
-              <span>Agent Surname</span>
+              <span>{t('admin.editAiAgent.identity.surnameLabel', 'Agent Surname')}</span>
               <span>{charCounters.lastname}/24</span>
             </div>
             <input
               type="text"
               value={formState.lastname}
               onChange={(e) => setFormState((p) => ({ ...p, lastname: e.target.value.slice(0, 24) }))}
-              placeholder="Optional last name or identifier"
+              placeholder={t(
+                'admin.editAiAgent.identity.surnamePlaceholder',
+                'Optional last name or identifier',
+              )}
               maxLength={24}
               required
               className={inputClasses}
@@ -112,14 +125,17 @@ export default function EditAiAgentDialogView(props: ViewProps) {
 
         <label className="space-y-2">
           <div className={fieldLabelClasses}>
-            <span>Profession</span>
+            <span>{t('admin.editAiAgent.identity.professionLabel', 'Profession')}</span>
             <span>{charCounters.profession}/24</span>
           </div>
           <input
             type="text"
             value={formState.profession}
             onChange={(e) => setFormState((p) => ({ ...p, profession: e.target.value.slice(0, 24) }))}
-            placeholder="What role does your agent embody?"
+            placeholder={t(
+              'admin.editAiAgent.identity.professionPlaceholder',
+              'What role does your agent embody?',
+            )}
             maxLength={24}
             required
             className={inputClasses}
@@ -129,13 +145,16 @@ export default function EditAiAgentDialogView(props: ViewProps) {
 
         <label className="space-y-2">
           <div className={fieldLabelClasses}>
-            <span>Profile Description</span>
+            <span>{t('admin.editAiAgent.identity.profileDescriptionLabel', 'Profile Description')}</span>
             <span>{charCounters.userBio}/160</span>
           </div>
           <textarea
             value={formState.userBio}
             onChange={(e) => setFormState((p) => ({ ...p, userBio: e.target.value.slice(0, 160) }))}
-            placeholder="Describe your agent’s personality, mission, or mood."
+            placeholder={t(
+              'admin.editAiAgent.identity.profileDescriptionPlaceholder',
+              'Describe your agent’s personality, mission, or mood.',
+            )}
             maxLength={160}
             rows={4}
             className="w-full resize-none rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3 text-base text-white placeholder:text-neutral-500 focus:border-white/40 focus:outline-none"
@@ -144,12 +163,18 @@ export default function EditAiAgentDialogView(props: ViewProps) {
       </section>
 
       <section className="space-y-4">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-400">Focus</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-400">
+          {t('admin.editAiAgent.focus.sectionTitle', 'Focus')}
+        </h3>
 
         <div className="space-y-4 rounded-3xl border border-white/10 bg-white/[0.04] p-4 sm:p-6">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-white">Categories</span>
-            <span className="text-xs uppercase tracking-wide text-white/50">Pick multiple</span>
+            <span className="text-sm font-semibold text-white">
+              {t('admin.create.focus.categories', 'Categories')}
+            </span>
+            <span className="text-xs uppercase tracking-wide text-white/50">
+              {t('admin.create.focus.categoriesHint', 'Pick multiple')}
+            </span>
           </div>
           <div className="flex flex-wrap gap-2">
             {categoryOptions.map((category) => {
@@ -173,15 +198,22 @@ export default function EditAiAgentDialogView(props: ViewProps) {
           </div>
           {!formState.categories.length && (
             <p className="text-xs text-white/50">
-              Select at least one category to highlight the agent&rsquo;s domain.
+              {t(
+                'admin.editAiAgent.focus.emptyCategories',
+                'Select at least one category to highlight the agent’s domain.',
+              )}
             </p>
           )}
         </div>
 
         <div className="space-y-4 rounded-3xl border border-white/10 bg-white/[0.04] p-4 sm:p-6">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-white">Usefulness</span>
-            <span className="text-xs uppercase tracking-wide text-white/50">Add scenarios</span>
+            <span className="text-sm font-semibold text-white">
+              {t('admin.create.focus.usefulness', 'Usefulness')}
+            </span>
+            <span className="text-xs uppercase tracking-wide text-white/50">
+              {t('admin.editAiAgent.focus.subtitle', 'Add scenarios')}
+            </span>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
             <input
@@ -191,8 +223,13 @@ export default function EditAiAgentDialogView(props: ViewProps) {
               placeholder="Например: Быстрые брейнштормы"
               className="flex-1 rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-violet-400 focus:outline-none"
             />
-            <Button type="button" variant="primaryTight" onClick={handleAddUsefulness} disabled={!usefulnessInput.trim()}>
-              Добавить
+            <Button
+              type="button"
+              variant="primaryTight"
+              onClick={handleAddUsefulness}
+              disabled={!usefulnessInput.trim()}
+            >
+              {t('admin.create.focus.add', 'Add')}
             </Button>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -215,7 +252,10 @@ export default function EditAiAgentDialogView(props: ViewProps) {
               ))
             ) : (
               <p className="text-xs text-white/50">
-                Добавьте несколько примеров, чтобы подсказать пользователям сценарии использования.
+                {t(
+                  'admin.create.focus.usefulnessEmpty',
+                  'Add a few examples to suggest how the agent can be used.',
+                )}
               </p>
             )}
           </div>
@@ -223,42 +263,60 @@ export default function EditAiAgentDialogView(props: ViewProps) {
       </section>
 
       <section className="space-y-4">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-400">Voice &amp; Story</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-400">
+          {t('admin.create.steps.voice.title', 'Voice & Story')}
+        </h3>
 
         <label className="space-y-2">
-          <span className="text-xs font-medium uppercase tracking-wide text-neutral-400">System prompt</span>
+          <span className="text-xs font-medium uppercase tracking-wide text-neutral-400">
+            {t('admin.create.voice.prompt', 'System prompt')}
+          </span>
           <textarea
             value={formState.aiPrompt}
             onChange={(e) => setFormState((p) => ({ ...p, aiPrompt: e.target.value }))}
             rows={5}
-            placeholder="You are a strategic confidant who helps people reframe their challenges with empathy..."
+            placeholder={t(
+              'admin.create.voice.promptPlaceholder',
+              'You are a strategic confidant who helps people reframe their challenges with empathy...',
+            )}
             required
             className="min-h-[140px] w-full rounded-3xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-neutral-500 focus:border-white/40 focus:outline-none"
           />
         </label>
 
         <label className="space-y-2">
-          <span className="text-xs font-medium uppercase tracking-wide text-neutral-400">Intro message</span>
+          <span className="text-xs font-medium uppercase tracking-wide text-neutral-400">
+            {t('admin.create.voice.intro', 'Intro message')}
+          </span>
           <textarea
             value={formState.intro}
             onChange={(e) => setFormState((p) => ({ ...p, intro: e.target.value }))}
             rows={3}
-            placeholder="How does the first hello sound? Set the scene in one paragraph."
+            placeholder={t(
+              'admin.create.voice.introPlaceholder',
+              'How does the first hello sound? Set the scene in one paragraph.',
+            )}
             className="rounded-3xl w-full border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-white placeholder:text-neutral-500 focus:border-white/40 focus:outline-none"
           />
         </label>
       </section>
 
       <section className="space-y-4">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-400">Media kit</h3>
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-400">
+          {t('admin.create.steps.media.title', 'Media kit')}
+        </h3>
 
         <div className="rounded-3xl border border-dashed border-white/15 bg-white/[0.04] p-6 text-center text-sm text-white/70">
           <label
             className={`relative flex cursor-pointer flex-col items-center justify-center gap-3 ${!canUploadPhotos ? "pointer-events-none opacity-50" : ""}`}
           >
             <ImagePlus className="size-6 text-violet-300" />
-            <span className="font-medium text-white">Upload gallery</span>
-            <span className="text-xs text-white/60">Drop multiple images or pick from your library</span>
+            <span className="font-medium text-white">
+              {t('admin.editAiAgent.media.upload', 'Upload gallery')}
+            </span>
+            <span className="text-xs text-white/60">
+              {t('admin.editAiAgent.media.hint', 'Drop multiple images or pick from your library')}
+            </span>
             <input
               type="file"
               accept="image/*"
@@ -270,23 +328,30 @@ export default function EditAiAgentDialogView(props: ViewProps) {
           </label>
           {!canUploadPhotos && remainingGallerySlots === 0 && (
             <p className="mt-4 text-xs text-white/50">
-              You&rsquo;ve reached the {maxGalleryItems}-image limit. Remove an image to upload new ones.
+              {t(
+                'admin.editAiAgent.media.limit',
+                'You’ve reached the {count}-image limit. Remove an image to upload new ones.',
+              ).replace('{count}', String(maxGalleryItems))}
             </p>
           )}
-          {photosUpdating && <p className="mt-4 text-xs text-white/50">Processing gallery updates…</p>}
+          {photosUpdating && (
+            <p className="mt-4 text-xs text-white/50">
+              {t('admin.editAiAgent.media.processing', 'Processing gallery updates…')}
+            </p>
+          )}
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           {botPhotos.map((url) => (
             <div key={url} className="group relative overflow-hidden rounded-3xl border border-white/10">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={url} alt="Gallery asset" className="h-40 w-full object-cover" />
+              <img src={url} alt={t('admin.editAiAgent.media.assetAlt', 'Gallery asset')} className="h-40 w-full object-cover" />
               <div className="absolute right-3 top-3">
                 <Button
                   type="button"
                   onClick={() => handleRemovePhoto(url)}
                   variant="galleryClose"
-                  aria-label="Remove image"
+                  aria-label={t('admin.editAiAgent.media.removeImage', 'Remove image')}
                   disabled={photosUpdating}
                 >
                   <X className="size-4" />
@@ -296,7 +361,12 @@ export default function EditAiAgentDialogView(props: ViewProps) {
           ))}
           {!botPhotos.length && (
             <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-left text-sm text-white/60">
-              <p>Add reference images, scenes, or moodboard shots to help visualise your agent.</p>
+              <p>
+                {t(
+                  'admin.editAiAgent.media.empty',
+                  'Add reference images, scenes, or moodboard shots to help visualise your agent.',
+                )}
+              </p>
             </div>
           )}
         </div>

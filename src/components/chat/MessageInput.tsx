@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
+import { useTranslations } from '@/localization/TranslationProvider';
 
 type Props = {
   placeholder?: string;
@@ -12,15 +13,18 @@ type Props = {
 };
 
 export default function MessageInput({
-  placeholder = 'Say something...',
+  placeholder,
   onSend,
   isSending = false,
   onTyping,
   onStopTyping,
 }: Props) {
+  const { t } = useTranslations();
   const [value, setValue] = useState('');
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isTypingRef = useRef(false);
+  const effectivePlaceholder = placeholder ?? t('chat.input.placeholder', 'Say something...');
+  const sendLabel = t('chat.input.send', 'Send');
 
   const stopTyping = useCallback(() => {
     if (typingTimeoutRef.current) {
@@ -89,11 +93,11 @@ export default function MessageInput({
           onChange={handleChange}
           onBlur={stopTyping}
           className="flex-1 rounded-2xl border border-white/10 bg-transparent px-4 py-3 text-sm text-white placeholder:text-white/40 focus:border-white/40 focus:outline-none"
-          placeholder={placeholder}
+          placeholder={effectivePlaceholder}
           disabled={isSending}
         />
         <Button type="submit" variant="solidWhite" disabled={isSending}>
-          Send
+          {sendLabel}
         </Button>
       </div>
     </form>

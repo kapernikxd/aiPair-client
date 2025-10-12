@@ -5,6 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Loader2, MessageSquare } from 'lucide-react';
 
+import { useTranslations } from '@/localization/TranslationProvider';
+
 export type HoverSwapCardProps = {
   src?: string;             // делаем опциональным — будет заглушка, если пусто
   avatarSrc?: string;
@@ -26,6 +28,8 @@ export default function HoverSwapCard({
   onChatNow,
   isChatLoading = false,
 }: HoverSwapCardProps) {
+  const { t } = useTranslations();
+
   const handleChatClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (!onChatNow) {
       return;
@@ -93,7 +97,7 @@ export default function HoverSwapCard({
             {avatarSrc && (
               <Image
                 src={avatarSrc}
-                alt={`${title} avatar`}
+                alt={`${title} — аватар`}
                 width={32}
                 height={32}
                 unoptimized
@@ -118,7 +122,11 @@ export default function HoverSwapCard({
               ) : (
                 <MessageSquare className="size-4" aria-hidden />
               )}
-              <span>{isChatLoading ? 'Opening…' : 'Chat Now'}</span>
+              <span>
+                {isChatLoading
+                  ? t('cards.ai.loading', 'Opening…')
+                  : t('cards.ai.chat', 'Chat now')}
+              </span>
             </button>
           </div>
         </div>

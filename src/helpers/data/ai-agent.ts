@@ -3,15 +3,15 @@ import type { Highlight, Opening } from "@/helpers/types/ai-agent";
 
 export const highlights: Highlight[] = [
     {
-        title: "Creator Info",
+        title: "Информация о создателе",
         lines: [
             {
-                label: "Handle",
+                label: "Ник",
                 value: "@aiAgent",
                 href: "https://example.com/@aiAgent",
             },
-            { label: "Role", value: "Adaptive companion" },
-            { label: "Created", value: "02/15/2026 09:41" },
+            { label: "Роль", value: "Адаптивный компаньон" },
+            { label: "Создан", value: "15.02.2026 09:41" },
         ],
     },
 ];
@@ -19,17 +19,17 @@ export const highlights: Highlight[] = [
 
 export const openings: Opening[] = [
     {
-        title: "Morning reset",
+        title: "Утренний перезапуск",
         description:
-            "Ground yourself with a 5-minute clarity ritual crafted around today's priorities.",
+            "Соберитесь с мыслями благодаря 5-минутному ритуалу ясности, построенному вокруг ваших приоритетов на сегодня.",
     },
     {
-        title: "Creative unblock",
-        description: "Spin up fresh metaphors or story angles when you're feeling stuck.",
+        title: "Творческий прорыв",
+        description: "Подберите свежие метафоры или сюжетные повороты, когда идеи заканчиваются.",
     },
     {
-        title: "Tough talk rehearsal",
+        title: "Репетиция сложного разговора",
         description:
-            "Run through the hard conversation before it happens—rehearse, refine, release.",
+            "Проиграйте трудный диалог до того, как он состоится — потренируйтесь, отпустите напряжение и найдите верные слова.",
     },
 ];
