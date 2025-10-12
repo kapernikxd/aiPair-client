@@ -1,6 +1,6 @@
 export const genderOptions = [
-  { value: "MALE", label: "Male" },
-  { value: "FEMALE", label: "Female" },
+  { value: "MALE", label: "Мужской" },
+  { value: "FEMALE", label: "Женский" },
 ] as const;
 
 export const professionOptions: string[] = [
@@ -13,21 +13,21 @@ export const professionOptions: string[] = [
 
 
 export const badges = [
-    "Narrative tactician",
-    "Keeps secrets",
-    "Loyal to the core",
+    "Мастер повествований",
+    "Умеет хранить секреты",
+    "Безусловно предан",
 ];
 
 
 export const initialProfile = {
-    userName: "Vadim Stepanov",
+    userName: "Вадим Степанов",
     gender: "MALE",
-    intro: "AI product designer exploring the edges of digital companions.",
+    intro: "Дизайнер AI-продуктов, исследующий границы цифровых компаньонов.",
     profession: "Выберите ваш род занятий",
 };
 
 
 export const genderLabels: Record<string, string> = {
-    MALE: "Male",
-    FEMALE: "Female",
+    MALE: "Мужской",
+    FEMALE: "Женский",
 };

@@ -6,6 +6,7 @@ import type { AiBotDTO } from '@/helpers/types/dtos/AiBotDto';
 import type { UserDTO } from '@/helpers/types';
 import React from 'react';
 import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
+import { useTranslations } from '@/localization/TranslationProvider';
 
 type TimelineAgent = AiBotDTO | UserDTO;
 
@@ -65,7 +66,9 @@ export default function AiAgentsTimeline({
   isLoading = false,
 }: AiAgentsTimelineProps) {
   const hasItems = items.length > 0;
-  const { getAiProfile } = useAuthRoutes(); 
+  const { getAiProfile } = useAuthRoutes();
+  const { t } = useTranslations();
+  const defaultEmptyMessage = t('admin.profile.aiAgentsTimeline.empty', 'No AI agents to display yet.');
 
   return (
     <section className="rounded-3xl border border-white/10 bg-white/5 p-1 md:p-6 backdrop-blur">
@@ -99,7 +102,7 @@ export default function AiAgentsTimeline({
           </div>
         ) : (
           <p className="rounded-2xl border border-dashed border-white/15 bg-transparent px-4 py-8 text-center text-sm text-white/60">
-            {emptyMessage ?? 'No AI agents to display yet.'}
+            {emptyMessage ?? defaultEmptyMessage}
           </p>
         )}
 

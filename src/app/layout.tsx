@@ -16,8 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI Pair | Free AI Character Chat",
-  description: "Chat with AI characters for free! Create personalized connections, have conversations that feel real, and discover your perfect AI friends. Create Your Super Intelligent World with AI Pair!",
+  title: "AI Pair | Бесплатные чаты с AI-компаньонами",
+  description:
+    "Общайтесь с виртуальными компаньонами на русском языке, создавайте собственных AI-героев и делитесь ими с друзьями.",
 };
 
 export default function RootLayout({

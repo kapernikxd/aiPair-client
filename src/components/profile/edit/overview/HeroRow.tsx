@@ -4,6 +4,7 @@ import Image from "next/image";
 import React, { ChangeEvent, useRef, useState } from "react";
 
 import { isLikelyImage, normalizeImageToJpeg } from "@/helpers/utils/image";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 type Props = {
   userName?: string;
@@ -20,8 +21,19 @@ export default function HeroRow({
   onAvatarSelect,
   onAvatarRemove,
   canRemoveAvatar,
-  description = "Update your personal details to help others know you better.",
+  description,
 }: Props) {
+  const { t } = useTranslations();
+  const fallbackDescription = t(
+    "admin.profile.edit.hero.description",
+    "Update your personal details to help others know you better.",
+  );
+  const heroDescription = description ?? fallbackDescription;
+  const loadingLabel = t("common.loading", "Loading…");
+  const chooseFileLabel = t("admin.profile.edit.hero.chooseFile", "Choose file");
+  const takePhotoLabel = t("admin.profile.edit.hero.takePhoto", "Take a photo");
+  const removePhotoLabel = t("admin.profile.edit.hero.removePhoto", "Remove photo");
+  const previewAlt = t("admin.profile.edit.hero.previewAlt", "Profile avatar preview");
   const inputFileRef = useRef<HTMLInputElement | null>(null);
   const inputCameraRef = useRef<HTMLInputElement | null>(null);
 
@@ -80,13 +92,13 @@ export default function HeroRow({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={previewUrl}
-                  alt="Profile avatar preview"
+                  alt={previewAlt}
                   className="h-full w-full object-cover"
                 />
               ) : (
                 <Image
                   src={previewUrl}
-                  alt="Profile avatar preview"
+                  alt={previewAlt}
                   fill
                   className="object-cover"
                   sizes="80px"
@@ -105,7 +117,7 @@ export default function HeroRow({
               htmlFor="avatarFileInput"
               className="block w-full cursor-pointer rounded-2xl border border-white/15 bg-white/5 px-4 py-2 text-center text-xs font-medium uppercase tracking-wide text-white/80 transition hover:bg-white/10"
             >
-              {busy ? "Loading..." : "Choose file"}
+              {busy ? loadingLabel : chooseFileLabel}
             </label>
             <input
               id="avatarFileInput"
@@ -120,7 +132,7 @@ export default function HeroRow({
               htmlFor="avatarCameraInput"
               className="block w-full cursor-pointer rounded-2xl border border-white/15 bg-white/5 px-4 py-2 text-center text-xs font-medium uppercase tracking-wide text-white/80 transition hover:bg-white/10"
             >
-              {busy ? "Loading..." : "Take a photo"}
+              {busy ? loadingLabel : takePhotoLabel}
             </label>
             <input
               id="avatarCameraInput"
@@ -145,7 +157,7 @@ export default function HeroRow({
                 }}
                 className="w-full rounded-2xl border border-transparent bg-white/0 px-4 py-2 text-xs font-medium uppercase tracking-wide text-white/60 transition hover:text-white"
               >
-                Remove photo
+                {removePhotoLabel}
               </button>
             )}
 
@@ -155,7 +167,7 @@ export default function HeroRow({
       </div>
 
       <p className="text-center text-sm text-neutral-300 sm:mt-2 sm:text-left">
-        {description}
+        {heroDescription}
       </p>
     </div>
   );

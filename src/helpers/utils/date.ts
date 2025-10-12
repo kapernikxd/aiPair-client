@@ -4,12 +4,14 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 import updateLocale from "dayjs/plugin/updateLocale";
+import "dayjs/locale/ru";
 
 dayjs.extend(relativeTime);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(localizedFormat);
 dayjs.extend(updateLocale);
+dayjs.locale("ru");
 
 // "2025-05-31T15:00:00" → "2 hours ago"
 export const getTimeAgo = (time?: string) =>

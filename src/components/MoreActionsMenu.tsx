@@ -8,6 +8,7 @@ import { useRootStore, useStoreData } from '@/stores/StoreProvider';
 import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
 import ReportModal from '@/components/ReportModal';
 import ModalShell from '@/components/profile/edit/overview/ModalShell';
+import { useTranslations } from '@/localization/TranslationProvider';
 
 interface MoreActionsMenuProps {
   buttonAriaLabel?: string;
@@ -22,7 +23,7 @@ interface MoreActionsMenuProps {
 }
 
 export default function MoreActionsMenu({
-  buttonAriaLabel = 'More options',
+  buttonAriaLabel,
   align = 'end',
   buttonVariant = 'frostedIcon',
   className,
@@ -33,6 +34,7 @@ export default function MoreActionsMenu({
   onAiAgentDeleted,
 }: MoreActionsMenuProps) {
   const { authStore, profileStore, uiStore, aiBotStore } = useRootStore();
+  const { t } = useTranslations();
   const hasAttemptedAutoLogin = useStoreData(authStore, (store) => store.hasAttemptedAutoLogin);
   const [open, setOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -47,6 +49,7 @@ export default function MoreActionsMenu({
   const [resolvedAlign, setResolvedAlign] = useState<'start' | 'end'>(align);
   const { goTo } = useAuthRoutes();
   const router = useRouter();
+  const menuAriaLabel = buttonAriaLabel ?? t('common.moreOptions', 'More options');
 
   useEffect(() => {
     setResolvedAlign((previous) => (previous === align ? previous : align));
@@ -105,7 +108,9 @@ export default function MoreActionsMenu({
 
   const handleSubmitReport = async (reason: string, details: string) => {
     if (!reportTargetId) {
-      setReportError('Unable to submit report: missing target identifier.');
+      setReportError(
+        t('moreActions.report.missingTarget', 'Unable to submit report: missing target identifier.'),
+      );
       return;
     }
 
@@ -118,10 +123,15 @@ export default function MoreActionsMenu({
         await profileStore.reportAiBot({ reason, details, targetId: reportTargetId });
       }
       setIsReportOpen(false);
-      uiStore.showSnackbar('Thanks for your report. Our team will review it shortly.', 'success');
+      uiStore.showSnackbar(
+        t('moreActions.report.success', 'Thanks for your report. Our team will review it shortly.'),
+        'success',
+      );
     } catch (error) {
       console.error('Failed to submit report', error);
-      setReportError('Could not send report. Please try again later.');
+      setReportError(
+        t('moreActions.report.error', 'Could not send report. Please try again later.'),
+      );
     } finally {
       setIsSubmittingReport(false);
     }
@@ -140,7 +150,9 @@ export default function MoreActionsMenu({
 
   const handleConfirmDelete = async () => {
     if (!aiAgentId) {
-      setDeleteError('Unable to delete AI agent: missing target identifier.');
+      setDeleteError(
+        t('moreActions.delete.missingTarget', 'Unable to delete AI agent: missing target identifier.'),
+      );
       return;
     }
 
@@ -149,11 +161,13 @@ export default function MoreActionsMenu({
     try {
       await aiBotStore.deleteBot(aiAgentId);
       setIsDeleteOpen(false);
-      uiStore.showSnackbar('AI agent deleted', 'success');
+      uiStore.showSnackbar(t('moreActions.delete.success', 'AI agent deleted'), 'success');
       onAiAgentDeleted?.();
     } catch (error) {
       console.error('Failed to delete AI agent', error);
-      setDeleteError('Could not delete this AI agent. Please try again later.');
+      setDeleteError(
+        t('moreActions.delete.error', 'Could not delete this AI agent. Please try again later.'),
+      );
     } finally {
       setIsDeleting(false);
     }
@@ -161,8 +175,19 @@ export default function MoreActionsMenu({
 
   const isReportMode = mode !== 'self';
   const reportDisabled = isReportMode && !reportTargetId;
-  const reportLabel = mode === 'aiAgent' ? 'Report AI agent' : 'Report user';
+  const reportLabel =
+    mode === 'aiAgent'
+      ? t('report.agent.title', 'Report AI agent')
+      : t('report.user.title', 'Report user');
   const canShowDeleteOption = mode === 'aiAgent' && canDeleteAiAgent;
+  const deleteTitle = t('moreActions.delete.title', 'Delete AI agent?');
+  const deleteDescription = t(
+    'moreActions.delete.description',
+    'Deleting this AI agent will permanently remove all of its chats, conversations, and related information for every user. This action cannot be undone. Are you sure you want to continue?',
+  );
+  const cancelLabel = t('common.cancel', 'Cancel');
+  const deleteLabel = t('common.delete', 'Delete');
+  const deletingLabel = t('common.deleting', 'Deleting…');
 
   useLayoutEffect(() => {
     if (!open) return;
@@ -209,7 +234,7 @@ export default function MoreActionsMenu({
         variant={buttonVariant}
         aria-haspopup="menu"
         aria-expanded={open}
-        aria-label={buttonAriaLabel}
+        aria-label={menuAriaLabel}
         onClick={() => setOpen((prev) => !prev)}
       >
         <MoreHorizontal className="size-5" />
@@ -223,14 +248,14 @@ export default function MoreActionsMenu({
           {isReportMode ? (
             <>
               {canShowDeleteOption ? (
-                <button
-                  type="button"
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-red-400 transition hover:bg-red-500/10"
-                  onClick={handleOpenDelete}
-                >
-                  <Trash2 className="size-4" />
-                  Delete AI agent
-                </button>
+              <button
+                type="button"
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-red-400 transition hover:bg-red-500/10"
+                onClick={handleOpenDelete}
+              >
+                <Trash2 className="size-4" />
+                  {t('moreActions.delete.button', 'Delete AI agent')}
+              </button>
               ) : null}
               <button
                 type="button"
@@ -250,7 +275,7 @@ export default function MoreActionsMenu({
               disabled={isLoggingOut}
             >
               <LogOut className="size-4" />
-              {isLoggingOut ? 'Logging out…' : 'Log out'}
+              {isLoggingOut ? t('common.loggingOut', 'Logging out…') : t('common.logout', 'Log out')}
             </button>
           )}
         </div>
@@ -269,16 +294,13 @@ export default function MoreActionsMenu({
         <ModalShell open={isDeleteOpen} onBackdrop={handleCloseDelete}>
           <div className="space-y-6 px-1 pb-6 pt-6 md:px-6">
             <div className="space-y-2">
-              <h2 className="text-lg font-semibold text-white">Delete AI agent?</h2>
-              <p className="text-sm text-white/70">
-                Deleting this AI agent will permanently remove all of its chats, conversations, and related information for every
-                user. This action cannot be undone. Are you sure you want to continue?
-              </p>
+              <h2 className="text-lg font-semibold text-white">{deleteTitle}</h2>
+              <p className="text-sm text-white/70">{deleteDescription}</p>
             </div>
             {deleteError ? <p className="text-sm text-red-400">{deleteError}</p> : null}
             <div className="flex justify-end gap-3">
               <Button type="button" variant="outline" onClick={handleCloseDelete} disabled={isDeleting}>
-                Cancel
+                {cancelLabel}
               </Button>
               <Button
                 type="button"
@@ -287,7 +309,7 @@ export default function MoreActionsMenu({
                 onClick={handleConfirmDelete}
                 disabled={isDeleting}
               >
-                {isDeleting ? 'Deleting…' : 'Delete'}
+                {isDeleting ? deletingLabel : deleteLabel}
               </Button>
             </div>
           </div>
