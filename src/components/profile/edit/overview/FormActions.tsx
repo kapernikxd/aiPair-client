@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
+import { useTranslations } from "@/localization/TranslationProvider";
 
 export default function FormActions({
   onCancel,
@@ -9,6 +10,11 @@ export default function FormActions({
   onCancel: () => void;
   isSubmitting?: boolean;
 }) {
+  const { t } = useTranslations();
+  const cancelLabel = t("common.cancel", "Отмена");
+  const saveLabel = t("common.save", "Сохранить");
+  const savingLabel = t("common.saving", "Сохраняем…");
+
   return (
     <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
       <Button
@@ -17,14 +23,14 @@ export default function FormActions({
         variant="outlineWide"
         disabled={isSubmitting}
       >
-        Cancel
+        {cancelLabel}
       </Button>
       <Button
         type="submit"
         variant="solidWhiteWide"
         disabled={isSubmitting}
       >
-        {isSubmitting ? "Saving..." : "Save"}
+        {isSubmitting ? savingLabel : saveLabel}
       </Button>
     </div>
   );

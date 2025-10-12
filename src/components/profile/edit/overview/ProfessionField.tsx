@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslations } from "@/localization/TranslationProvider";
+
 export default function ProfessionField({
   value,
   onChange,
@@ -9,10 +11,12 @@ export default function ProfessionField({
   onChange: (val: string) => void;
   placeholder?: string;
 }) {
+  const { t } = useTranslations();
+
   return (
     <label className="block space-y-2">
       <span className="text-xs font-medium uppercase tracking-wide text-neutral-400">
-        Profession
+        {t("admin.profile.edit.professionLabel", "Профессия")}
       </span>
       <input
         type="text"
