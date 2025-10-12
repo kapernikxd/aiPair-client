@@ -5,7 +5,7 @@ import { storageHelper } from "../utils/storageHelper";
 
 export const isDev = process.env.NODE_ENV === "development";
 
-export const EMAIL = "aiPair.support@gmail.com";
+export const EMAIL = "aipairpro@yandex.com";
 
 export const BASE_URL = isDev ? "http://localhost:5001/" : "https://aipair.pro/"
 

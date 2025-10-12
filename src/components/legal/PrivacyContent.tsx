@@ -66,8 +66,8 @@ export default function PrivacyContent() {
         content: (
           <p>
             {t("legal.privacy.section5.body.beforeEmail", "Conversation history and account records are kept while your profile is active and as needed to provide the service. You can request deletion of your account and related data by emailing ")}
-            <a className="text-[#6f2da8] underline" href="mailto:feedback@aipair.pro">
-              feedback@aipair.pro
+            <a className="text-[#6f2da8] underline" href="mailto:aipairpro@yandex.com">
+              aipairpro@yandex.com
             </a>
             {t("legal.privacy.section5.body.afterEmail", ". We may retain certain information to comply with legal obligations or resolve disputes.")}
           </p>
@@ -81,7 +81,7 @@ export default function PrivacyContent() {
               "Adjust profile and privacy preferences within your AiPair account.",
               "Manage conversation memory for each chat directly in the product.",
               "Unsubscribe from marketing emails via the \"Unsubscribe\" link in messages.",
-              "Request access, portability, or deletion of data by contacting feedback@aipair.pro.",
+              "Request access, portability, or deletion of data by contacting aipairpro@yandex.com.",
             ]).map((item) => (
               <li key={item}>{item}</li>
             ))}
@@ -126,8 +126,8 @@ export default function PrivacyContent() {
         content: (
           <p>
             {t("legal.privacy.section10.body.beforeEmail", "If you have privacy questions for AiPair, email ")}
-            <a className="text-[#6f2da8] underline" href="mailto:feedback@aipair.pro">
-              feedback@aipair.pro
+            <a className="text-[#6f2da8] underline" href="mailto:aipairpro@yandex.com">
+              aipairpro@yandex.com
             </a>
             {t("legal.privacy.section10.body.afterEmail", " or visit our ")}
             <Link className="text-[#6f2da8] underline" href="/contact">

@@ -462,14 +462,14 @@ export default function Landing() {
             <p className="mt-3 text-sm text-white/70">
               {t(
                 'landing.pricing.plus.unavailableDescription',
-                'Чтобы перейти на тариф, напишите нам на почту info@aipair.pro.'
+                'Чтобы перейти на тариф, напишите нам на почту aipairpro@yandex.com.'
               )}
             </p>
             <a
-              href="mailto:info@aipair.pro"
+              href="mailto:aipairpro@yandex.com"
               className="mt-5 inline-flex items-center justify-center rounded-xl bg-white px-4 py-2 text-sm font-semibold text-neutral-900 transition hover:bg-white/90"
             >
-              info@aipair.pro
+              aipairpro@yandex.com
             </a>
           </div>
         </div>

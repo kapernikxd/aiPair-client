@@ -15,8 +15,8 @@ export function ContactPageContent() {
           'contact.channels.support.description',
           'Need help using AiPair or have suggestions to share? Email our support team and we will respond within 2 business days.',
         ),
-        actionLabel: t('contact.channels.support.action', 'feedback@aipair.pro'),
-        actionHref: 'mailto:feedback@aipair.pro',
+        actionLabel: t('contact.channels.support.action', 'aipairpro@yandex.com'),
+        actionHref: 'mailto:aipairpro@yandex.com',
       },
       {
         title: t('contact.channels.partnerships.title', 'Partnerships'),
@@ -25,7 +25,7 @@ export function ContactPageContent() {
           'Interested in integrating AiPair characters into your product or building a custom experience? Reach out to discuss collaborations.',
         ),
         actionLabel: t('contact.channels.partnerships.action', 'Partner with us'),
-        actionHref: 'mailto:feedback@aipair.pro?subject=Partnership%20with%20AiPair',
+        actionHref: 'mailto:aipairpro@yandex.com?subject=Partnership%20with%20AiPair',
       },
       {
         title: t('contact.channels.press.title', 'Press'),
@@ -34,7 +34,7 @@ export function ContactPageContent() {
           'Members of the media can contact us for interviews, product details, or assets about AiPair and our AI companion mission.',
         ),
         actionLabel: t('contact.channels.press.action', 'Request press info'),
-        actionHref: 'mailto:feedback@aipair.pro?subject=Press%20Inquiry',
+        actionHref: 'mailto:aipairpro@yandex.com?subject=Press%20Inquiry',
       },
     ],
     [t],

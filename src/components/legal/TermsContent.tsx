@@ -100,8 +100,8 @@ export default function TermsContent() {
         content: (
           <p>
             {t("legal.terms.section8.body.beforeEmail", "We may suspend or restrict access to AiPair if you violate the Terms or harm the service. You can delete your account at any time via settings or by emailing ")}
-            <a className="text-[#6f2da8] underline" href="mailto:feedback@aipair.pro">
-              feedback@aipair.pro
+            <a className="text-[#6f2da8] underline" href="mailto:aipairpro@yandex.com">
+              aipairpro@yandex.com
             </a>
             {t("legal.terms.section8.body.afterEmail", ".")}
           </p>
@@ -123,8 +123,8 @@ export default function TermsContent() {
         content: (
           <p>
             {t("legal.terms.section10.body.beforeEmail", "For questions about the Terms email us at ")}
-            <a className="text-[#6f2da8] underline" href="mailto:feedback@aipair.pro">
-              feedback@aipair.pro
+            <a className="text-[#6f2da8] underline" href="mailto:aipairpro@yandex.com">
+              aipairpro@yandex.com
             </a>
             {t("legal.terms.section10.body.afterEmail", " or visit our ")}
             <Link className="text-[#6f2da8] underline" href="/contact">
