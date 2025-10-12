@@ -1,9 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin } from "lucide-react";
+
+import { useTranslations } from "@/localization/TranslationProvider";
 import BadgePills from "./BadgePills";
 import SocialCounters from "./SocialCounters";
-
 
 export default function UserHero({
     name,
@@ -20,12 +23,16 @@ export default function UserHero({
     badges: string[];
     messageHref: string;
 }) {
+    const { t } = useTranslations();
+    const messageLabel = t("common.message", "Написать");
+    const firstName = name.split(" ")[0] || name;
+
     return (
         <div className="rounded-3xl border border-white/10 bg-white/5 p-1 md:p-8 backdrop-blur">
             <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
                 <div className="flex flex-1 items-start gap-5">
                     <div className="relative size-24 shrink-0 overflow-hidden rounded-3xl border border-white/15">
-                        <Image src={avatar} alt={`${name} portrait`} fill className="object-cover" sizes="(max-width: 768px) 96px, 150px" />
+                        <Image src={avatar} alt={`Портрет ${name}`} fill className="object-cover" sizes="(max-width: 768px) 96px, 150px" />
                     </div>
                     <div className="space-y-3">
                         <div className="flex items-center gap-2 text-sm text-white/60">
@@ -42,9 +49,9 @@ export default function UserHero({
                 <div className="flex flex-col items-start gap-4 text-sm text-white/70 md:items-end">
                     <SocialCounters />
                     <Link href={messageHref} className="inline-flex items-center gap-2 rounded-2xl border border-white/15 px-5 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10">
-                        Message {name.split(" ")[0]}
+                        {messageLabel} {firstName}
                     </Link>
-                </div>м
+                </div>
             </div>
         </div>
     );
