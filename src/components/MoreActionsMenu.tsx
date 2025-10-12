@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Flag, LogOut, MoreHorizontal, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button, type ButtonVariant } from '@/components/ui/Button';
@@ -43,8 +43,14 @@ export default function MoreActionsMenu({
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const [resolvedAlign, setResolvedAlign] = useState<'start' | 'end'>(align);
   const { goTo } = useAuthRoutes();
   const router = useRouter();
+
+  useEffect(() => {
+    setResolvedAlign((previous) => (previous === align ? previous : align));
+  }, [align]);
 
   useEffect(() => {
     if (!open) return;
@@ -158,6 +164,44 @@ export default function MoreActionsMenu({
   const reportLabel = mode === 'aiAgent' ? 'Report AI agent' : 'Report user';
   const canShowDeleteOption = mode === 'aiAgent' && canDeleteAiAgent;
 
+  useLayoutEffect(() => {
+    if (!open) return;
+
+    setResolvedAlign((previous) => (previous === align ? previous : align));
+
+    const ensureMenuWithinViewport = () => {
+      const menu = menuRef.current;
+      if (!menu) return;
+
+      const rect = menu.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const safePadding = 16;
+
+      if (rect.left < safePadding && resolvedAlign !== 'start') {
+        setResolvedAlign('start');
+        return;
+      }
+
+      if (rect.right > viewportWidth - safePadding && resolvedAlign !== 'end') {
+        setResolvedAlign('end');
+      }
+    };
+
+    const rafId = window.requestAnimationFrame(ensureMenuWithinViewport);
+    const handleResize = () => {
+      window.requestAnimationFrame(ensureMenuWithinViewport);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [align, open, resolvedAlign]);
+
+  const alignmentClass = resolvedAlign === 'end' ? 'right-0' : 'left-0';
+
   return (
     <div ref={containerRef} className={`relative ${className ?? ''}`}>
       <Button
@@ -172,7 +216,8 @@ export default function MoreActionsMenu({
       </Button>
       {open && (
         <div
-          className={`absolute z-50 mt-2 w-44 rounded-xl border border-white/10 bg-neutral-900/95 p-1 text-sm text-white/90 shadow-xl backdrop-blur ${align === 'end' ? 'right-0' : 'left-0'}`}
+          ref={menuRef}
+          className={`absolute z-50 mt-2 w-44 max-w-[calc(100vw-2rem)] rounded-xl border border-white/10 bg-neutral-900/95 p-1 text-sm text-white/90 shadow-xl backdrop-blur ${alignmentClass}`}
           role="menu"
         >
           {isReportMode ? (
