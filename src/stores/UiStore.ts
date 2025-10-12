@@ -36,14 +36,20 @@ export class UiStore extends BaseStore {
 
   // Методы для работы со Snackbar
   showSnackbar(message: string, type: SnackbarType) {
-    this.snackBar.message = message;
-    this.snackBar.type = type;
-    this.snackBar.visible = true;
+    this.snackBar = {
+      message,
+      type,
+      visible: true,
+    };
     this.notify();
   }
 
   hideSnackbar() {
-    this.snackBar.visible = false;
+    if (!this.snackBar.visible) return;
+    this.snackBar = {
+      ...this.snackBar,
+      visible: false,
+    };
     this.notify();
   }
 
