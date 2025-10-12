@@ -9,15 +9,8 @@ import { AiBotDetails, AiBotDTO } from '@/helpers/types/dtos/AiBotDto';
 import { AiBotMainPageBot } from '@/helpers/types';
 import { UserDTO } from '@/helpers/types';
 import { AvatarFile, ProfilesFilterParams } from '@/helpers/types/profile';
-import ProfileService from '@/services/profile/ProfileService';
 import AiBotDetailsService, { AiBotUpdatePayload } from '@/services/ai-bot-details/AiBotDetailsService';
 
-export type AiAgentHeader = {
-  name: string;
-  curatorLabel: string;
-  tagline: string;
-  avatarSrc: string;
-};
 
 export class AiBotStore extends BaseStore {
   private root: RootStore;
@@ -38,7 +31,6 @@ export class AiBotStore extends BaseStore {
   completed = false;
   readonly maxGalleryItems = MAX_GALLERY_ITEMS;
 
-  private profileService = ProfileService;
   private aiBotDetailsService = AiBotDetailsService;
 
   createdBot: UserDTO | null = null;

@@ -8,21 +8,10 @@ import ProfileService, { UsersFilterParams } from '@/services/profile/ProfileSer
 import { ChangePasswordProps } from '@/services/auth/AuthResponse';
 
 import {
-  badges as profileBadges,
-  milestones,
   genderLabels,
   genderOptions as defaultGenderOptions,
   professionOptions as defaultProfessionOptions,
 } from '@/helpers/data/profile';
-
-export type PublicProfile = {
-  name: string;
-  intro: string;
-  location: string;
-  avatar: string;
-  badges: string[];
-  talkies: AiAgentCard[];
-};
 
 export class ProfileStore extends BaseStore {
   private root: RootStore;
@@ -47,8 +36,6 @@ export class ProfileStore extends BaseStore {
   /** Инстанс сервиса для работы с API профиля */
   private profileService = ProfileService;
 
-  badges = [...profileBadges];
-  milestones = [...milestones];
   genderLabels = { ...genderLabels };
   genderOptions = [...defaultGenderOptions];
   professionOptions = [...defaultProfessionOptions];

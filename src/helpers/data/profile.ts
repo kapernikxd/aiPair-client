@@ -19,14 +19,6 @@ export const badges = [
 ];
 
 
-export const milestones = [
-    "Built the first multilingual storyline engine",
-    "Hosted a co-creation salon in Lisbon",
-    "Launched Talkie mentorship series",
-    "Documented narrative design patterns",
-];
-
-
 export const initialProfile = {
     userName: "Vadim Stepanov",
     gender: "MALE",

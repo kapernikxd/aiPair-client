@@ -200,7 +200,7 @@ export default function MoreActionsMenu({
     };
   }, [align, open, resolvedAlign]);
 
-  const alignmentClass = resolvedAlign === 'end' ? 'right-0' : 'left-0';
+  const alignmentClass = 'left-0';
 
   return (
     <div ref={containerRef} className={`relative ${className ?? ''}`}>
