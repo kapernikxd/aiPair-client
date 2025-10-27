@@ -2,16 +2,17 @@ import { makeAutoObservable, runInAction } from 'mobx';
 import { isAxiosError } from 'axios';
 import { BaseStore } from './BaseStore';
 import type { RootStore } from './RootStore';
-import type { ProfilesFilterParams, AiAgentCard, UpdateProfileProps } from '@/helpers/types/profile';
-import { MyProfileDTO, ProfileDTO, UserDTO } from '@/helpers/types';
-import ProfileService, { UsersFilterParams } from '@/services/profile/ProfileService';
-import { ChangePasswordProps } from '@/services/auth/AuthResponse';
+import type { ProfileFormErrorResponse, ProfilesFilterParams, UpdateProfileProps } from '@/types/profile/profile';
+import { MyProfileDTO, ProfileDTO, UserDTO } from '@/types';
+import ProfileService from '@/services/profile/ProfileService';
+import { ChangePasswordProps } from '@/types/auth/auth-api';
 
 import {
   genderLabels,
   genderOptions as defaultGenderOptions,
   professionOptions as defaultProfessionOptions,
 } from '@/helpers/data/profile';
+import { UsersFilterParams } from '@/types/profile';
 
 export class ProfileStore extends BaseStore {
   private root: RootStore;
@@ -422,12 +423,3 @@ export class ProfileStore extends BaseStore {
     return null;
   }
 }
-
-type ProfileFieldError = {
-  field: string;
-  message: string;
-};
-
-type ProfileFormErrorResponse = {
-  errors?: ProfileFieldError[];
-};

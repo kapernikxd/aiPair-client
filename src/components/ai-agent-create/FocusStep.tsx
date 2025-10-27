@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/Button";
-import { CreateAiAgentFormState } from "@/helpers/types/agent-create";
+import { CreateAiAgentFormState } from "@/types/aiBot/agent-create";
 import { categoryOptions } from "@/helpers/data/agent-create";
 import { useTranslations } from "@/localization/TranslationProvider";
 

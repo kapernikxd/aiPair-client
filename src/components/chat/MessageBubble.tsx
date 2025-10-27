@@ -1,6 +1,6 @@
 'use client';
 
-import type { MessageDTO } from '@/helpers/types';
+import type { MessageDTO } from '@/types';
 import { useMemo } from 'react';
 
 type MessageBubbleProps = {

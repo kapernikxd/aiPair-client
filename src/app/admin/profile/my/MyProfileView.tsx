@@ -5,7 +5,7 @@ import EditProfileDialog from "@/components/profile/edit/EditProfileDialog";
 import HeaderActions from "@/components/profile/HeaderActions";
 import ProfileCard from "@/components/profile/ProfileCard";
 import AiAgentsTimeline from "@/components/profile/AiAgentsTimeline";
-import { MyProfileDTO, UserDTO } from "@/helpers/types";
+import { MyProfileDTO, UserDTO } from "@/types";
 
 type Filter = { value: "my" | "subscribed"; label: string };
 

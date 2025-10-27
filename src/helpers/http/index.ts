@@ -7,10 +7,12 @@ export const isDev = process.env.NODE_ENV === "development";
 
 export const EMAIL = "aipairpro@yandex.com";
 
-export const BASE_URL = isDev ? "http://localhost:5001/" : "https://aipair.pro/"
+export const BASE_URL = isDev ? "http://localhost:5001/" : "https://aipair.ru/"
+
+export const SITE_NAME = "AiPair";
 
 export const TELEGRAM_URL = 'https://t.me/pllacesupport';
-export const DOMAIN = "https://aipair.pro"
+export const DOMAIN = "https://aipair.ru"
 export const API_URL = `${BASE_URL}api/`;
 
 // Создаем экземпляр Axios

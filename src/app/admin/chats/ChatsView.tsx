@@ -4,7 +4,7 @@
 import PageHeader from "@/components/chats/PageHeader";
 import ChatList from "@/components/chats/ChatList";
 import { AuthRouteKey } from "@/helpers/hooks/useAuthRoutes";
-import { ChatListItem } from "@/stores/ChatStore";
+import { ChatListItem } from "@/types/chat";
 
 type Props = {
   chats: ChatListItem[];

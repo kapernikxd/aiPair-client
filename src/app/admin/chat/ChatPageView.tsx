@@ -10,7 +10,7 @@ import MessageInput from "@/components/chat/MessageInput";
 import TypingIndicator from "@/components/chat/TypingIndicator";
 import GradientOrbs from "@/components/ui/GradientOrbs";
 import { Button } from "@/components/ui/Button";
-import type { MessageDTO, UserBasicDTO, UserDTO } from "@/helpers/types";
+import type { MessageDTO, UserBasicDTO, UserDTO } from "@/types";
 
 function formatPinnedTimestamp(value: string) {
     const date = new Date(value);

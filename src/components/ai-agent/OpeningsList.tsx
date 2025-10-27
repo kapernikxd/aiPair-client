@@ -1,5 +1,5 @@
 import { Clock } from "lucide-react";
-import type { Opening } from "@/helpers/types/ai-agent";
+import type { Opening } from "@/types/aiBot/ai-agent";
 
 
 export default function OpeningsList({ openings }: { openings: Opening[] }) {

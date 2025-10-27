@@ -1,13 +1,14 @@
 // src/stores/OnlineStore.ts
 import { makeAutoObservable, runInAction } from 'mobx';
 import type { Socket } from 'socket.io-client';
-import { UnreadStatus } from '@/services/chat/ChatService';
-import { MessageDTO } from '@/helpers/types';
 import { connectSocket } from '@/helpers/http/socket';
 import { BaseStore } from './BaseStore';
 import { RootStore } from './RootStore';
 
-type AppStateStatus = 'active' | 'inactive' | 'background';
+import { MessageDTO } from '@/types';
+import { UnreadStatus } from '@/types/chat';
+import { AppStateStatus } from '@/types/online';
+
 
 const getInitialAppState = (): AppStateStatus => {
   if (typeof document === 'undefined') {

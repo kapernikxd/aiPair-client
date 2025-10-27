@@ -6,7 +6,7 @@ import AppShell from "@/components/AppShell";
 import CardRailOneRow from "@/components/ui/CardRailOneRow";
 import CardRailTwoRows from "@/components/ui/CardRailTwoRows";
 import { Spacer } from "@/components/ui/Spacer";
-import { AiBotMainPageBot } from "@/helpers/types";
+import { AiBotMainPageBot } from "@/types";
 import { BASE_URL } from "@/helpers/http";
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import { GetProfile, useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";

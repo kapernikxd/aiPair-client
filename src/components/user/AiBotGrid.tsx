@@ -1,5 +1,5 @@
+import { AiBotDTO } from "@/types";
 import AiBotCard from "./AiBotCard";
-import { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
 
 
 type AiBotGridProps = {

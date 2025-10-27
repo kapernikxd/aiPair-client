@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 
-import { MyProfileDTO, ProfileDTO } from "@/helpers/types";
+import { MyProfileDTO, ProfileDTO } from "@/types";
 import { getUserAvatar, getUserFullName } from "@/helpers/utils/user";
 import { getMonthYear, getTimeAgo } from "@/helpers/utils/date";
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";

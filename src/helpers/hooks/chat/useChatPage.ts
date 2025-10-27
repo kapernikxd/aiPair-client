@@ -2,7 +2,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { MessageDTO } from "@/helpers/types";
+import type { MessageDTO } from "@/types";
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 import { getUserAvatar, getUserFullName } from "@/helpers/utils/user";

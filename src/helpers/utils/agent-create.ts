@@ -1,4 +1,4 @@
-import { GalleryItem } from "@/helpers/types/agent-create";
+import { GalleryItem } from "@/types/aiBot/agent-create";
 
 
 export function revokeIfNeeded(url?: string | null) {

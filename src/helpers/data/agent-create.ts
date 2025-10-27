@@ -1,5 +1,4 @@
-import { StepDef } from "../types/agent-create";
-
+import { StepDef } from "../../types/aiBot/agent-create";
 
 export const steps: StepDef[] = [
   { title: "Идентичность", description: "Аватар, имя и первое впечатление." },

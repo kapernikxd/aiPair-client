@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode, Ref } from 'react';
-import type { MessageDTO } from '@/helpers/types';
+import type { MessageDTO } from '@/types';
 import MessageBubble from './MessageBubble';
 
 type MessageListProps = {

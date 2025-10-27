@@ -2,7 +2,7 @@
 "use client";
 
 import { Upload } from "lucide-react";
-import { CreateAiAgentFormState } from "../../helpers/types/agent-create";
+import { CreateAiAgentFormState } from "../../types/aiBot/agent-create";
 import { useTranslations } from "@/localization/TranslationProvider";
 
 type IdentityForm = Pick<CreateAiAgentFormState, "firstName" | "lastName" | "profession">;

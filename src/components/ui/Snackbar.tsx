@@ -4,7 +4,7 @@ import { useEffect, useMemo } from "react";
 import { X } from "lucide-react";
 
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
-import type { SnackbarType } from "@/stores/UiStore";
+import { SnackbarType } from "@/types/ui";
 
 const VARIANT_STYLES: Record<SnackbarType, string> = {
   success: "bg-emerald-500 text-white",

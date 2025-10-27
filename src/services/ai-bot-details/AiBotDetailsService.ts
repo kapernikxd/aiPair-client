@@ -1,41 +1,21 @@
 import { AxiosResponse } from "axios";
-
 import $api from "@/helpers/http";
-import { AiBotDetails, AiBotDTO, AiBotMainPageBot, ProfileDTO, UserDTO } from "@/helpers/types";
-import { getQueriedUrl } from "@/helpers/queryStringHelper";
-import { ProfilesFilterParams } from "@/helpers/types/profile";
-import { StringifiableRecord } from "query-string";
 
-
-export interface AiBotUpdatePayload {
-  name?: string;
-  lastname?: string;
-  profession?: string;
-  userBio?: string;
-  aiPrompt?: string;
-  intro?: string;
-  introMessage?: string;
-  categories?: string[];
-  usefulness?: string[];
-}
-
-export interface AiBotPhotoResponse extends AiBotDetails {
-  id?: string;
-  botId: string;
-  photos: string[];
-  createdAt?: string;
-  updatedAt?: string;
-  isFollowing: boolean;
-}
+import { AiBotDTO, AiBotMainPageBot, ProfileDTO, UserDTO } from "@/types";
+import { getQueriedUrl, StringifiableRecordType } from "@/helpers/queryStringHelper";
+import { AiBotPhotoResponse, AiBotReportPayload, AiBotUpdatePayload, GuestAiBotMessagePayload, GuestAiBotMessageResponse } from "@/types/aiBot";
+import { ProfilesFilterParams } from "@/types/profile/profile";
 
 
 class AiBotDetailsService {
+  public async fetchAiBotsForMainPage(): Promise<AxiosResponse<AiBotMainPageBot[]>> {
+    return $api.get("/profile/ai-bots/fetchAiBotsForMainPage");
+  }
   /**
    * Получить список созданных AI-ботов.
    */
-
   public async getAllAiBots(params: ProfilesFilterParams = {}): Promise<AxiosResponse<{ profiles: ProfileDTO[], hasMore: boolean }>> {
-    return $api.get(getQueriedUrl({ url: "/profile/ai-bots/all", query: params as StringifiableRecord }));
+    return $api.get(getQueriedUrl({ url: "/profile/ai-bots/all", query: params as StringifiableRecordType }));
   }
 
   public async getAiBotById(botId: string): Promise<AxiosResponse<AiBotDTO>> {
@@ -125,8 +105,18 @@ class AiBotDetailsService {
     return $api.delete(`/profile/ai-bots/${id}`);
   }
 
-  public async fetchAiBotsForMainPage(): Promise<AxiosResponse<AiBotMainPageBot[]>> {
-    return $api.get("/profile/ai-bots/fetchAiBotsForMainPage");
+  /**
+   * Отправить сообщение AI-боту от гостя.
+   */
+  public async sendGuestMessage(
+    botId: string,
+    payload: GuestAiBotMessagePayload,
+  ): Promise<AxiosResponse<GuestAiBotMessageResponse>> {
+    return $api.post(`/profile/ai-bots/${botId}/guest/messages`, payload);
+  }
+
+  public async reportAiBot(data: AiBotReportPayload): Promise<AxiosResponse<boolean>> {
+    return $api.post(`/reports`, { targetType: 'ai-bot', ...data });
   }
 }
 

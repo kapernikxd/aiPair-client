@@ -19,20 +19,10 @@ export interface AuthRejection {
   message: string;
 }
 
-export type ParamsVerificateEmail = {
-  verificationCode: string;
-  email: string;
-};
-
 export type ChangePasswordProps = {
   oldPassword:string;
   password:string;
 }
-
-export type NewPasswordParams = {
-  password: string;
-  activatedLink: string;
-};
 
 export interface AuthProfileDTO {
   name: string;

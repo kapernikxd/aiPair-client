@@ -4,8 +4,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import { getUserAvatar } from "@/helpers/utils/user";
-import type { MyProfileDTO } from "@/helpers/types";
-import type { UpdateProfileProps } from "@/helpers/types/profile";
+import type { MyProfileDTO } from "@/types";
+import type { UpdateProfileProps } from "@/types/profile/profile";
 
 export function useEditProfileDialog(open: boolean, profile: MyProfileDTO, onClose: () => void, onSave?: (p: MyProfileDTO) => void) {
   const { profileStore } = useRootStore();

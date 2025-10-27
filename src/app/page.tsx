@@ -10,12 +10,12 @@ import { Button } from "@/components/ui/Button";
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 import { useRootStore, useStoreData } from "@/stores/StoreProvider";
 import { BASE_URL } from "@/helpers/http";
-import type { AuthProvider } from "@/stores/AuthStore";
 import { Logo } from "@/components/ui/Logo";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { useTranslations } from "@/localization/TranslationProvider";
+import { AuthProvider } from "@/types/auth";
 
 // export const metadata = {
 //   title: 'AI Pair — Talk with an AI companion',

@@ -1,5 +1,5 @@
 import { BASE_URL } from "../http";
-import { UserBasicDTO, UserDTO } from "../types";
+import { UserBasicDTO, UserDTO } from "../../types";
 import { capitalizeFirstLetter } from "./common";
 
 

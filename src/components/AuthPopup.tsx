@@ -92,14 +92,12 @@ type Props = {
 export default function AuthPopup({
   open,
   onClose,
-  onGoogle,
-  onApple,
   coverUrls = [
-    'https://picsum.photos/seed/a/300/420',
-    'https://picsum.photos/seed/b/300/420',
-    'https://picsum.photos/seed/c/300/420',
-    'https://picsum.photos/seed/d/300/420',
-    'https://picsum.photos/seed/e/300/420',
+    '/img/auth/1.png',
+    '/img/auth/2.png',
+    '/img/auth/3.png',
+    '/img/auth/4.png',
+    '/img/auth/5.png',
   ],
 }: Props) {
   const dialogRef = useRef<HTMLDivElement>(null);

@@ -3,13 +3,11 @@ import { isAxiosError } from 'axios';
 import { BaseStore } from './BaseStore';
 import type { RootStore } from './RootStore';
 import { MAX_GALLERY_ITEMS, steps } from '@/helpers/data/agent-create';
-import type { CreateAiAgentFormState, GalleryItem } from '@/helpers/types/agent-create';
 import { revokeGallery, revokeIfNeeded } from '@/helpers/utils/agent-create';
-import { AiBotDetails, AiBotDTO } from '@/helpers/types/dtos/AiBotDto';
-import { AiBotMainPageBot } from '@/helpers/types';
-import { UserDTO } from '@/helpers/types';
-import { AvatarFile, ProfilesFilterParams } from '@/helpers/types/profile';
-import AiBotDetailsService, { AiBotUpdatePayload } from '@/services/ai-bot-details/AiBotDetailsService';
+import { AiBotDetails, AiBotDTO, AiBotMainPageBot, UserDTO} from '@/types';
+import { AvatarFile, ProfilesFilterParams } from '@/types/profile/profile';
+import AiBotDetailsService from '@/services/ai-bot-details/AiBotDetailsService';
+import { AiBotUpdatePayload, CreateAiAgentFormState, GalleryItem } from '@/types/aiBot';
 
 
 export class AiBotStore extends BaseStore {

@@ -11,7 +11,7 @@ import ProfessionField from "./overview/ProfessionField";
 import Notice from "./overview/Notice";
 import FormActions from "./overview/FormActions";
 import LastNameField from "./overview/LastNameField";
-import type { MyProfileDTO } from "@/helpers/types";
+import type { MyProfileDTO } from "@/types";
 
 type ViewProps = {
   open: boolean;

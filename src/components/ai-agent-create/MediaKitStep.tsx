@@ -3,7 +3,7 @@
 
 import { ImagePlus, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { GalleryItem } from "../../helpers/types/agent-create";
+import { GalleryItem } from "../../types/aiBot/agent-create";
 import { useTranslations } from "@/localization/TranslationProvider";
 
 export default function MediaKitStep({

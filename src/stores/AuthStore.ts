@@ -1,32 +1,14 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 import { isAxiosError } from 'axios';
-import AuthService from "@/services/auth/AuthService";
-import { LoginParams, RegistrationParams, ParamsVerificateEmail, NewPasswordParams } from "@/helpers/types/auth";
 import $api from '@/helpers/http';
+import AuthService from "@/services/auth/AuthService";
+import { LoginParams, RegistrationParams, ParamsVerificateEmail, NewPasswordParams, AuthProvider, AuthUserLike, AuthUser, FormErrorResponse } from "@/types/auth/auth";
 import { storageHelper } from "@/helpers/utils/storageHelper";
 import { BaseStore } from './BaseStore';
 import type { RootStore } from './RootStore';
 
-export type AuthProvider = 'google' | 'apple' | 'demo';
-
-type AuthUserLike = {
-  id: string;
-  email: string;
-  isActivated?: boolean;
-  fullName?: string;
-  name?: string;
-};
-
-export type AuthUser = {
-  id: string;
-  email: string;
-  isActivated: boolean;
-  fullName: string;
-  name: string;
-};
 
 export class AuthStore extends BaseStore {
-
   private root?: RootStore;
 
   isAuth = false;
@@ -93,7 +75,7 @@ export class AuthStore extends BaseStore {
 
   async loginByGoogle(credential: string) {
     try {
-      const { data } = await AuthService.loginByGoogle(credential);
+      const { data } = await AuthService.loginByGoogleCode(credential);
 
       const normalizedUser = this.normalizeUser(data.user);
       runInAction(() => {
@@ -120,7 +102,7 @@ export class AuthStore extends BaseStore {
 
   async loginByApple(identityToken: string) {
     try {
-      const { data } = await AuthService.loginByApple(identityToken);
+      const { data } = await AuthService.loginByAppleCode(identityToken);
 
       const normalizedUser = this.normalizeUser(data.user);
       runInAction(() => {
@@ -195,7 +177,6 @@ export class AuthStore extends BaseStore {
       await storageHelper.removeRefreshToken();
       await storageHelper.removeAccessToken();
     }
-
   }
 
   async registration(props: RegistrationParams) {
@@ -365,12 +346,3 @@ export class AuthStore extends BaseStore {
 }
 
 export default AuthStore;
-
-type FieldError = {
-  field: string;
-  message: string;
-};
-
-type FormErrorResponse = {
-  errors?: FieldError[];
-};

@@ -1,4 +1,4 @@
-import { UserDTO } from "@/helpers/types";
+import { UserDTO } from "@/types";
 
 
 export interface ChatById {

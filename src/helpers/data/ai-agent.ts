@@ -1,4 +1,4 @@
-import type { Highlight, Opening } from "@/helpers/types/ai-agent";
+import type { Highlight, Opening } from "@/types/aiBot/ai-agent";
 
 
 export const highlights: Highlight[] = [

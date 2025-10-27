@@ -1,10 +1,9 @@
 import Image from "next/image";
 import { ShieldCheck } from "lucide-react";
-
-import { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
 import { getUserAvatar, getUserFullName } from "@/helpers/utils/user";
 import { useTranslations } from "@/localization/TranslationProvider";
 import TruncatedReveal from "../ui/TruncatedReveal";
+import { AiBotDTO } from "@/types";
 
 export default function HeaderCard({ user }: { user: AiBotDTO }) {
 

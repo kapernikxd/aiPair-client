@@ -6,7 +6,7 @@ import { useBreakpoint } from "@/helpers/hooks/useBreakpoint";
 import { useCopyLink } from "@/helpers/hooks/useCopyLink";
 import { getUserFullName } from "@/helpers/utils/user";
 import { useTranslations } from "@/localization/TranslationProvider";
-import { Highlight } from "@/helpers/types/ai-agent";
+import { Highlight } from "@/types/aiBot/ai-agent";
 
 
 export type ActiveTab = "info" | "gallery";

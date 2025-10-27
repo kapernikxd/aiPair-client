@@ -5,10 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { Users, UserPlus, Sparkles } from "lucide-react";
 
-import type { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
 import { getUserAvatar } from "@/helpers/utils/user";
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 import { useTranslations } from "@/localization/TranslationProvider";
+import { AiBotDTO } from "@/types";
 
 
 type AiBotCardProps = {

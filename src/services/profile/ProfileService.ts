@@ -1,22 +1,10 @@
 import type { AxiosResponse } from "axios";
-import { AuthProfileResponse, AuthResponse, ChangePasswordProps } from "../auth/AuthResponse";
-import { MyProfileDTO, ProfileDTO, UserDTO } from "@/helpers/types";
 import $api from "@/helpers/http";
-import { ProfilesFilterParams, UpdateProfileProps } from "@/helpers/types/profile";
-import { getQueriedUrl } from "@/helpers/queryStringHelper";
-import { StringifiableRecord } from "query-string";
+import { getQueriedUrl, StringifiableRecordType } from "@/helpers/queryStringHelper";
+import { MyProfileDTO, ProfileDTO } from "@/types";
+import { AuthProfileResponse, AuthResponse, ChangePasswordProps } from "../../types/auth/auth-api";
+import { ProfilesFilterParams, UpdateProfileProps, UsersFilterParams, UsersResponse } from "@/types/profile";
 
-
-export interface UsersFilterParams {
-  search?: string;
-  limit?: number;
-  page?: number;
-}
-
-export interface UsersResponse {
-  users: UserDTO[];
-  hasMore: boolean;
-}
 
 export class ProfileService {
   /**
@@ -32,7 +20,7 @@ export class ProfileService {
    * @returns Ответ со списком профилей.
    */
   public async getProfiles(params: ProfilesFilterParams): Promise<AxiosResponse<{ profiles: ProfileDTO[], hasMore: boolean }>> {
-    return $api.get(getQueriedUrl({ url: "/profile/", query: params as StringifiableRecord }));
+    return $api.get(getQueriedUrl({ url: "/profile/", query: params as StringifiableRecordType }));
   }
 
   /**

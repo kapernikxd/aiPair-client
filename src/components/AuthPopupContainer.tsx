@@ -3,8 +3,8 @@
 import { useCallback } from 'react';
 import AuthPopup from './AuthPopup';
 import { useRootStore, useStoreData } from '@/stores/StoreProvider';
-import type { AuthProvider } from '@/stores/AuthStore';
 import { useTranslations } from '@/localization/TranslationProvider';
+import { AuthProvider } from '@/types/auth';
 
 export default function AuthPopupContainer() {
   const { uiStore, authStore, profileStore } = useRootStore();

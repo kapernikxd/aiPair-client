@@ -1,4 +1,4 @@
-import { ChatThread } from "../types/chats";
+import { ChatThread } from "../../types/chat/chats";
 
 export const chatThreads: ChatThread[] = [
   {

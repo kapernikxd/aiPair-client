@@ -7,7 +7,7 @@ import FormActions from "@/components/profile/edit/overview/FormActions";
 
 import EditAiAgentDialogView from "@/components/ai-agent/edit/EditAiAgentDialogView";
 import { useEditAiAgentDialog } from "@/helpers/hooks/aiAgent/useEditAiAgentDialog";
-import type { AiBotDTO } from "@/helpers/types/dtos/AiBotDto";
+import { AiBotDTO } from "@/types";
 
 interface Props {
   open: boolean;

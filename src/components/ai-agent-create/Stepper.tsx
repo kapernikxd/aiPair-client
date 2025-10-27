@@ -1,5 +1,5 @@
 import { CheckCircle2 } from "lucide-react";
-import { StepDef } from "../../helpers/types/agent-create";
+import { StepDef } from "../../types/aiBot/agent-create";
 
 export default function Stepper({ steps, current }: { steps: StepDef[]; current: number }) {
   return (

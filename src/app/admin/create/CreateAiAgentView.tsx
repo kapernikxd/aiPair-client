@@ -13,7 +13,7 @@ import MediaKitStep from "@/components/ai-agent-create/MediaKitStep";
 import PreviewSidebar from "@/components/ai-agent-create/PreviewSidebar";
 import ActionBar from "@/components/ai-agent-create/ActionBar";
 import type { ChangeEvent } from "react";
-import type { CreateAiAgentFormState, GalleryItem } from "@/helpers/types/agent-create";
+import type { CreateAiAgentFormState, GalleryItem } from "@/types/aiBot/agent-create";
 
 type Props = {
   // data/state

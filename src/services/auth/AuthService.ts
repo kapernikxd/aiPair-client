@@ -1,14 +1,7 @@
 
 import axios, { AxiosResponse, isAxiosError } from "axios";
-import {
-  AuthRejection,
-  AuthResponseExtend,
-  NewPasswordParams,
-  ParamsVerificateEmail,
-} from "./AuthResponse";
-import { AuthResponse } from "./AuthResponse";
 import $api, { API_URL } from "@/helpers/http";
-import { LoginParams, RegistrationParams } from "@/helpers/types/auth";
+import { AuthRejection, AuthResponse, AuthResponseExtend, LoginParams, NewPasswordParams, ParamsVerificateEmail, RegistrationParams, ResetPasswordParams } from "@/types/auth";
 
 export default class AuthService {
   static async login({
@@ -18,16 +11,28 @@ export default class AuthService {
     return $api.post("/auth/login", { email, password });
   }
 
-  static async loginByGoogle(
+  static async loginByGoogleCode(
     credential: string
   ): Promise<AxiosResponse<AuthResponseExtend, AuthRejection>> {
     return $api.post("/auth/loginByGoogleCode", { credential });
   }
 
-  static async loginByApple(
+  static async loginByAppleCode(
     identityToken: string
   ): Promise<AxiosResponse<AuthResponseExtend, AuthRejection>> {
     return $api.post("/auth/loginByAppleCode", { identityToken });
+  }
+
+  static async loginByGoogle(
+    credential: string
+  ): Promise<AxiosResponse<AuthResponseExtend, AuthRejection>> {
+    return $api.post("/auth/loginByGoogle", { credential });
+  }
+
+  static async loginByApple(
+    identityToken: string
+  ): Promise<AxiosResponse<AuthResponseExtend, AuthRejection>> {
+    return $api.post("/auth/loginByApple", { identityToken });
   }
 
   static async registration(
@@ -93,8 +98,3 @@ export default class AuthService {
     return $api.post("/push/mobile", { pushToken });
   }
 }
-
-type ResetPasswordParams = {
-  verificationCode: string;
-  email: string;
-};

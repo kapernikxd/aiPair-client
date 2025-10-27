@@ -1,6 +1,6 @@
 import { AuthRouteKey } from "@/helpers/hooks/useAuthRoutes";
 import { ReactNode } from "react";
-import { ChatDTO } from "@/helpers/types";
+import { ChatDTO } from "@/types";
 import ChatListItem from "./ChatListItem";
 import { useTranslations } from "@/localization/TranslationProvider";
 

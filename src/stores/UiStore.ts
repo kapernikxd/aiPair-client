@@ -1,16 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import { BaseStore } from './BaseStore';
 import type { RootStore } from './RootStore';
-
-export type Notification = { id: number; message: string; variant?: 'info' | 'success' | 'error' };
-
-export type SnackbarType = 'success' | 'warning' | 'error' | 'info';
-
-export interface SnackBarParams {
-  visible: boolean;
-  message: string;
-  type: SnackbarType;
-}
+import { Notification, SnackBarParams, SnackbarType } from '@/types/ui';
 
 export class UiStore extends BaseStore {
   private root: RootStore;

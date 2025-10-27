@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { Sparkles } from "lucide-react";
-import { CreateAiAgentFormState, GalleryItem } from "../../helpers/types/agent-create";
+import { CreateAiAgentFormState, GalleryItem } from "../../types/aiBot/agent-create";
 import { useTranslations } from "@/localization/TranslationProvider";
 
 export default function PreviewSidebar({

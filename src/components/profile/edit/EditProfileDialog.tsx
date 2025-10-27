@@ -1,7 +1,7 @@
 // components/profile/edit/EditProfileDialog.tsx
 "use client";
 
-import type { MyProfileDTO } from "@/helpers/types";
+import type { MyProfileDTO } from "@/types";
 import EditProfileDialogView from "./EditProfileDialogView";
 import { useEditProfileDialog } from "@/helpers/hooks/myProfile/useEditProfileDialog";
 

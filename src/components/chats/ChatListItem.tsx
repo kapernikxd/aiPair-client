@@ -1,6 +1,6 @@
 import Link from "next/link";
 import ChatAvatar from "./ChatAvatar";
-import { ChatDTO, UserDTO } from "@/helpers/types";
+import { ChatDTO, UserDTO } from "@/types";
 import { getSmartTime } from "@/helpers/utils/date";
 import { getUserAvatar, getUserFullName } from "@/helpers/utils/user";
 import { useTranslations } from "@/localization/TranslationProvider";

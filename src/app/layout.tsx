@@ -68,7 +68,7 @@ export default function RootLayout({
         {/* Скрипт Mail.ru — вставляем inline-код через next/script */}
         <Script id="mailru-init" strategy="afterInteractive">
           {`var _tmr = window._tmr || (window._tmr = []);
-            _tmr.push({id: "3706687", type: "pageView", start: (new Date()).getTime()});
+            _tmr.push({id: "3708601", type: "pageView", start: (new Date()).getTime()});
             (function (d, w, id) {
               if (d.getElementById(id)) return;
               var ts = d.createElement("script"); ts.type = "text/javascript"; ts.async = true; ts.id = id;
@@ -79,7 +79,7 @@ export default function RootLayout({
         </Script>
         {/* noscript fallback — можно положить в head или body */}
         <noscript>
-          <div dangerouslySetInnerHTML={{ __html: '<img src="https://top-fwz1.mail.ru/counter?id=3706687;js=na" style="position:absolute;left:-9999px;" alt="Top.Mail.Ru" />' }} />
+          <div dangerouslySetInnerHTML={{ __html: '<img src="https://top-fwz1.mail.ru/counter?id=3708601;js=na" style="position:absolute;left:-9999px;" alt="Top.Mail.Ru" />' }} />
         </noscript>
 
       </head>

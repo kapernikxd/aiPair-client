@@ -4,7 +4,7 @@
 import HeaderBar from "@/components/user/HeaderBar";
 import AiAgentsTimeline from "@/components/profile/AiAgentsTimeline";
 import ProfileCard from "@/components/profile/ProfileCard";
-import { AiBotDTO, ProfileDTO } from "@/helpers/types";
+import { AiBotDTO, ProfileDTO } from "@/types";
 
 type Props = {
   // data

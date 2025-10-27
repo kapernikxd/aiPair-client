@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { PushNotificationSettings, UserId } from "./dtos";
+import { PushNotificationSettings, UserId } from "../DTO";
 
 export type AvatarFile = { uri: string; name: string; type: string };
 
@@ -52,4 +52,14 @@ export type EditableProfile = {
   gender: string;
   intro: string;
   profession: string;
+};
+
+
+export type ProfileFieldError = {
+  field: string;
+  message: string;
+};
+
+export type ProfileFormErrorResponse = {
+  errors?: ProfileFieldError[];
 };

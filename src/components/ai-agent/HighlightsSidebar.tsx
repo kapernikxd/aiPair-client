@@ -1,4 +1,4 @@
-import type { Highlight } from "@/helpers/types/ai-agent";
+import type { Highlight } from "@/types/aiBot/ai-agent";
 import HighlightCard from "./HighlightCard";
 
 

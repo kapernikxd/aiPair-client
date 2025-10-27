@@ -5,7 +5,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/Button";
 import ModalShell from "./edit/overview/ModalShell";
-import { UserDTO } from "@/helpers/types";
+import { UserDTO } from "@/types";
 import { getUserAvatar, getUserFullName, getUsername } from "@/helpers/utils/user";
 import { useAuthRoutes } from "@/helpers/hooks/useAuthRoutes";
 import { useTranslations } from "@/localization/TranslationProvider";

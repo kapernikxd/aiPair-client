@@ -1,26 +1,8 @@
 import { AxiosResponse } from "axios";
-import { ChatById, ReadedMessageResponse } from "./ChatResponse";
+import { ChatById, ReadedMessageResponse } from "../../types/chat/chat-api";
 import $api from "@/helpers/http";
-import { ChatDTO, MessageDTO } from "@/helpers/types";
-
-export interface FetchChatsOptions {
-  typeChat?: 'private' | 'group' | 'bot';
-  limit?: number;
-  page?: number;
-  search?: string;
-}
-
-export interface FetchChatsResponse {
-  chats: ChatDTO[];
-  hasMore: boolean;
-}
-
-export type UnreadStatus = {
-  hasUnread: boolean;
-  group: boolean;
-  private: boolean;
-  bot: boolean;
-};
+import { MessageDTO } from "@/types";
+import { FetchChatsOptions, FetchChatsResponse, FormDataImage, MessageByIdResponse, UnreadStatus, UploadImage } from "@/types/chat";
 
 export default class ChatService {
   async fetchChats(
@@ -121,20 +103,3 @@ export default class ChatService {
   }
 }
 
-export type UploadImage = {
-  uri: string;
-  fileName?: string;
-  mimeType?: string;
-};
-
-type FormDataImage = {
-  uri: string;
-  name: string;
-  type: string;
-};
-
-export type MessageByIdResponse = {
-  _id?: string;
-  chat?: { _id?: string } | string;
-  data?: { _id?: string; chat?: { _id?: string } | string };
-} & Partial<MessageDTO>;

@@ -2,8 +2,7 @@
 
 import HoverSwapCard from '@/components/AiCard';
 import { getUserAvatar } from '@/helpers/utils/user';
-import type { AiBotDTO } from '@/helpers/types/dtos/AiBotDto';
-import type { UserDTO } from '@/helpers/types';
+import type { AiBotDTO, UserDTO } from '@/types';
 import React from 'react';
 import { useAuthRoutes } from '@/helpers/hooks/useAuthRoutes';
 import { useTranslations } from '@/localization/TranslationProvider';
