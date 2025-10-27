@@ -3,7 +3,7 @@ import React from 'react';
 
 const DeleteAccountInfo = () => {
   return (
-    <div style={{ maxWidth: 800, margin: '0 auto', padding: '40px', fontFamily: 'sans-serif' }}>
+    <div style={{ maxWidth: 800, margin: '0 auto', padding: '40px', fontFamily: 'sans-serif', color: '#fff'  }}>
       <h1>Request to Delete Account - {SITE_NAME} App</h1>
 
       <p>

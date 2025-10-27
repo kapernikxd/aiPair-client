@@ -9,7 +9,7 @@ const PrivacyPolicy = () => {
       padding: '60px 20px', 
       fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif', 
       lineHeight: '1.6', 
-      color: '#333' 
+      color: '#fff' 
     }}>
       <h1 style={{ fontSize: '2.5rem', marginBottom: '20px', textAlign: 'center' }}>Privacy Policy</h1>
       <p style={{ textAlign: 'center', marginBottom: '40px' }}><strong>Effective Date:</strong> April 1, 2024</p>
