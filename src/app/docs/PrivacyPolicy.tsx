@@ -16,7 +16,10 @@ const PrivacyPolicy = () => {
 
       <section style={{ marginBottom: '40px' }}>
         <p>
-          This Privacy Policy explains how the website <a href={process.env.DOMAIN} target="_blank" rel="noopener noreferrer">{process.env.DOMAIN}</a> and the mobile application "{SITE_NAME}" (hereinafter referred to as "{SITE_NAME}", "we", "us", or "our service") collect, use, process, and protect users' personal data.
+          This Privacy Policy explains how the website{' '}
+          <a href={process.env.DOMAIN} target="_blank" rel="noopener noreferrer">{process.env.DOMAIN}</a>{' '}
+          and the mobile application &quot;{SITE_NAME}&quot; (hereinafter referred to as &quot;{SITE_NAME}&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our service&quot;)
+          collect, use, process, and protect users&apos; personal data.
         </p>
         <p>
           By using our website or mobile application, you agree to the terms of this Privacy Policy.
@@ -26,7 +29,10 @@ const PrivacyPolicy = () => {
       <section style={{ marginBottom: '40px' }}>
         <h2>1. Terms and Definitions</h2>
         <ul style={{ paddingLeft: '20px' }}>
-          <li><strong>Operator:</strong> the administration of the {SITE_NAME} service that determines the purposes and means of processing users' personal data.</li>
+          <li>
+            <strong>Operator:</strong> the administration of the {SITE_NAME} service that determines the purposes and means of
+            processing users&apos; personal data.
+          </li>
           <li><strong>User:</strong> an individual who uses the {SITE_NAME} website or mobile application.</li>
           <li><strong>Personal Data:</strong> any information relating to an identified or identifiable user.</li>
           <li><strong>Personal Data Processing:</strong> any operation performed with personal data (collection, recording, storage, use, transfer, deletion, etc.).</li>

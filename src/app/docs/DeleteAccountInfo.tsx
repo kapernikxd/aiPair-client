@@ -7,19 +7,21 @@ const DeleteAccountInfo = () => {
       <h1>Request to Delete Account - {SITE_NAME} App</h1>
 
       <p>
-        This page provides information on how users can request the deletion of their account and associated data from the "{SITE_NAME}" mobile application.
+        This page provides information on how users can request the deletion of their account and associated data from the &quot;{SITE_NAME}&quot; mobile application.
       </p>
 
       <p style={{ fontWeight: 'bold' }}>
-        Please note: The account deletion process described here applies exclusively to the "{SITE_NAME}" mobile application. It does not apply to any other platforms or services.
+        Please note: The account deletion process described here applies exclusively to the &quot;{SITE_NAME}&quot; mobile application. It does not apply to any other platforms or services.
       </p>
 
       <h2>How to Request Account Deletion</h2>
       <ol>
-        <li>Open the "{SITE_NAME}" mobile application on your device.</li>
+        <li>Open the &quot;{SITE_NAME}&quot; mobile application on your device.</li>
         <li>Go to the <strong>Profile</strong> tab.</li>
         <li>Tap on the <strong>Settings (gear)</strong> icon located in the top right corner.</li>
-        <li>Select <strong>"Delete Account"</strong> from the menu options.</li>
+        <li>
+          Select <strong>&quot;Delete Account&quot;</strong> from the menu options.
+        </li>
         <li>Confirm your decision to permanently delete your account.</li>
       </ol>
 

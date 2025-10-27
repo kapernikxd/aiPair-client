@@ -15,7 +15,10 @@ const ChildSafetyStandards = () => {
       <p style={{ textAlign: 'center', marginBottom: '40px' }}><strong>Effective Date:</strong> April 1, 2024</p>
 
       <section style={{ marginBottom: '40px' }}>
-        <p>At "{SITE_NAME}," the safety and well-being of children are our highest priority.</p>
+        <p>
+          At &quot;{SITE_NAME}&quot;, the safety and well-being of children are our highest
+          priority.
+        </p>
         <p>We strictly prohibit any content that depicts, promotes, or facilitates the sexual exploitation or abuse of minors.</p>
       </section>
 

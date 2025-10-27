@@ -15,8 +15,12 @@ const TermsOfUse = () => {
       <p style={{ textAlign: 'center', marginBottom: '40px' }}><strong>Effective Date:</strong> April 1, 2024</p>
 
       <section style={{ marginBottom: '40px' }}>
-        <p>Welcome to "{SITE_NAME}"!</p>
-        <p>These Terms of Use ("Terms") govern your access to and use of the {SITE_NAME} mobile application and the website <a href={process.env.DOMAIN} target="_blank" rel="noopener noreferrer">{process.env.DOMAIN}</a> (collectively, the "Service").</p>
+        <p>Welcome to &quot;{SITE_NAME}&quot;!</p>
+        <p>
+          These Terms of Use (&quot;Terms&quot;) govern your access to and use of the {SITE_NAME} mobile application and the
+          website <a href={process.env.DOMAIN} target="_blank" rel="noopener noreferrer">{process.env.DOMAIN}</a>{' '}
+          (collectively, the &quot;Service&quot;).
+        </p>
         <p>By accessing or using our Service, you agree to be bound by these Terms.</p>
         <p>If you do not agree with these Terms, you may not access or use the Service.</p>
       </section>
@@ -44,7 +48,10 @@ const TermsOfUse = () => {
 
       <section style={{ marginBottom: '40px' }}>
         <h2>4. Privacy</h2>
-        <p>Our collection and use of personal data are governed by our <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</p>
+        <p>
+          Our collection and use of personal data are governed by our{' '}
+          <a href="/docs/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+        </p>
       </section>
 
       <section style={{ marginBottom: '40px' }}>
